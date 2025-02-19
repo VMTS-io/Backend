@@ -5,7 +5,7 @@ using VMTS.Repository.Identity;
 
 namespace VMTS.API.Extensions;
 
-public class AppUserIdentityServices
+public static class AppUserIdentityServices
 {
     public static IServiceCollection AddAppServices(IServiceCollection services, IConfiguration configuration)
     {
