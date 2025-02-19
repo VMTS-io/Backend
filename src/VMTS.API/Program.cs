@@ -16,6 +16,9 @@ namespace VMTS.API
             builder.Services.AddOpenApi();
 
 
+
+            VTMSServices.AddAppServices(builder.Services, builder.Configuration);
+            
             AppUserIdentityServices.AddAppServices(builder.Services, builder.Configuration);
             
             
