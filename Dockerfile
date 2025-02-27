@@ -4,8 +4,8 @@
 FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS base
 USER $APP_UID
 WORKDIR /app
-EXPOSE 8080
 EXPOSE 8081
+EXPOSE 8080
 
 
 # This stage is used to build the service project
@@ -29,5 +29,7 @@ RUN dotnet publish "./VMTS.API.csproj" -c $BUILD_CONFIGURATION -o /app/publish /
 # This stage is used in production or when running from VS in regular mode (Default when not using the Debug configuration)
 FROM base AS final
 WORKDIR /app
+# Set the ASP.NET Core URLs to listen on both HTTP and HTTPS
+# ENV ASPNETCORE_URLS="https://+:8081;http://+:8080"
 COPY --from=publish /app/publish .
 ENTRYPOINT ["dotnet", "VMTS.API.dll"]
