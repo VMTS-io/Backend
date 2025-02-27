@@ -1,4 +1,4 @@
-
+using Scalar.AspNetCore;
 using VMTS.API.Extensions;
 
 namespace VMTS.API
@@ -15,26 +15,22 @@ namespace VMTS.API
             // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
             builder.Services.AddOpenApi();
 
-
-
             VTMSServices.AddAppServices(builder.Services, builder.Configuration);
-            
+
             AppUserIdentityServices.AddAppServices(builder.Services, builder.Configuration);
-            
-            
-            
+
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
             {
                 app.MapOpenApi();
+                app.MapScalarApiReference();
             }
 
             app.UseHttpsRedirection();
 
             app.UseAuthorization();
-
 
             app.MapControllers();
 
