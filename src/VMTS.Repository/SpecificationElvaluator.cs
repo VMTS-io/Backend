@@ -1,0 +1,32 @@
+﻿using Microsoft.EntityFrameworkCore;
+using VMTS.Core.Entities;
+using VMTS.Core.Specifications;
+
+namespace VMTS.Repository;
+
+public static class SpecificationElvaluator<T> where T : BaseEntity 
+{
+    public static IQueryable BuildQuery(IQueryable<T> inputQuery , ISpecification<T>specs)
+    {
+        var query = inputQuery;
+
+        if (specs.Criteria is not null)
+        {
+            query = query.Where(specs.Criteria);
+
+            query = specs.Includes.Aggregate(query, (currentQuery, Expression) => currentQuery.Include(Expression));
+        }
+        
+        if (specs.OrderBy is not null)
+            query = query.OrderBy(specs.OrderBy);
+
+        if (specs.OrderByDesc is not null)
+            query = query.OrderByDescending(specs.OrderByDesc);
+        
+        if (specs.IsPaginaitonEnabled)
+            query = query.Skip(specs.Skip).Take(specs.Take);
+        
+        
+        return query;
+    }
+}
