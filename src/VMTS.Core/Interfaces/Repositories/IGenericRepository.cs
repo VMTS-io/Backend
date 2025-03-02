@@ -1,0 +1,17 @@
+using VMTS.Core.Entities;
+using VMTS.Core.Interfaces.Specifications;
+
+namespace VMTS.Core.Interfaces.Repositories;
+
+public interface IGenericRepository<T>
+    where T : BaseEntity
+{
+    Task<IReadOnlyList<T>> GetAllAsync();
+    Task<T?> GetByIdAsync(int id);
+    Task CreateAsync(T entity);
+    void Update(T entity);
+    void Delete(T entity);
+    Task<IReadOnlyList<T>> GetAllWithSpecification(ISpecification<T> specs);
+    Task<T?> GetByIdWithSpecification(ISpecification<T> specs);
+    Task<int> GetCountAsync(ISpecification<T> specs);
+}
