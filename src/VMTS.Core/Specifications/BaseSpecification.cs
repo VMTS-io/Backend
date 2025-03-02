@@ -1,5 +1,6 @@
 ﻿using System.Linq.Expressions;
 using VMTS.Core.Entities;
+using VMTS.Core.Interfaces.Specifications;
 
 namespace VMTS.Core.Specifications;
 
