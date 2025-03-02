@@ -1,0 +1,21 @@
+services:
+  asp-app:
+    container_name: asp-vmts-container
+    build: .
+    ports:
+      - 8080:8080
+      - 8081:8081
+    depends_on:
+      - sql-server
+  sql-server:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: sqlserver
+    environment:
+      ACCEPT_EULA : "Y"
+      MSSQL_SA_PASSWORD: "P@$$word1234"
+    volumes:
+      - sql-volume:/var/opt/mssql
+    ports:
+      - 1433:1433
+volumes:
+  sql-volume:
