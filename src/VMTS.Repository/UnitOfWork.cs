@@ -10,7 +10,7 @@ namespace VMTS.Repository;
 public class UnitOfWork : IUnitOfWork
 {
     private readonly VTMSDbContext _dbContext;
-    private Hashtable _repos;
+    private readonly Hashtable _repos;
 
     public UnitOfWork(VTMSDbContext dbContext)
     {
