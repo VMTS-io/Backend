@@ -16,5 +16,9 @@ public class IdentityDbContext : IdentityDbContext<AppUser>
     {
         base.OnModelCreating(builder);
         builder.Entity<Address>().ToTable("Addresses");
+        builder.Entity<AppUser>()
+            .HasIndex(u => u.UserName)
+            .IsUnique(false);
+
     }
 }

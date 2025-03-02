@@ -18,7 +18,10 @@ namespace VMTS.API
             VTMSServices.AddAppServices(builder.Services, builder.Configuration);
 
             AppUserIdentityServices.AddAppServices(builder.Services, builder.Configuration);
-
+                
+            
+            builder.Services.AddControllers();
+            
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
