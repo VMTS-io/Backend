@@ -16,5 +16,6 @@ public class Address
         public string? ApartmentNumber { get; set; } // Example: "Flat 10"
         public string? Landmark { get; set; } // Example: "Near City Stars Mall"
         
+        public string AppUserId { get; set; } // foreign Key
 }
 
