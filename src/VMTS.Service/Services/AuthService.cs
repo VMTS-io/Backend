@@ -53,43 +53,7 @@ public class AuthService : IAuthService
 
     #endregion
 
-    #region Password
     
-    public async Task<string> GenerateSecurePasswordAsync(int length)
-    {
-        const string lowercaseLetters = "abcdefghijklmnopqrstuvwxyz";
-        const string uppercaseLetters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-        const string numbers = "0123456789";
-        const string symbols = "!@#$%^&*()_+-=[]{}|;:,.<>?";
-        
-        string allCharacters = lowercaseLetters + uppercaseLetters + numbers + symbols;
-        
-        StringBuilder password = new StringBuilder();
-
-        // Ensure at least one character from each set
-        password.Append(lowercaseLetters[_random.Next(lowercaseLetters.Length)]);
-        password.Append(uppercaseLetters[_random.Next(uppercaseLetters.Length)]);
-        password.Append(numbers[_random.Next(numbers.Length)]);
-        password.Append(symbols[_random.Next(symbols.Length)]);
-
-        // Fill the rest of the password with random characters
-        for (int i = 4; i < length; i++)
-        {
-            password.Append(allCharacters[_random.Next(allCharacters.Length)]);
-        }
-
-        // Shuffle the password to randomize the order of characters
-        string shuffledPassword = new string(password.ToString().OrderBy(c => _random.Next()).ToArray());
-
-        // Simulate an asynchronous operation (e.g., fetching data or logging)
-        await Task.Delay(100); // Simulate a 100ms delay
-
-        return shuffledPassword;
-    }
-    
-    
-
-    #endregion
     
 
     public async Task<string> CreateTokenAsync(AppUser user, UserManager<AppUser> userManager)
