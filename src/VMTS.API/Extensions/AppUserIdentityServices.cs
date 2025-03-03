@@ -21,7 +21,8 @@ public static class AppUserIdentityServices
                 options.User.RequireUniqueEmail = true;  // Email must be unique
                 options.User.AllowedUserNameCharacters = null; // Allow any username format
             })
-            .AddEntityFrameworkStores<IdentityDbContext>();
+            .AddEntityFrameworkStores<IdentityDbContext>()
+            .AddDefaultTokenProviders();;
 
         services.AddScoped(typeof(IAuthService), typeof(AuthService));
 
@@ -29,7 +30,8 @@ public static class AppUserIdentityServices
         {
             options.UseSqlServer(configuration.GetConnectionString("IdentityConnection"));
         });
-
+        
+        
         services.AddAuthentication(options =>
         {
             options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;

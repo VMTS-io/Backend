@@ -33,6 +33,7 @@ namespace VMTS.API
 
             app.UseHttpsRedirection();
 
+            
             app.UseAuthorization();
 
             app.MapControllers();

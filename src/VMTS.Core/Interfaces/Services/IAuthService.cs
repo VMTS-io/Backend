@@ -11,7 +11,6 @@ public interface IAuthService
         {
                 throw new NotImplementedException();
         }
-                
-        Task<string> GenerateSecurePasswordAsync(int length);
+        
         Task<string> CreateTokenAsync(AppUser user , UserManager<AppUser> userManager);
 }
