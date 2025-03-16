@@ -9,4 +9,6 @@ public class RegisterRequest
     
     public string Role { get; set; }
     
+    public AddressDto Address { get; set; }
+    
 }
