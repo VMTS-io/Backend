@@ -9,4 +9,8 @@ public interface IUnitOfWork : IAsyncDisposable
 
     IGenericRepository<T> GetRepo<T>()
         where T : BaseEntity;
+    
+    public Task<int> CompleteAsync();
+    
+
 }
