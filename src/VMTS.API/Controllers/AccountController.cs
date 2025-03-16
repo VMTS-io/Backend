@@ -1,10 +1,14 @@
-﻿using Microsoft.AspNetCore.Http.HttpResults;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using VMTS.API.Dtos;
 using VMTS.API.Errors;
 using VMTS.Core.Entities.Identity;
+using VMTS.Core.Entities.User_Business;
+using VMTS.Core.Interfaces.UnitOfWork;
 using VMTS.Core.ServicesContract;
+using VMTS.Repository;
 using ResetPasswordRequest = Microsoft.AspNetCore.Identity.Data.ResetPasswordRequest;
 
 namespace VMTS.API.Controllers;
@@ -15,18 +19,26 @@ public class AccountController : BaseApiController
     private readonly IAuthService _authService;
     private readonly SignInManager<AppUser> _signInManager;
     private readonly RoleManager<IdentityRole> _roleManager;
+    private readonly IUnitOfWork _iunitOfWork;
+    private readonly IMapper _mapper;
 
     public AccountController(
         UserManager<AppUser> userManager,
         IAuthService authService,
         SignInManager<AppUser> signInManager,
-        RoleManager<IdentityRole> roleManager)
+        RoleManager<IdentityRole> roleManager,
+        IUnitOfWork iunitOfWork 
+        ,IMapper mapper)
     {
         _userManager = userManager;
         _authService = authService;
         _signInManager = signInManager;
         _roleManager = roleManager;
+        _iunitOfWork = iunitOfWork;
+        _mapper = mapper;
     }
+
+    #region register
 
     [HttpPost("register")]
     public async Task<ActionResult<RegisterResponse>> Register(RegisterRequest model)
@@ -35,14 +47,16 @@ public class AccountController : BaseApiController
 
         var password = "Pa$$w0rd";
 
+        var address = _mapper.Map<Address>(model.Address);
+
         var user = new AppUser()
         {
             Email = email,
             UserName = email.Split('@')[0],
             PhoneNumber = model.PhoneNumber,
-            DisplayName = $"{model.FirstName?.Trim()} {model.LastName?.Trim()}"
+            Address = address
         };
-
+        
         
         var result = await _userManager.CreateAsync(user, password);
         if (!result.Succeeded)
@@ -54,13 +68,32 @@ public class AccountController : BaseApiController
         var userRole = await _userManager.AddToRoleAsync(user, model.Role);
         if (!userRole.Succeeded) return BadRequest(new ApiResponse(400));
 
-        
+        var businessUser = new BusinessUser()
+        {
+            Id   = user.Id,
+            DisplayName = $"{model.FirstName?.Trim()} {model.LastName?.Trim()}",
+            Email = user.Email,
+            PhoneNumber = user.PhoneNumber,
+            NormalizedEmail = user.NormalizedEmail
+        };
+
+        await _iunitOfWork.GetRepo<BusinessUser>().CreateAsync(businessUser);
+        await _iunitOfWork.SaveChanges();
         
         return Ok(new RegisterResponse()
         {
             Email = email,
         });
-}
+    }
+    
+            
+
+    #endregion
+
+    
+    
+    
+    #region login
 
     [HttpPost("login")]
     public async Task<ActionResult<UserDto>> Login(LoginRequest request)
@@ -87,10 +120,17 @@ public class AccountController : BaseApiController
         return Ok(new UserDto()
         {
             Email = user.Email,
-            DisplayName = user.DisplayName,
+            // DisplayName = user.DisplayName,
             Token = tokenString
         });
     }
+    
+    #endregion
+
+
+
+
+    #region reset password endpoints
 
     [HttpPost("resetpassword")]
     public async Task<ActionResult<ResetPasswordResponse>> ResetPasswordAsync(Reset_PasswordRequest model)
@@ -125,6 +165,8 @@ public class AccountController : BaseApiController
     }
 
     
+
+    #endregion
     
     
 }
