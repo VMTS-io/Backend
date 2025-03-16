@@ -1,7 +1,9 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System.Reflection;
+using Microsoft.EntityFrameworkCore;
 using VMTS.Core.Entities.Maintenace;
 using VMTS.Core.Entities.Parts;
 using VMTS.Core.Entities.Trip;
+using VMTS.Core.Entities.User_Business;
 using VMTS.Core.Entities.Vehicle_Aggregate;
 
 namespace VMTS.Repository.Data;
@@ -37,6 +39,19 @@ public class VTMSDbContext : DbContext
     public DbSet<TripRequest> TripsRequests { get; set; }
     
     #endregion
+
+    #region Fault Reports
+    
+    public DbSet<FaultReport> FaultReports { get; set; }
+        
+
+    #endregion
+
+    #region Business User 
+
+    public DbSet<BusinessUser> BusinessUsers { get; set; }
+
+    #endregion
     
     public VTMSDbContext(DbContextOptions<VTMSDbContext> options) 
         : base(options)
@@ -46,6 +61,11 @@ public class VTMSDbContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        base.OnModelCreating(modelBuilder);
+        
+        modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
+
+        modelBuilder.Ignore<System.Reflection.CustomAttributeData>(); // Ignore this type
+        modelBuilder.Ignore<System.Type>(); // Exclude System.Type from EF Core
     }
+
 }

@@ -2,7 +2,7 @@
 
 public class MaintenaceCategory : BaseEntity
 {
-    public string Name { get; set; }
+    public Categorty Categorty { get; set; }
     
     public string Description { get; set; }
 }
