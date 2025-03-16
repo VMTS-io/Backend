@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using Scalar.AspNetCore;
 using VMTS.API.Extensions;
 
@@ -20,7 +21,12 @@ namespace VMTS.API
             AppUserIdentityServices.AddAppServices(builder.Services, builder.Configuration);
                 
             
-            builder.Services.AddControllers();
+            builder.Services
+                .AddControllers()
+                .AddJsonOptions(options =>
+            {
+                options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()); // Convert enums to strings
+            });;
             
             var app = builder.Build();
 
@@ -33,7 +39,7 @@ namespace VMTS.API
 
             app.UseHttpsRedirection();
 
-            
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.MapControllers();
