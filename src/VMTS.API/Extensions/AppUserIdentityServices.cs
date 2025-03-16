@@ -1,9 +1,11 @@
-﻿using System.Text;
+﻿using System.Security.Claims;
+using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using VMTS.API.Helpers;
 using VMTS.Core.Entities.Identity;
 using VMTS.Core.ServicesContract;
 using VMTS.Repository.Identity;
@@ -25,6 +27,8 @@ public static class AppUserIdentityServices
             .AddDefaultTokenProviders();;
 
         services.AddScoped(typeof(IAuthService), typeof(AuthService));
+        
+        services.AddAutoMapper(typeof(MappingProfile));
 
         services.AddDbContext<IdentityDbContext>(options =>
         {
@@ -42,11 +46,12 @@ public static class AppUserIdentityServices
                 ValidateAudience = true,
                 ValidAudience = configuration["JWT:ValidAudience"],
                 ValidateIssuer = true,
-                ValidIssuer = configuration["Jwt:ValidIssuer"],
+                ValidIssuer = configuration["JWT:ValidIssuer"],
                 ValidateIssuerSigningKey = true,
                 IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["JWT:secretkey"])),
                 ValidateLifetime = true,
-                ClockSkew = TimeSpan.FromDays(double.Parse(configuration["JWT:Expires"]))
+                ClockSkew = TimeSpan.FromDays(double.Parse(configuration["JWT:Expires"])),
+        
             }
             );
         
