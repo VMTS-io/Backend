@@ -62,17 +62,21 @@ public class AuthService : IAuthService
 
         var authClaims = new List<Claim>()
         {
-            new Claim(ClaimTypes.Email , user.Email),
-            new Claim(ClaimTypes.GivenName , user.UserName)
+            new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()), 
+            new Claim(ClaimTypes.Email, user.Email),
+            new Claim(ClaimTypes.GivenName, user.UserName)
         };
-        
+    
         var userRoles = await userManager.GetRolesAsync(user);
-
         foreach (var role in userRoles)
         {
             authClaims.Add(new Claim(ClaimTypes.Role, role));
         }
+
         #endregion
+
+        
+    
 
         #region SecretKey
 
@@ -87,7 +91,7 @@ public class AuthService : IAuthService
             issuer: _configuration["JWT:ValidIssuer"],
             expires: DateTime.UtcNow.AddDays(double.Parse(_configuration["JWT:Expires"])),
             claims: authClaims,
-            signingCredentials: new SigningCredentials(secretKey , SecurityAlgorithms.HmacSha256Signature)
+            signingCredentials: new SigningCredentials(secretKey , SecurityAlgorithms.HmacSha256)
         );
 
         return new JwtSecurityTokenHandler().WriteToken(token);
