@@ -1,4 +1,7 @@
-﻿namespace VMTS.Core.Entities.Maintenace;
+﻿using VMTS.Core.Entities.User_Business;
+using VMTS.Core.Entities.Vehicle_Aggregate;
+
+namespace VMTS.Core.Entities.Maintenace;
 
 public class MaintenaceReport : BaseEntity
 {
@@ -9,4 +12,10 @@ public class MaintenaceReport : BaseEntity
     public DateTime Date { get; set; }
 
     public Status Status { get; set; }
+
+    public BusinessUser Mechanic { get; set; }
+    
+
+    public Vehicle Vehicle { get; set; }
+
 }

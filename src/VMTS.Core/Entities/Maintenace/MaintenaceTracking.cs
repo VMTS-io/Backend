@@ -10,5 +10,7 @@ public class MaintenaceTracking : BaseEntity
 
     public DateTime NextMaintainDate { get; set; }
 
-    public Type Type { get; set; }
+    public MaintenanceType MaintenanceType { get; set; }
+    
+    
 }
