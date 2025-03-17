@@ -364,4 +364,5 @@ FodyWeavers.xsd
 #mine
 .globalconfig
 ./.idea
-# **/Migrations
+**/Migrations/*.cs
+**/VTMSDbContextModelSnapshot.cs
