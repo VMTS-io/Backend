@@ -10,7 +10,6 @@ namespace VMTS.Repository.Data;
 
 public class VTMSDbContext : DbContext
 {
-
     #region Vehicle
     public DbSet<Vehicle> Vehicles { get; set; }
     public DbSet<VehicleModel> Models { get; set; }
@@ -18,14 +17,14 @@ public class VTMSDbContext : DbContext
     #endregion
 
     #region parts
-    
+
     public DbSet<Part> Parts { get; set; }
     public DbSet<PartCategory> PartCategories { get; set; }
-    
+
     #endregion
 
     #region Maintenance
-    
+
     public DbSet<MaintenaceCategory> MaintenanceCategories { get; set; }
     public DbSet<MaintenaceReport> MaintenanceReports { get; set; }
     public DbSet<MaintenaceTracking> MaintenanceTrackings { get; set; }
@@ -37,35 +36,29 @@ public class VTMSDbContext : DbContext
 
     public DbSet<TripReport> TripsReports { get; set; }
     public DbSet<TripRequest> TripsRequests { get; set; }
-    
+
     #endregion
 
     #region Fault Reports
-    
+
     public DbSet<FaultReport> FaultReports { get; set; }
-        
 
     #endregion
 
-    #region Business User 
+    #region Business User
 
     public DbSet<BusinessUser> BusinessUsers { get; set; }
 
     #endregion
-    
-    public VTMSDbContext(DbContextOptions<VTMSDbContext> options) 
-        : base(options)
-    {
-        
-    }
+
+    public VTMSDbContext(DbContextOptions<VTMSDbContext> options)
+        : base(options) { }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        
         modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
 
-        modelBuilder.Ignore<System.Reflection.CustomAttributeData>(); // Ignore this type
-        modelBuilder.Ignore<System.Type>(); // Exclude System.Type from EF Core
+        modelBuilder.Ignore<CustomAttributeData>(); // Ignore this type
+        modelBuilder.Ignore<Type>(); // Exclude System.Type from EF Core
     }
-
 }
