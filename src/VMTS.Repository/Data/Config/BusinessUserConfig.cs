@@ -8,24 +8,26 @@ public class BusinessUserConfig : IEntityTypeConfiguration<BusinessUser>
 {
     public void Configure(EntityTypeBuilder<BusinessUser> builder)
     {
-
         #region TripRequest
-        builder.HasMany(m => m.ManagerTripRequest)
+        builder
+            .HasMany(m => m.ManagerTripRequest)
             .WithOne(t => t.Manager)
             .HasForeignKey(t => t.ManagerId)
             .IsRequired()
             .OnDelete(DeleteBehavior.Restrict);
 
-        builder.HasMany(m => m.DriverTripRequest)
+        builder
+            .HasMany(m => m.DriverTripRequest)
             .WithOne(t => t.Driver)
             .HasForeignKey(t => t.DriverId)
             .IsRequired()
             .OnDelete(DeleteBehavior.Restrict);
-            
+
         #endregion
 
         #region Trip Reports
-            builder.HasMany(m => m.DriverTripReport)
+        builder
+            .HasMany(m => m.DriverTripReport)
             .WithOne(t => t.Driver)
             .HasForeignKey("DriverId")
             .IsRequired()
@@ -33,15 +35,17 @@ public class BusinessUserConfig : IEntityTypeConfiguration<BusinessUser>
         #endregion
 
         #region FaultReport
-            builder.HasMany(m => m.DriverFaultReport)
-                .WithOne(t => t.Driver)
-                .HasForeignKey("DriverId")
-                .IsRequired()
-                .OnDelete(DeleteBehavior.Restrict);
+        builder
+            .HasMany(m => m.DriverFaultReport)
+            .WithOne(t => t.Driver)
+            .HasForeignKey("DriverId")
+            .IsRequired()
+            .OnDelete(DeleteBehavior.Restrict);
         #endregion
 
         #region  MaintenaceReports
-        builder.HasMany(b => b.MechanicMaintenaceReports)
+        builder
+            .HasMany(b => b.MechanicMaintenaceReports)
             .WithOne(m => m.Mechanic)
             .HasForeignKey("MechanicId")
             .IsRequired()
@@ -49,14 +53,19 @@ public class BusinessUserConfig : IEntityTypeConfiguration<BusinessUser>
         #endregion
 
         #region MaintenanceRequest
-        builder.HasMany(b => b.ManagerMaintenaceRequests)
-            .WithOne(m => m.ManagerMaintenanceRequest)
-            .HasForeignKey("MechanicId")
+        builder
+            .HasMany(b => b.ManagerMaintenaceRequests)
+            .WithOne(m => m.Manager)
+            .HasForeignKey(mr => mr.ManagerId)
             .IsRequired()
             .OnDelete(DeleteBehavior.Restrict);
-        
 
+        builder
+            .HasMany(b => b.MechanicMaintenaceRequests)
+            .WithOne(m => m.Mechanic)
+            .HasForeignKey(m => m.MechanicId)
+            .IsRequired()
+            .OnDelete(DeleteBehavior.Restrict);
         #endregion
-
     }
 }
