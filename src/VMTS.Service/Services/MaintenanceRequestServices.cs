@@ -1,6 +1,5 @@
 using System.Security.Claims;
 using VMTS.Core.Entities.Maintenace;
-using VMTS.Core.Entities.User_Business;
 using VMTS.Core.Interfaces.Repositories;
 using VMTS.Core.Interfaces.Services;
 using VMTS.Core.Interfaces.UnitOfWork;
@@ -22,8 +21,7 @@ public class MaintenanceRequestServices : IMaintenanceRequestServices
     public async Task CreateAsync(MaintenaceRequest model, ClaimsPrincipal user)
     {
         var managerId = user.FindFirstValue(ClaimTypes.NameIdentifier);
-        /*var manager = await _unitOfWork.GetRepo<BusinessUser>().GetByIdAsync(managerId!);*/
-        model.ManagerId = managerId! ?? "dfsakfljlsdkajf";
+        model.ManagerId = managerId!;
         await _repo.CreateAsync(model);
         await _unitOfWork.SaveChanges();
     }
