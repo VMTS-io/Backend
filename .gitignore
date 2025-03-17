@@ -363,3 +363,5 @@ MigrationBackup/
 FodyWeavers.xsd
 #mine
 .globalconfig
+./.idea
+# **/Migrations
