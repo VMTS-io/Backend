@@ -19,7 +19,7 @@ public static class VTMSServices
 
         services.AddScoped<IUnitOfWork, UnitOfWork>();
         services.AddScoped<IReportService, ReportService>();
-    
+        services.AddScoped<ITripRequestService, TripRequestService>();
         
         return services;
     }
