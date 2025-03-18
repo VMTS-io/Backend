@@ -363,3 +363,6 @@ MigrationBackup/
 FodyWeavers.xsd
 #mine
 .globalconfig
+./.idea
+**/Migrations/*.cs
+**/VTMSDbContextModelSnapshot.cs
