@@ -2,6 +2,7 @@
 using VMTS.API.Helpers;
 using VMTS.Core.Interfaces.Services;
 using VMTS.Core.Interfaces.UnitOfWork;
+using VMTS.Core.ServicesContract;
 using VMTS.Repository;
 using VMTS.Repository.Data;
 using VMTS.Service.Services;
