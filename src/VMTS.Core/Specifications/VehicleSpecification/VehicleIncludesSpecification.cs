@@ -6,8 +6,8 @@ public class VehicleIncludesSpecification : BaseSpecification<Vehicle>
 {
     private void ApplyIncludes()
     {
-        Includes.Add(v => v.CategoryId);
-        Includes.Add(v => v.ModelId);
+        Includes.Add(v => v.VehicleCategory);
+        Includes.Add(v => v.VehicleModel);
     }
 
     public VehicleIncludesSpecification(string id) : base(v => v.Id == id)
