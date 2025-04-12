@@ -1,4 +1,3 @@
-using System.Security.Claims;
 using AutoMapper;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -36,7 +35,7 @@ public class MaintenanceRequestController : BaseApiController
     public async Task<ActionResult<MaintenanceRequestDto>> Edit(MaintenanceRequestEdit model)
     {
         var mappedModel = _mapper.Map<MaintenanceRequestEdit, MaintenaceRequest>(model);
-        await _services.UpdateAsync(mappedModel);
+        await _services.UpdateAsync(mappedModel, User);
         return Ok(model);
     }
 
@@ -79,8 +78,7 @@ public class MaintenanceRequestController : BaseApiController
         [FromQuery] MaintenanceRequestSpecParamsForMechanic specParams
     )
     {
-        var mechanicId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-        var result = await _services.GetAllForUserAsync(mechanicId!, specParams);
+        var result = await _services.GetAllForUserAsync(specParams, User);
         var mappedResult = _mapper.Map<
             IReadOnlyList<MaintenaceRequest>,
             IReadOnlyList<MaintenanceRequestResponse>
