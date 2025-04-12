@@ -32,8 +32,8 @@ public class ExceptionMiddleware : IMiddleware
             context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
 
             var responsBody = _env.IsDevelopment()
-                ? new APIExceptionResponse(500, ex.Message, ex.StackTrace?.ToString())
-                : new APIExceptionResponse(500, ex.Message);
+                ? new ApiExceptionResponse(500, ex.Message, ex.StackTrace?.ToString())
+                : new ApiExceptionResponse(500, ex.Message);
 
             JsonSerializerOptions jsonSerializerOptions = new()
             {
