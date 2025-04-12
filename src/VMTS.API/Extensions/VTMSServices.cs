@@ -6,6 +6,7 @@ using VMTS.API.Helpers;
 using VMTS.API.Middlewares;
 using VMTS.Core.Interfaces.Services;
 using VMTS.Core.Interfaces.UnitOfWork;
+using VMTS.Core.ServicesContract;
 using VMTS.Repository;
 using VMTS.Repository.Data;
 using VMTS.Service.Services;
@@ -46,8 +47,12 @@ public static class VTMSServices
         });
 
         services.AddScoped<IUnitOfWork, UnitOfWork>();
+        services.AddScoped<IReportService, ReportService>();
+        services.AddScoped<ITripRequestService, TripRequestService>();
+      
         services.AddScoped<IMaintenanceRequestServices, MaintenanceRequestServices>();
         services.AddAutoMapper(typeof(MappingProfile));
+
         return services;
     }
 }
