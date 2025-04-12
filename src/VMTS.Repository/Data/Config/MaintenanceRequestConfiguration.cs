@@ -8,6 +8,9 @@ public class MaintenanceRequestConfiguration : IEntityTypeConfiguration<Maintena
 {
     public void Configure(EntityTypeBuilder<MaintenaceRequest> builder)
     {
-        builder.HasOne(MR => MR.Vehicle).WithMany().HasForeignKey(MR => MR.VehicleId);
+        builder
+            .HasOne(MR => MR.Vehicle)
+            .WithMany(V => V.MaintenaceRequests)
+            .HasForeignKey(MR => MR.VehicleId);
     }
 }
