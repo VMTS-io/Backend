@@ -41,12 +41,12 @@ public class GenericRepository<T> : IGenericRepository<T>
         _dbContext.Remove(entity);
     }
 
-    public async Task<IReadOnlyList<T>> GetAllWithSpecification(ISpecification<T> specs)
+    public async Task<IReadOnlyList<T>> GetAllWithSpecificationAsync(ISpecification<T> specs)
     {
         return await GetQuery(specs).ToListAsync();
     }
 
-    public async Task<T?> GetByIdWithSpecification(ISpecification<T> specs)
+    public async Task<T?> GetByIdWithSpecificationAsync(ISpecification<T> specs)
     {
         return await GetQuery(specs).FirstOrDefaultAsync();
     }

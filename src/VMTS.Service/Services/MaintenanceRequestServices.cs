@@ -58,14 +58,14 @@ public class MaintenanceRequestServices : IMaintenanceRequestServices
             Id = mechanicSpecParams.Id,
         };
         var spec = new MaintenanceRequestSpecification(specParam);
-        var result = await _repo.GetAllWithSpecification(spec);
+        var result = await _repo.GetAllWithSpecificationAsync(spec);
         return result;
     }
 
     public async Task<MaintenaceRequest?> GetByIdAsync(string id)
     {
         var spec = new MaintenanceRequestSpecification(id);
-        var result = await _repo.GetByIdWithSpecification(spec);
+        var result = await _repo.GetByIdWithSpecificationAsync(spec);
         return result;
     }
 }
