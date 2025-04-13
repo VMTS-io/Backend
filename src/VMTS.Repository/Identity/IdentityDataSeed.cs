@@ -39,8 +39,11 @@ public class IdentityDataSeed
             };
             var adminBusinessUser = new BusinessUser()
             {
+                Id = adminUser.Id,
                 Email = "bassel.admin@raafat.com",
                 DisplayName = "Bassel Raafat",
+                NormalizedEmail = "bassel.admin@raafat.com".ToUpper(),
+                PhoneNumber = "1234",
             };
             var createResult = await userManager.CreateAsync(
                 adminUser,
@@ -71,8 +74,11 @@ public class IdentityDataSeed
             };
             var managerBusinessUser = new BusinessUser()
             {
+                Id = managerUser.Id,
                 Email = "bassel.manager@raafat.com",
                 DisplayName = "Bassel Raafat",
+                NormalizedEmail = "bassel.manager@raafat.com".ToUpper(),
+                PhoneNumber = "1234",
             };
 
             createResult = await userManager.CreateAsync(
@@ -104,8 +110,11 @@ public class IdentityDataSeed
 
             var mechanicBusinessUser = new BusinessUser()
             {
+                Id = mechanicUser.Id,
                 Email = "basell.mechainc@raafat.com",
                 DisplayName = "Bassel Raafat",
+                NormalizedEmail = "basell.mechainc@raafat.com",
+                PhoneNumber = "1234",
             };
 
             createResult = await userManager.CreateAsync(
@@ -137,8 +146,11 @@ public class IdentityDataSeed
             };
             var driverBusinessDriver = new BusinessUser()
             {
+                Id = driverUser.Id,
                 Email = "basel.driver@raaft.com",
                 DisplayName = "Bassel Raafat",
+                NormalizedEmail = "basel.driver@raaft.com",
+                PhoneNumber = "1234",
             };
 
             createResult = await userManager.CreateAsync(
