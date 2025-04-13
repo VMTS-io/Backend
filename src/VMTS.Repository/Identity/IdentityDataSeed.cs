@@ -1,7 +1,10 @@
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using VMTS.Core.Entities.Identity;
+using VMTS.Core.Entities.User_Business;
 using VMTS.Core.Helpers;
+using VMTS.Core.Interfaces.UnitOfWork;
 
 namespace VMTS.Repository.Identity;
 
@@ -10,6 +13,8 @@ public class IdentityDataSeed
     public static async Task SeedAsync(
         UserManager<AppUser> userManager,
         RoleManager<IdentityRole> roleManager,
+        IUnitOfWork unitOfWork,
+        IConfiguration configuration,
         ILogger<IdentityDataSeed> logger
     )
     {
@@ -32,8 +37,15 @@ public class IdentityDataSeed
                 Email = "bassel.admin@raafat.com",
                 UserName = "raafatadmin",
             };
-
-            var createResult = await userManager.CreateAsync(adminUser, "P@33word");
+            var adminBusinessUser = new BusinessUser()
+            {
+                Email = "bassel.admin@raafat.com",
+                DisplayName = "Bassel Raafat",
+            };
+            var createResult = await userManager.CreateAsync(
+                adminUser,
+                configuration["Password:Admin"]
+            );
 
             if (createResult.Succeeded)
             {
@@ -42,6 +54,8 @@ public class IdentityDataSeed
                     await roleManager.CreateAsync(new IdentityRole(Roles.Admin));
 
                 await userManager.AddToRoleAsync(adminUser, Roles.Admin);
+
+                await unitOfWork.GetRepo<BusinessUser>().CreateAsync(adminBusinessUser);
             }
             else
             {
@@ -55,8 +69,16 @@ public class IdentityDataSeed
                 Email = "bassel.manager@raafat.com",
                 UserName = "raafatmanager",
             };
+            var managerBusinessUser = new BusinessUser()
+            {
+                Email = "bassel.manager@raafat.com",
+                DisplayName = "Bassel Raafat",
+            };
 
-            createResult = await userManager.CreateAsync(managerUser, "P@33word");
+            createResult = await userManager.CreateAsync(
+                managerUser,
+                configuration["Password:Manager"]
+            );
 
             if (createResult.Succeeded)
             {
@@ -65,6 +87,7 @@ public class IdentityDataSeed
                     await roleManager.CreateAsync(new IdentityRole(Roles.Manager));
 
                 await userManager.AddToRoleAsync(managerUser, Roles.Manager);
+                await unitOfWork.GetRepo<BusinessUser>().CreateAsync(managerBusinessUser);
             }
             else
             {
@@ -79,7 +102,16 @@ public class IdentityDataSeed
                 UserName = "raafatmechanic",
             };
 
-            createResult = await userManager.CreateAsync(mechanicUser, "P@33word");
+            var mechanicBusinessUser = new BusinessUser()
+            {
+                Email = "basell.mechainc@raafat.com",
+                DisplayName = "Bassel Raafat",
+            };
+
+            createResult = await userManager.CreateAsync(
+                mechanicUser,
+                configuration["Password:Mechanic"]
+            );
 
             if (createResult.Succeeded)
             {
@@ -88,6 +120,7 @@ public class IdentityDataSeed
                     await roleManager.CreateAsync(new IdentityRole(Roles.Mechanic));
 
                 await userManager.AddToRoleAsync(mechanicUser, Roles.Mechanic);
+                await unitOfWork.GetRepo<BusinessUser>().CreateAsync(mechanicBusinessUser);
             }
             else
             {
@@ -102,8 +135,16 @@ public class IdentityDataSeed
                 Email = "basel.driver@raaft.com",
                 UserName = "raaftdriver",
             };
+            var driverBusinessDriver = new BusinessUser()
+            {
+                Email = "basel.driver@raaft.com",
+                DisplayName = "Bassel Raafat",
+            };
 
-            createResult = await userManager.CreateAsync(driverUser, "P@33word");
+            createResult = await userManager.CreateAsync(
+                driverUser,
+                configuration["Password:Driver"]
+            );
 
             if (createResult.Succeeded)
             {
@@ -111,6 +152,7 @@ public class IdentityDataSeed
                 if (!isRoleExists)
                     await roleManager.CreateAsync(new IdentityRole(Roles.Driver));
                 await userManager.AddToRoleAsync(driverUser, Roles.Driver);
+                await unitOfWork.GetRepo<BusinessUser>().CreateAsync(driverBusinessDriver);
             }
             else
             {
@@ -119,6 +161,7 @@ public class IdentityDataSeed
                     logger.LogError("{message}", $"Error: {error.Code} - {error.Description}");
                 }
             }
+            await unitOfWork.SaveChanges();
         }
     }
 }

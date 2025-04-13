@@ -1,12 +1,6 @@
-using System.Text.Json.Serialization;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
 using Scalar.AspNetCore;
 using VMTS.API.Extensions;
 using VMTS.API.Middlewares;
-using VMTS.Core.Entities.Identity;
-using VMTS.Repository.Data;
-using VMTS.Repository.Identity;
 
 namespace VMTS.API
 {
@@ -23,32 +17,9 @@ namespace VMTS.API
 
             var app = builder.Build();
 
-            using var scope = app.Services.CreateScope();
-            var services = scope.ServiceProvider;
+            await app.ApplyMigrationAsync();
+            await app.ApplySeedAsync();
 
-            var loggerFactory = services.GetRequiredService<ILoggerFactory>();
-            var dbContext = services.GetRequiredService<VTMSDbContext>();
-            var identityDbContext = services.GetRequiredService<IdentityDbContext>();
-            var userManager = services.GetRequiredService<UserManager<AppUser>>();
-            var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
-            try
-            {
-                await dbContext.Database.MigrateAsync();
-                await VMTSDataSeed.SeedAsync(dbContext);
-                await identityDbContext.Database.MigrateAsync();
-                await IdentityDataSeed.SeedAsync(
-                    userManager,
-                    roleManager,
-                    loggerFactory.CreateLogger<IdentityDataSeed>()
-                );
-            }
-            catch (Exception ex)
-            {
-                var logger = loggerFactory.CreateLogger<Program>();
-                logger.LogError(ex, "Erorr Happened While Updating Database");
-            }
-
-            // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
             {
                 app.MapOpenApi();
