@@ -13,10 +13,10 @@ using VMTS.Service.Services;
 
 namespace VMTS.API.Extensions;
 
-public static class VTMSServices
+public static class VTMSServicesExtension
 {
     public static IServiceCollection AddAppServices(
-        IServiceCollection services,
+        this IServiceCollection services,
         IConfiguration configuration
     )
     {
@@ -47,9 +47,9 @@ public static class VTMSServices
         });
 
         services.AddScoped<IUnitOfWork, UnitOfWork>();
+        services.AddScoped<IAuthService, AuthService>();
         services.AddScoped<IReportService, ReportService>();
         services.AddScoped<ITripRequestService, TripRequestService>();
-      
         services.AddScoped<IMaintenanceRequestServices, MaintenanceRequestServices>();
         services.AddAutoMapper(typeof(MappingProfile));
 

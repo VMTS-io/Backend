@@ -18,8 +18,8 @@ namespace VMTS.API
 
             // Add services to the container.
 
-            VTMSServices.AddAppServices(builder.Services, builder.Configuration);
-            AppUserIdentityServices.AddAppServices(builder.Services, builder.Configuration);
+            builder.Services.AddAppServices(builder.Configuration);
+            builder.Services.AddIdentityServices(builder.Configuration);
 
             var app = builder.Build();
 
