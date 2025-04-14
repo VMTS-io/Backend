@@ -4,6 +4,12 @@ namespace VMTS.Core.Specifications.FaultReportSepcification;
 
 public class FaultReportIncludesSpecification : BaseSpecification<FaultReport>
 {
+
+    public FaultReportIncludesSpecification(string id)
+            :base(f => f.Id == id)
+    {
+        ApplyIncludes();
+    }
     private void ApplyIncludes()
     {
         Includes.Add(fr => fr.TripId); 

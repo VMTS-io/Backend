@@ -1,15 +1,19 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using VMTS.API.Dtos;
 using VMTS.API.Errors;
 using VMTS.Core.Entities.Identity;
 using VMTS.Core.Entities.User_Business;
+using VMTS.Core.Interfaces.Services;
 using VMTS.Core.Interfaces.UnitOfWork;
 using VMTS.Core.ServicesContract;
 
 namespace VMTS.API.Controllers;
-
+[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
 public class AccountController : BaseApiController
 {
     private readonly UserManager<AppUser> _userManager;
@@ -18,6 +22,7 @@ public class AccountController : BaseApiController
     private readonly RoleManager<IdentityRole> _roleManager;
     private readonly IUnitOfWork _iunitOfWork;
     private readonly IMapper _mapper;
+    private readonly IUserService _userService;
 
     public AccountController(
         UserManager<AppUser> userManager,
@@ -25,7 +30,8 @@ public class AccountController : BaseApiController
         SignInManager<AppUser> signInManager,
         RoleManager<IdentityRole> roleManager,
         IUnitOfWork iunitOfWork,
-        IMapper mapper
+        IMapper mapper,
+        IUserService userService
     )
     {
         _userManager = userManager;
@@ -34,6 +40,7 @@ public class AccountController : BaseApiController
         _roleManager = roleManager;
         _iunitOfWork = iunitOfWork;
         _mapper = mapper;
+        _userService = userService;
     }
 
     #region register
@@ -83,10 +90,7 @@ public class AccountController : BaseApiController
     }
 
     #endregion
-
-
-
-
+    
     #region login
 
     [HttpPost("login")]
@@ -122,10 +126,7 @@ public class AccountController : BaseApiController
     }
 
     #endregion
-
-
-
-
+    
     #region reset password endpoints
 
     [HttpPost("resetpassword")]
@@ -170,6 +171,114 @@ public class AccountController : BaseApiController
 
         return Ok(new { Message = "Password reset token generated", Token = token });
     }
+
+    #endregion
+    
+    #region delete user
+
+    [HttpDelete]
+    public async Task<ActionResult> DeleteUser([FromBody] UserDeleteRequest request)
+    {
+        var user = await _userManager.FindByIdAsync(request.UserId);
+        if (user == null)
+            return NotFound(new ApiResponse(404, "User not found"));
+
+        var result = await _userManager.DeleteAsync(user);
+        if (!result.Succeeded)
+            return BadRequest(new ApiResponse(400, string.Join(", ", result.Errors.Select(e => e.Description))));
+
+        return Ok(new ApiResponse(200, "User deleted successfully"));
+    }
+
+    
+    #endregion
+    
+    #region edit user
+    [HttpPut("edit")]
+    public async Task<ActionResult> Edit(EditUserRequest request, string userId)
+    {
+        var result = await _userService.EditUserAsync(
+            userId,
+            request.UserName,
+            request.PhoneNumber,
+            request.Address.Street,
+            request.Address.Area,
+            request.Address.Governorate,
+            request.Address.Country,
+            request.Role
+        );
+
+        if (!result) return BadRequest(new ApiResponse(400, "Failed to update user"));
+
+        return Ok(new ApiResponse(200, "User updated successfully"));
+    }
+
+
+    #endregion
+
+    #region Get User By Id
+
+    [HttpGet("getById")]
+    public async Task<ActionResult<UserResponse>> GetById(string userId)
+    {
+        var result = await _userManager.Users
+            .Include(u => u.Address)
+            .FirstOrDefaultAsync(u => u.Id == userId);
+
+        if (result == null)
+            return NotFound(new ApiResponse(404, "User not found"));
+
+        var roles = await _userManager.GetRolesAsync(result);
+        var role = roles.FirstOrDefault();
+
+        return Ok(new UserResponse()
+        {
+            Email = result.Email,
+            UserName = result.UserName,
+            PhoneNumber = result.PhoneNumber,
+            Role = role,
+            Address = new AddressDto()
+            {
+                Street = result.Address?.Street,
+                Area = result.Address?.Area,
+                Governorate = result.Address?.Governorate,
+                Country = result.Address?.Country,
+            }
+        });
+    }
+
+
+
+    #endregion
+
+    #region Get All Users
+
+    [HttpGet("getall")]
+    public async Task<ActionResult<IReadOnlyList<UserResponse>>> GetAllUsers()
+    {
+        var users = await _userManager.Users
+            .Include(u => u.Address)
+            .ToListAsync();
+        
+        if (users == null)
+            return NotFound(new ApiResponse(404, "Users not found"));
+
+        var userResponeses = new List<UserResponse>();
+        foreach (var user in users)
+        {
+            var mappedUser = _mapper.Map<UserResponse>(user);
+            
+            var roles = await _userManager.GetRolesAsync(user);
+            
+            mappedUser.Role = roles.FirstOrDefault();
+            
+            userResponeses.Add(mappedUser);
+            
+        }
+
+        return Ok(userResponeses);
+    }
+
 
     #endregion
 }

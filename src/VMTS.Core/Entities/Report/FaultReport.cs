@@ -15,9 +15,6 @@ public class FaultReport : BaseEntity
     
     public string FaultAddress { get; set; } 
     public MaintenanceType FaultType { get; set; }
-     
-    public FaultComponent? FaultComponent { get; set; }
-    
     public FaultReportStatus Status { get; set; } = FaultReportStatus.Reported; 
 
     // FKs
@@ -28,5 +25,5 @@ public class FaultReport : BaseEntity
     // Navigational Properties
     public TripRequest Trip { get; set; } 
     public Vehicle Vehicle { get; set; } 
-    public BusinessUser Driver { get; set; }  
+    public BusinessUser? Driver { get; set; }  
 }

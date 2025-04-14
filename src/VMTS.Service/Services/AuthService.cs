@@ -25,7 +25,7 @@ public class AuthService : IAuthService
     public async Task<string> GenerateUniqueEmailAsync(string firstName, string lastName)
     {
         
-        var domain = "vtms.com";
+        var domain = "veemanage.com";
         
         var cleanFirstName = firstName.Replace(" ", "").ToLower();
         var cleanLastName = lastName.Replace(" ", "").ToLower();
@@ -58,6 +58,7 @@ public class AuthService : IAuthService
 
     public async Task<string> CreateTokenAsync(AppUser user, UserManager<AppUser> userManager)
     {
+       
         #region Claims
 
         var authClaims = new List<Claim>()
