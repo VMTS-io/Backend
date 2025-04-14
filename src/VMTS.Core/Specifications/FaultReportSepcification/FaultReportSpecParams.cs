@@ -8,6 +8,8 @@ public class FaultReportSpecParams
     public string? TripId { get; set; }
 
     public string? VehicleId { get; set; }
+    
+    public string? DriverId { get; set; }
 
     public MaintenanceType? FaultType { get; set; }
 
