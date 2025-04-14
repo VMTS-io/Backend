@@ -24,6 +24,8 @@ public static class VTMSServices
         services.AddScoped<IUnitOfWork, UnitOfWork>();
         services.AddScoped<IReportService, ReportService>();
         services.AddScoped<ITripRequestService, TripRequestService>();
+        services.AddScoped<IUserService, UserService>();
+        
       
         services.AddScoped<IMaintenanceRequestServices, MaintenanceRequestServices>();
         services.AddAutoMapper(typeof(MappingProfile));
