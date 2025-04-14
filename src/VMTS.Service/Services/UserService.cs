@@ -1,0 +1,78 @@
+using AutoMapper;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+using VMTS.Core.Entities.Identity;
+using VMTS.Core.Interfaces.Services;
+
+namespace VMTS.Service.Services;
+
+public class UserService : IUserService
+{
+    private readonly UserManager<AppUser> _userManager;
+    private readonly IMapper _mapper;
+
+    public UserService(UserManager<AppUser> userManager, IMapper mapper)
+    {
+        _userManager = userManager;
+        _mapper = mapper;
+    }
+
+    public async Task<bool> EditUserAsync(
+        string userId,
+        string? userName,
+        string? phoneNumber,
+        string street,
+        string area,
+        string governorate,
+        string country,
+        string? role)
+    {
+        var user = await _userManager.Users
+            .Include(u => u.Address)
+            .FirstOrDefaultAsync(u => u.Id == userId);
+
+        if (user == null)
+            return false;
+
+        if (!string.IsNullOrWhiteSpace(userName))
+            user.UserName = userName;
+
+        if (!string.IsNullOrWhiteSpace(phoneNumber))
+            user.PhoneNumber = phoneNumber;
+
+        // Address update
+        if (user.Address == null)
+        {
+            user.Address = new Address
+            {
+                Street = street,
+                Area = area,
+                Governorate = governorate,
+                Country = country,
+                AppUserId = user.Id
+            };
+        }
+        else
+        {
+            user.Address.Street = street;
+            user.Address.Area = area;
+            user.Address.Governorate = governorate;
+            user.Address.Country = country;
+        }
+
+        // Role update
+        if (!string.IsNullOrWhiteSpace(role))
+        {
+            var currentRoles = await _userManager.GetRolesAsync(user);
+            if (currentRoles.Any())
+                await _userManager.RemoveFromRolesAsync(user, currentRoles);
+
+            var roleResult = await _userManager.AddToRoleAsync(user, role);
+            if (!roleResult.Succeeded)
+                return false;
+        }
+
+        var updateResult = await _userManager.UpdateAsync(user);
+        return updateResult.Succeeded;
+    }
+}
