@@ -8,12 +8,13 @@ using VMTS.API.Dtos;
 using VMTS.API.Errors;
 using VMTS.Core.Entities.Identity;
 using VMTS.Core.Entities.User_Business;
+using VMTS.Core.Helpers;
 using VMTS.Core.Interfaces.Services;
 using VMTS.Core.Interfaces.UnitOfWork;
 using VMTS.Core.ServicesContract;
 
 namespace VMTS.API.Controllers;
-[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
+
 public class AccountController : BaseApiController
 {
     private readonly UserManager<AppUser> _userManager;
@@ -44,7 +45,7 @@ public class AccountController : BaseApiController
     }
 
     #region register
-
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
     [HttpPost("register")]
     public async Task<ActionResult<RegisterResponse>> Register(RegisterRequest model)
     {
@@ -175,11 +176,11 @@ public class AccountController : BaseApiController
     #endregion
     
     #region delete user
-
-    [HttpDelete]
-    public async Task<ActionResult> DeleteUser([FromBody] UserDeleteRequest request)
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
+    [HttpDelete("{userId}")]
+    public async Task<ActionResult> DeleteUser([FromRoute] string userId)
     {
-        var user = await _userManager.FindByIdAsync(request.UserId);
+        var user = await _userManager.FindByIdAsync(userId);
         if (user == null)
             return NotFound(new ApiResponse(404, "User not found"));
 
@@ -194,8 +195,9 @@ public class AccountController : BaseApiController
     #endregion
     
     #region edit user
-    [HttpPut("edit")]
-    public async Task<ActionResult> Edit(EditUserRequest request, string userId)
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
+    [HttpPut("{userId}")]
+    public async Task<ActionResult> Edit(EditUserRequest request, [FromRoute]string userId)
     {
         var result = await _userService.EditUserAsync(
             userId,
@@ -210,16 +212,16 @@ public class AccountController : BaseApiController
 
         if (!result) return BadRequest(new ApiResponse(400, "Failed to update user"));
 
-        return Ok(new ApiResponse(200, "User updated successfully"));
+        return Ok(result);
     }
 
 
     #endregion
 
     #region Get User By Id
-
-    [HttpGet("getById")]
-    public async Task<ActionResult<UserResponse>> GetById(string userId)
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = $"{Roles.Admin},{Roles.Manager}")]
+    [HttpGet("{userId}")]
+    public async Task<ActionResult<UserResponse>> GetById([FromRoute]string userId)
     {
         var result = await _userManager.Users
             .Include(u => u.Address)
@@ -253,6 +255,7 @@ public class AccountController : BaseApiController
 
     #region Get All Users
 
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = $"{Roles.Admin},{Roles.Manager}")]
     [HttpGet("getall")]
     public async Task<ActionResult<IReadOnlyList<UserResponse>>> GetAllUsers()
     {
