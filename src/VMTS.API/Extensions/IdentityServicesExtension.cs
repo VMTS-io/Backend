@@ -12,12 +12,16 @@ public static class IdentityServicesExtension
 {
     public static IServiceCollection AddIdentityServices(
         this IServiceCollection services,
-        IConfiguration configuration
+        IConfiguration configuration,
+        IWebHostEnvironment environment
     )
     {
         services.AddDbContext<IdentityDbContext>(options =>
         {
-            options.UseSqlServer(configuration.GetConnectionString("IdentityConnection"));
+            if(environment.IsDevelopment())
+                options.UseSqlServer(configuration.GetConnectionString("IdentityConnection"));
+            else
+                options.UseSqlServer(configuration.GetConnectionString("IdentityDeploymentConnection"));
         });
 
         services

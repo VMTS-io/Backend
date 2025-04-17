@@ -17,7 +17,8 @@ public static class VTMSServicesExtension
 {
     public static IServiceCollection AddAppServices(
         this IServiceCollection services,
-        IConfiguration configuration
+        IConfiguration configuration,
+        IWebHostEnvironment environment
     )
     {
         services.Configure<ApiBehaviorOptions>(options =>
@@ -42,7 +43,10 @@ public static class VTMSServicesExtension
         services.AddSingleton<ExceptionMiddleware>();
         services.AddDbContext<VTMSDbContext>(options =>
         {
-            options.UseSqlServer(configuration.GetConnectionString("DefaultConnection"));
+            if(environment.IsDevelopment())
+                options.UseSqlServer(configuration.GetConnectionString("DefaultConnection"));
+            else
+                options.UseSqlServer(configuration.GetConnectionString("DefaultDeploymentConnection"));
         });
 
         services.AddScoped<IUnitOfWork, UnitOfWork>();
