@@ -4,6 +4,8 @@ namespace VMTS.API.Dtos;
 
 public class TripRequestDto
 {
+    public string Id { get; set; }
+
     public string DriverEmail { get; set; }
 
     public string VehicleId { get; set; }
@@ -13,5 +15,5 @@ public class TripRequestDto
     public string Details { get; set; }
 
     public string Destination { get; set; }
-
 }
+
