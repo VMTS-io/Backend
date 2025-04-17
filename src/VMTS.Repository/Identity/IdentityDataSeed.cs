@@ -36,6 +36,7 @@ public class IdentityDataSeed
             {
                 Email = "bassel.admin@raafat.com",
                 UserName = "raafatadmin",
+                MustChangePassword = false,
             };
             var adminBusinessUser = new BusinessUser()
             {
