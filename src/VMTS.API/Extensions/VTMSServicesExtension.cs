@@ -51,6 +51,7 @@ public static class VTMSServicesExtension
         services.AddScoped<IReportService, ReportService>();
         services.AddScoped<ITripRequestService, TripRequestService>();
         services.AddScoped<IMaintenanceRequestServices, MaintenanceRequestServices>();
+        services.AddScoped<IVehicleSerivces, VehicleServices>();
         services.AddAutoMapper(typeof(MappingProfile));
 
         return services;
