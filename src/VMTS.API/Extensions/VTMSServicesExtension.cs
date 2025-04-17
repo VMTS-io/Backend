@@ -21,8 +21,7 @@ public static class VTMSServicesExtension
     )
     {
         services.Configure<ApiBehaviorOptions>(options =>
-            options.InvalidModelStateResponseFactory = (actionContext) =>
-            {
+            options.InvalidModelStateResponseFactory = (actionContext) => {
                 var errors = actionContext
                     .ModelState.Where(M => M.Value?.Errors.Count > 0)
                     .ToDictionary(
