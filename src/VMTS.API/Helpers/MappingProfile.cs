@@ -1,8 +1,12 @@
 ﻿using AutoMapper;
 using VMTS.API.Dtos;
 using VMTS.API.Dtos.Maintenance;
+using VMTS.API.Dtos.Trip;
+using VMTS.API.Dtos.Vehicles;
 using VMTS.Core.Entities.Identity;
 using VMTS.Core.Entities.Maintenace;
+using VMTS.Core.Entities.Trip;
+using VMTS.Core.Entities.Vehicle_Aggregate;
 
 namespace VMTS.API.Helpers;
 
@@ -17,5 +21,15 @@ public class MappingProfile : Profile
 
         CreateMap<MaintenanceRequestDto, MaintenaceRequest>();
         CreateMap<MaintenaceRequest, MaintenanceRequestResponse>();
+        CreateMap<Vehicle, VehicleCreateRequest>().ReverseMap();
+        CreateMap<Vehicle, VehicleDetailsDto>();
+        CreateMap<Vehicle, VehicleListDto>();
+        CreateMap<VehicleUpdateRequest, Vehicle>();
+        CreateMap<VehicleCategory, VehicleCategoryDto>();
+        CreateMap<VehicleModel, VehicleModelDto>();
+        CreateMap<TripRequest, TripRequestDto>();
+        CreateMap<TripReport, TripReportDto>();
+        CreateMap<MaintenaceReport, MaintenanceReportDto>();
+        CreateMap<MaintenaceRequest, VehicleMaintenanceRequestDto>();
     }
 }
