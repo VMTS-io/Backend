@@ -1,4 +1,3 @@
-using System.Security.Claims;
 using AutoMapper;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -6,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using VMTS.API.Dtos.Maintenance;
 using VMTS.API.Errors;
 using VMTS.Core.Entities.Maintenace;
+using VMTS.Core.Helpers;
 using VMTS.Core.Interfaces.Services;
 using VMTS.Core.Specifications.Maintenance;
 
@@ -22,7 +22,10 @@ public class MaintenanceRequestController : BaseApiController
         _services = services;
     }
 
-    [Authorize(Roles = "Manager", AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+    [Authorize(
+        Roles = Roles.Manager,
+        AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme
+    )]
     [HttpPost]
     public async Task<ActionResult<MaintenanceRequestDto>> Create(MaintenanceRequestDto model)
     {
@@ -31,17 +34,20 @@ public class MaintenanceRequestController : BaseApiController
         return Ok(model);
     }
 
-    [Authorize(Roles = "Manager", AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+    [Authorize(
+        Roles = Roles.Manager,
+        AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme
+    )]
     [HttpPut]
     public async Task<ActionResult<MaintenanceRequestDto>> Edit(MaintenanceRequestEdit model)
     {
         var mappedModel = _mapper.Map<MaintenanceRequestEdit, MaintenaceRequest>(model);
-        await _services.UpdateAsync(mappedModel);
+        await _services.UpdateAsync(mappedModel, User);
         return Ok(model);
     }
 
     [Authorize(
-        Roles = "Manager,Mechanic",
+        Roles = $"{Roles.Manager},{Roles.Mechanic}",
         AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme
     )]
     [HttpGet("{id}")]
@@ -58,7 +64,10 @@ public class MaintenanceRequestController : BaseApiController
         return Ok(mappedModel);
     }
 
-    [Authorize(Roles = "Manager", AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+    [Authorize(
+        Roles = Roles.Manager,
+        AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme
+    )]
     [HttpGet]
     public async Task<ActionResult<IReadOnlyList<MaintenanceRequestResponse>>> GetAll(
         [FromQuery] MaintenanceRequestSpecParams specParams
@@ -72,15 +81,17 @@ public class MaintenanceRequestController : BaseApiController
         return Ok(mappedModel);
     }
 
-    [Authorize(Roles = "Mechanic", AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+    [Authorize(
+        Roles = Roles.Manager,
+        AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme
+    )]
     [Route("mechanic")]
     [HttpGet]
     public async Task<ActionResult<IReadOnlyList<MaintenanceRequestResponse>>> GetAllForUser(
         [FromQuery] MaintenanceRequestSpecParamsForMechanic specParams
     )
     {
-        var mechanicId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-        var result = await _services.GetAllForUserAsync(mechanicId!, specParams);
+        var result = await _services.GetAllForUserAsync(specParams, User);
         var mappedResult = _mapper.Map<
             IReadOnlyList<MaintenaceRequest>,
             IReadOnlyList<MaintenanceRequestResponse>

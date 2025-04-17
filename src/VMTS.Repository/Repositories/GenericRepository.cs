@@ -18,12 +18,15 @@ public class GenericRepository<T> : IGenericRepository<T>
 
     public async Task<IReadOnlyList<T>> GetAllAsync()
     {
-        return await _dbContext.Set<T>().ToListAsync();
+        return await _dbContext.Set<T>().AsNoTracking().ToListAsync();
     }
 
     public async Task<T?> GetByIdAsync(string id)
     {
-        return await _dbContext.Set<T>().FindAsync(id);
+        return await _dbContext
+            .Set<T>()
+            .AsNoTracking()
+            .FirstOrDefaultAsync(Entity => Entity.Id == id);
     }
 
     public async Task CreateAsync(T entity)
@@ -41,12 +44,12 @@ public class GenericRepository<T> : IGenericRepository<T>
         _dbContext.Remove(entity);
     }
 
-    public async Task<IReadOnlyList<T>> GetAllWithSpecification(ISpecification<T> specs)
+    public async Task<IReadOnlyList<T>> GetAllWithSpecificationAsync(ISpecification<T> specs)
     {
         return await GetQuery(specs).ToListAsync();
     }
 
-    public async Task<T?> GetByIdWithSpecification(ISpecification<T> specs)
+    public async Task<T?> GetByIdWithSpecificationAsync(ISpecification<T> specs)
     {
         return await GetQuery(specs).FirstOrDefaultAsync();
     }

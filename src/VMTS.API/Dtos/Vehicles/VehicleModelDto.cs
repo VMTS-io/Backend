@@ -1,7 +1,9 @@
-﻿namespace VMTS.Core.Entities.Vehicle_Aggregate;
+namespace VMTS.API.Dtos.Vehicles;
 
-public class VehicleModel : BaseEntity
+public class VehicleModelDto
 {
+    public string Id { get; set; }
+
     public string Name { get; set; }
 
     public DateTime Year { get; set; }
@@ -9,7 +11,4 @@ public class VehicleModel : BaseEntity
     public string Manufacturer { get; set; }
 
     public string FuelEfficiency { get; set; }
-
-    public ICollection<Vehicle> Vehicle { get; set; } = new HashSet<Vehicle>();
 }
-

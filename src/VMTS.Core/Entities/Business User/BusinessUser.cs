@@ -29,4 +29,3 @@ public class BusinessUser : BaseEntity
     public ICollection<MaintenaceRequest?> MechanicMaintenaceRequests { get; set; } =
         new HashSet<MaintenaceRequest>();
 }
-

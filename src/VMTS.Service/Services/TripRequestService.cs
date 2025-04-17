@@ -16,35 +16,40 @@ public class TripRequestService : ITripRequestService
     private readonly UserManager<AppUser> _userManager;
     private readonly IUnitOfWork _unitOfWork;
 
-    public TripRequestService(UserManager<AppUser> userManager,
-        IUnitOfWork unitOfWork)
+    public TripRequestService(UserManager<AppUser> userManager, IUnitOfWork unitOfWork)
     {
         _userManager = userManager;
         _unitOfWork = unitOfWork;
     }
 
-    public async Task<TripRequest> CreateTripRequestAsync(string managerEmail,
-                                                          string driverEmail,
-                                                          string vehicleId,
-                                                          TripType tripType,
-                                                          string details,
-                                                          string destination
-                                                          )
+    public async Task<TripRequest> CreateTripRequestAsync(
+        string managerEmail,
+        string driverEmail,
+        string vehicleId,
+        TripType tripType,
+        string details,
+        string destination
+    )
     {
         // Get manager
         var manager = await _userManager.FindByEmailAsync(managerEmail);
-        if (manager is null) throw new UnauthorizedAccessException("Unauthorized: unable to find manager");
+        if (manager is null)
+            throw new UnauthorizedAccessException("Unauthorized: unable to find manager");
         var managerId = manager.Id;
 
         // Get driver
         var driver = await _userManager.FindByEmailAsync(driverEmail);
-        if (driver is null) throw new UnauthorizedAccessException("Unauthorized: unable to find driver");
+        if (driver is null)
+            throw new UnauthorizedAccessException("Unauthorized: unable to find driver");
         var driverId = driver.Id;
 
         // Get vehicle
         var vehicleSpec = new VehicleIncludesSpecification(vehicleId);
-        var vehicle = await _unitOfWork.GetRepo<Vehicle>().GetByIdWithSpecification(vehicleSpec);
-        if (vehicle is null) throw new InvalidOperationException("Vehicle not found");
+        var vehicle = await _unitOfWork
+            .GetRepo<Vehicle>()
+            .GetByIdWithSpecificationAsync(vehicleSpec);
+        if (vehicle is null)
+            throw new InvalidOperationException("Vehicle not found");
 
         // Create TripRequest
         var tripRequest = new TripRequest
@@ -57,9 +62,8 @@ public class TripRequestService : ITripRequestService
             Status = TripStatus.Pending,
             DriverId = driverId,
             ManagerId = managerId,
-            VehicleId = vehicleId
+            VehicleId = vehicleId,
         };
-           
 
         // Save to database
         await _unitOfWork.GetRepo<TripRequest>().CreateAsync(tripRequest);
@@ -67,5 +71,5 @@ public class TripRequestService : ITripRequestService
 
         return result > 0 ? tripRequest : null;
     }
-
 }
+

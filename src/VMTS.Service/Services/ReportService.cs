@@ -14,16 +14,18 @@ public class ReportService : IReportService
     private readonly IUnitOfWork _unitOfWork;
     private readonly UserManager<AppUser> _userManager;
 
-    public ReportService(
-        IUnitOfWork unitOfWork,
-        UserManager<AppUser> userManager)
+    public ReportService(IUnitOfWork unitOfWork, UserManager<AppUser> userManager)
     {
         _unitOfWork = unitOfWork;
         _userManager = userManager;
     }
 
-    public async Task<FaultReport> CreateFaultReportAsync(string userEmail, string details, 
-        MaintenanceType faultType ,string address)
+    public async Task<FaultReport> CreateFaultReportAsync(
+        string userEmail,
+        string details,
+        MaintenanceType faultType,
+        string address
+    )
     {
         // get driver
         var driver = await _userManager.FindByEmailAsync(userEmail);
@@ -31,10 +33,12 @@ public class ReportService : IReportService
             throw new UnauthorizedAccessException("Unauthorized: Unable to determine driver.");
         // get driverId
         var driverId = driver.Id;
-        
+
         // get active trip for driver
         var tripSpec = new TripRequestIncludesSpecification(driverId);
-        var tripRequest = await _unitOfWork.GetRepo<TripRequest>().GetByIdWithSpecification(tripSpec);
+        var tripRequest = await _unitOfWork
+            .GetRepo<TripRequest>()
+            .GetByIdWithSpecificationAsync(tripSpec);
 
         if (tripRequest == null)
             throw new Exception("No active trip found for this driver.");
@@ -48,17 +52,15 @@ public class ReportService : IReportService
             ReportedAt = DateTime.UtcNow,
             FaultType = faultType,
             TripId = tripRequest.Id,
-            VehicleId = tripRequest.Vehicle.Id, 
-            DriverId = tripRequest.DriverId, 
-            Destination = tripRequest.Destination, 
-            FaultAddress = address
+            VehicleId = tripRequest.Vehicle.Id,
+            DriverId = tripRequest.DriverId,
+            Destination = tripRequest.Destination,
+            FaultAddress = address,
         };
-        
+
         await _unitOfWork.GetRepo<FaultReport>().CreateAsync(faultReport);
         var result = await _unitOfWork.CompleteAsync();
 
         return result > 0 ? faultReport : null;
     }
-
-
 }
