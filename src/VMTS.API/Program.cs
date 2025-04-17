@@ -20,11 +20,9 @@ namespace VMTS.API
             await app.ApplyMigrationAsync();
             await app.ApplySeedAsync();
 
-            if (app.Environment.IsDevelopment())
-            {
-                app.MapOpenApi();
-                app.MapScalarApiReference();
-            }
+            app.MapOpenApi();
+            app.MapScalarApiReference();
+
             app.UseHttpsRedirection();
             app.UseMiddleware<ExceptionMiddleware>();
             app.UseStatusCodePagesWithReExecute("/errors/{0}");

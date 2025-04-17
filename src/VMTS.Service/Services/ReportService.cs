@@ -24,7 +24,6 @@ public class ReportService : IReportService
         string userEmail,
         string details,
         MaintenanceType faultType,
-        FaultComponent? faultComponent,
         string address
     )
     {
@@ -52,7 +51,6 @@ public class ReportService : IReportService
             Details = details,
             ReportedAt = DateTime.UtcNow,
             FaultType = faultType,
-            FaultComponent = faultComponent,
             TripId = tripRequest.Id,
             VehicleId = tripRequest.Vehicle.Id,
             DriverId = tripRequest.DriverId,

@@ -10,7 +10,6 @@ public interface IReportService
         string userEmail,
         string details,
         MaintenanceType faultType,
-        FaultComponent? faultComponent,
         string address);
 
    

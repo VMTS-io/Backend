@@ -9,5 +9,6 @@
   <ItemGroup>
     <ProjectReference Include="..\VMTS.Repository\VMTS.Repository.csproj" />
   </ItemGroup>
+  
 
 </Project>

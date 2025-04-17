@@ -31,7 +31,7 @@ public class TripRequestController : BaseApiController
         
         var tripRequest = await _requestService.CreateTripRequestAsync(
             manager,
-            request.DriverEmail,
+            request.DriverId,
             request.VehicleId,
             request.TripType,
             request.Details,

@@ -27,7 +27,7 @@ public class FaultReportController : BaseApiController
         _mapper = mapper;
     }
    
-    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Driver")]
     [HttpPost("create")]
     public async Task<ActionResult<FaultReportResponse>> CreateFaultReportAsync(FaultReportRequest request)
     {
@@ -39,7 +39,6 @@ public class FaultReportController : BaseApiController
             user,
             request.Details,
             request.FaultType,
-            request.FaultComponent,
             request.Address
         );
     
