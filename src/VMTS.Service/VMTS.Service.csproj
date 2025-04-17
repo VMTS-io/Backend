@@ -9,10 +9,6 @@
   <ItemGroup>
     <ProjectReference Include="..\VMTS.Repository\VMTS.Repository.csproj" />
   </ItemGroup>
-
-
-  <ItemGroup>
-    <PackageReference Include="AutoMapper" Version="12.0.1" />
-  </ItemGroup>
+  
 
 </Project>

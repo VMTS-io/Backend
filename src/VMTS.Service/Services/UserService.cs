@@ -1,4 +1,3 @@
-using AutoMapper;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using VMTS.Core.Entities.Identity;
@@ -9,12 +8,11 @@ namespace VMTS.Service.Services;
 public class UserService : IUserService
 {
     private readonly UserManager<AppUser> _userManager;
-    private readonly IMapper _mapper;
+   
 
-    public UserService(UserManager<AppUser> userManager, IMapper mapper)
+    public UserService(UserManager<AppUser> userManager)
     {
         _userManager = userManager;
-        _mapper = mapper;
     }
 
     public async Task<bool> EditUserAsync(
