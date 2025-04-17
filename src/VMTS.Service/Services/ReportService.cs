@@ -23,7 +23,7 @@ public class ReportService : IReportService
     }
 
     public async Task<FaultReport> CreateFaultReportAsync(string userEmail, string details, 
-        MaintenanceType faultType, FaultComponent? faultComponent ,string address)
+        MaintenanceType faultType ,string address)
     {
         // get driver
         var driver = await _userManager.FindByEmailAsync(userEmail);
@@ -47,7 +47,6 @@ public class ReportService : IReportService
             Details = details,
             ReportedAt = DateTime.UtcNow,
             FaultType = faultType,
-            FaultComponent = faultComponent,
             TripId = tripRequest.Id,
             VehicleId = tripRequest.Vehicle.Id, 
             DriverId = tripRequest.DriverId, 
