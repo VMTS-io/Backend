@@ -12,11 +12,34 @@ namespace VMTS.API
 
             // Add services to the container.
 
-            builder.Services.AddAppServices(builder.Configuration);
-            builder.Services.AddIdentityServices(builder.Configuration);
+            builder.Services.AddAppServices(builder.Configuration, builder.Environment);
+            builder.Services.AddIdentityServices(builder.Configuration, builder.Environment);
 
+            
+            var allowedOrigins = builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>();
+            
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy("AllowFrontend", policy =>
+                {
+                    policy.WithOrigins(
+                            "http://localhost:3000",            // Dev frontend
+                            "https://veemanage.runasp.net"      // Deployment frontend
+                        )
+                        .AllowAnyHeader()
+                        .AllowAnyMethod()
+                        .AllowCredentials();
+                });
+            });
+            
+            
             var app = builder.Build();
 
+            
+            // CORS middleware
+            app.UseCors("AllowFrontend");
+
+            
             await app.ApplyMigrationAsync();
             await app.ApplySeedAsync();
 

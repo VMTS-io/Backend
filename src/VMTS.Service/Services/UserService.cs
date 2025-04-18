@@ -32,32 +32,16 @@ public class UserService : IUserService
         if (user == null)
             return false;
 
-        if (!string.IsNullOrWhiteSpace(userName))
-            user.UserName = userName;
-
-        if (!string.IsNullOrWhiteSpace(phoneNumber))
-            user.PhoneNumber = phoneNumber;
+        
+        user.UserName = userName;
+        user.PhoneNumber = phoneNumber;
 
         // Address update
-        if (user.Address == null)
-        {
-            user.Address = new Address
-            {
-                Street = street,
-                Area = area,
-                Governorate = governorate,
-                Country = country,
-                AppUserId = user.Id
-            };
-        }
-        else
-        {
-            user.Address.Street = street;
-            user.Address.Area = area;
-            user.Address.Governorate = governorate;
-            user.Address.Country = country;
-        }
-
+        user.Address.Street = street;
+        user.Address.Area = area;
+        user.Address.Governorate = governorate;
+        user.Address.Country = country;
+        
         // Role update
         if (!string.IsNullOrWhiteSpace(role))
         {

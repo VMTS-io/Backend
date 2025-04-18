@@ -19,6 +19,12 @@ public class MappingProfile : Profile
         CreateMap<FaultReport, FaultReportResponse>()
             .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(src => src.ReportedAt));
 
+        CreateMap<AddressDto, Address>()
+            .ForMember(dest => dest.AppUserId, opt => opt.Ignore()) // Explicitly ignore this
+            .ForAllMembers(opts => opts.Condition((src, dest, srcMember) => srcMember != null)); // Apply null-check to all others
+
+        CreateMap<AppUser, UserResponse>();
+        
         CreateMap<MaintenanceRequestDto, MaintenaceRequest>();
         CreateMap<MaintenaceRequest, MaintenanceRequestResponse>();
         CreateMap<Vehicle, VehicleCreateRequest>().ReverseMap();
