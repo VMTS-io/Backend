@@ -106,7 +106,7 @@ public class AccountController : BaseApiController
         if (user.MustChangePassword)
         {
             var token = await _userManager.GeneratePasswordResetTokenAsync(user);
-            return Unauthorized(new ApiResponse(401, "Password reset required"));
+            return Unauthorized(new MustChangePasswordDto(){MustChangePassword = true,ApiResponse = new ApiResponse(401)});
         }
 
         var result = await _signInManager.CheckPasswordSignInAsync(user, request.Password, false);
