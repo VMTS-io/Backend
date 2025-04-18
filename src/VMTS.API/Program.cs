@@ -16,21 +16,6 @@ namespace VMTS.API
             builder.Services.AddIdentityServices(builder.Configuration, builder.Environment);
 
             
-            var allowedOrigins = builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>();
-            
-            builder.Services.AddCors(options =>
-            {
-                options.AddPolicy("AllowFrontend", policy =>
-                {
-                    policy.WithOrigins(
-                            "http://localhost:3000",            // Dev frontend
-                            "https://veemanage.runasp.net"      // Deployment frontend
-                        )
-                        .AllowAnyHeader()
-                        .AllowAnyMethod()
-                        .AllowCredentials();
-                });
-            });
             
             
             var app = builder.Build();
