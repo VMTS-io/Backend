@@ -1,6 +1,7 @@
 ﻿using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using VMTS.API.Errors;
 using VMTS.API.Helpers;
 using VMTS.API.Middlewares;
@@ -21,7 +22,8 @@ public static class VTMSServicesExtension
     )
     {
         services.Configure<ApiBehaviorOptions>(options =>
-            options.InvalidModelStateResponseFactory = (actionContext) => {
+            options.InvalidModelStateResponseFactory = (actionContext) =>
+            {
                 var errors = actionContext
                     .ModelState.Where(M => M.Value?.Errors.Count > 0)
                     .ToDictionary(
@@ -38,6 +40,7 @@ public static class VTMSServicesExtension
             {
                 options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()); // Convert enums to strings
             });
+        services.AddCors();
         services.AddOpenApi();
         services.AddSingleton<ExceptionMiddleware>();
         services.AddDbContext<VTMSDbContext>(options =>
