@@ -36,8 +36,7 @@ namespace VMTS.API
             var app = builder.Build();
 
             
-            // CORS middleware
-            app.UseCors("AllowFrontend");
+         
 
             
             await app.ApplyMigrationAsync();

@@ -18,9 +18,6 @@ public static class IdentityServicesExtension
     {
         services.AddDbContext<IdentityDbContext>(options =>
         {
-            if(environment.IsDevelopment())
-                options.UseSqlServer(configuration.GetConnectionString("IdentityConnection"));
-            else
                 options.UseSqlServer(configuration.GetConnectionString("IdentityDeploymentConnection"));
         });
 

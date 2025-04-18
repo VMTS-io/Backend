@@ -23,8 +23,7 @@ public static class VTMSServicesExtension
     )
     {
         services.Configure<ApiBehaviorOptions>(options =>
-            options.InvalidModelStateResponseFactory = (actionContext) =>
-            {
+            options.InvalidModelStateResponseFactory = (actionContext) => {
                 var errors = actionContext
                     .ModelState.Where(M => M.Value?.Errors.Count > 0)
                     .ToDictionary(
@@ -46,9 +45,6 @@ public static class VTMSServicesExtension
         services.AddSingleton<ExceptionMiddleware>();
         services.AddDbContext<VTMSDbContext>(options =>
         {
-            if(environment.IsDevelopment())
-                options.UseSqlServer(configuration.GetConnectionString("DefaultConnection"));
-            else
                 options.UseSqlServer(configuration.GetConnectionString("DefaultDeploymentConnection"));
         });
 
