@@ -1,0 +1,194 @@
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using VMTS.API.Dtos;
+using VMTS.API.Errors;
+using VMTS.Core.Entities.Identity;
+using VMTS.Core.Entities.User_Business;
+using VMTS.Core.Helpers;
+using VMTS.Core.Interfaces.Services;
+using VMTS.Core.Interfaces.UnitOfWork;
+using VMTS.Core.ServicesContract;
+
+namespace VMTS.API.Controllers;
+
+[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+public class UserController : BaseApiController
+{
+    private readonly UserManager<AppUser> _userManager;
+    private readonly RoleManager<IdentityRole> _roleManager;
+    private readonly IUnitOfWork _iunitOfWork;
+    private readonly IMapper _mapper;
+    private readonly IUserService _userService;
+    private readonly IAuthService _authService;
+
+    public UserController(
+        UserManager<AppUser> userManager,
+        RoleManager<IdentityRole> roleManager,
+        IUnitOfWork iunitOfWork,
+        IMapper mapper,
+        IUserService userService,
+        IAuthService authService)
+    {
+        _userManager = userManager;
+        _roleManager = roleManager;
+        _iunitOfWork = iunitOfWork;
+        _mapper = mapper;
+        _userService = userService;
+        _authService = authService;
+    }
+
+    #region Create User
+    [HttpPost("add")]
+    [Authorize(Roles = Roles.Admin)]
+    [ProducesResponseType(typeof(RegisterResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<RegisterResponse>> CreateUser(RegisterRequest model)
+    {
+        var email = await _authService.GenerateUniqueEmailAsync(model.FirstName, model.LastName);
+        var password = "Pa$$w0rd";
+        var address = _mapper.Map<Address>(model.Address);
+
+        var user = new AppUser
+        {
+            Email = email,
+            UserName = email.Split('@')[0],
+            PhoneNumber = model.PhoneNumber,
+            DateOfBirth = model.DateOfBirth,
+            NationalId = model.NationalId,
+            Address = address,
+        };
+
+        var result = await _userManager.CreateAsync(user, password);
+        if (!result.Succeeded)
+            return BadRequest(new ApiResponse(400));
+
+        if (!await _roleManager.RoleExistsAsync(model.Role))
+            return NotFound(new ApiResponse(404));
+
+        var userRole = await _userManager.AddToRoleAsync(user, model.Role);
+        if (!userRole.Succeeded)
+            return BadRequest(new ApiResponse(400));
+
+        var businessUser = new BusinessUser
+        {
+            Id = user.Id,
+            DisplayName = $"{model.FirstName?.Trim()} {model.LastName?.Trim()}",
+            Email = user.Email,
+            PhoneNumber = user.PhoneNumber,
+            NormalizedEmail = user.NormalizedEmail,
+        };
+
+        await _iunitOfWork.GetRepo<BusinessUser>().CreateAsync(businessUser);
+        await _iunitOfWork.SaveChanges();
+
+        return Ok(new RegisterResponse { Email = email });
+    }
+    #endregion
+
+    #region Get All Users
+    [HttpGet("all")]
+    [Authorize(Roles = Roles.Admin)]
+    [ProducesResponseType(typeof(IReadOnlyList<UserResponse>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<IReadOnlyList<UserResponse>>> GetAllUsers()
+    {
+        var users = await _userManager.Users.Include(u => u.Address).ToListAsync();
+
+        if (users == null)
+            return NotFound(new ApiResponse(404, "Users not found"));
+
+        var userResponses = new List<UserResponse>();
+        foreach (var user in users)
+        {
+            var mappedUser = _mapper.Map<UserResponse>(user);
+            var roles = await _userManager.GetRolesAsync(user);
+            mappedUser.Role = roles.FirstOrDefault();
+            userResponses.Add(mappedUser);
+        }
+
+        return Ok(userResponses);
+    }
+    #endregion
+
+    #region Get User By Id
+    [HttpGet("{userId}")]
+    [Authorize(Roles = $"{Roles.Admin},{Roles.Manager}")]
+    [ProducesResponseType(typeof(UserResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<UserResponse>> GetById([FromRoute] string userId)
+    {
+        var user = await _userManager.Users.Include(u => u.Address).FirstOrDefaultAsync(u => u.Id == userId);
+
+        if (user == null)
+            return NotFound(new ApiResponse(404, "User not found"));
+
+        var roles = await _userManager.GetRolesAsync(user);
+        var role = roles.FirstOrDefault();
+
+        return Ok(new UserResponse
+        {
+            Email = user.Email,
+            UserName = user.UserName,
+            PhoneNumber = user.PhoneNumber,
+            Role = role,
+            Address = new AddressDto
+            {
+                Street = user.Address?.Street,
+                Area = user.Address?.Area,
+                Governorate = user.Address?.Governorate,
+                Country = user.Address?.Country,
+            }
+        });
+    }
+    #endregion
+
+    #region Delete User
+    [HttpDelete("{userId}")]
+    [Authorize(Roles = Roles.Admin)]
+    [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status404NotFound)]
+    public async Task<ActionResult> DeleteUser([FromRoute] string userId)
+    {
+        var user = await _userManager.FindByIdAsync(userId);
+        if (user == null)
+            return NotFound(new ApiResponse(404, "User not found"));
+
+        var result = await _userManager.DeleteAsync(user);
+        if (!result.Succeeded)
+            return BadRequest(new ApiResponse(400, string.Join(", ", result.Errors.Select(e => e.Description))));
+
+        return Ok(new ApiResponse(200, "User deleted successfully"));
+    }
+    #endregion
+
+    #region Edit User
+    [HttpPut("{userId}")]
+    [Authorize(Roles = Roles.Admin)]
+    [ProducesResponseType(typeof(bool), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status400BadRequest)]
+    public async Task<ActionResult> Edit(EditUserRequest request, [FromRoute] string userId)
+    {
+        var result = await _userService.EditUserAsync(
+            userId,
+            request.UserName,
+            request.PhoneNumber,
+            request.Address.Street,
+            request.Address.Area,
+            request.Address.Governorate,
+            request.Address.Country,
+            request.Role
+        );
+
+        if (!result)
+            return BadRequest(new ApiResponse(400, "Failed to update user"));
+
+        return Ok(result);
+    }
+    #endregion
+}
