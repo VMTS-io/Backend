@@ -115,6 +115,97 @@ public class UserController : BaseApiController
     }
     #endregion
 
+    #region GetAllManagers
+
+    [HttpGet("managers")]
+    [ProducesResponseType(typeof(IReadOnlyList<UserResponse>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<IReadOnlyList<UserResponse>>> GetManagers()
+    {
+        var users = await _userManager.Users.Include(u => u.Address).ToListAsync();
+        var managers = new List<UserResponse>();
+
+        foreach (var user in users)
+        {
+            var roles = await _userManager.GetRolesAsync(user);
+            if (roles.Contains("Manager"))
+            {
+                var mappedUser = _mapper.Map<UserResponse>(user);
+                mappedUser.Role = roles.FirstOrDefault();
+                managers.Add(mappedUser);
+            }
+        }
+
+        if (!managers.Any())
+            return NotFound(new ApiResponse(404, "No users with 'Manager' role found"));
+
+        return Ok(managers);
+    }
+
+
+    #endregion
+
+    #region Get All Drivers
+    
+    [HttpGet("drivers")]
+    [ProducesResponseType(typeof(IReadOnlyList<UserResponse>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<IReadOnlyList<UserResponse>>> GetDrivers()
+    {
+        var users = await _userManager.Users.Include(u => u.Address).ToListAsync();
+        var drivers = new List<UserResponse>();
+
+        foreach (var user in users)
+        {
+            var roles = await _userManager.GetRolesAsync(user);
+            if (roles.Contains("Driver"))
+            {
+                var mappedUser = _mapper.Map<UserResponse>(user);
+                mappedUser.Role = roles.FirstOrDefault();
+                drivers.Add(mappedUser);
+            }
+        }
+
+        if (!drivers.Any())
+            return NotFound(new ApiResponse(404, "No users with 'Driver' role found"));
+
+        return Ok(drivers);
+    }
+
+
+    #endregion
+
+    #region Get All Mechanics
+    
+    [HttpGet("mechanics")]
+
+    [ProducesResponseType(typeof(IReadOnlyList<UserResponse>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<IReadOnlyList<UserResponse>>> GetMechanics()
+    {
+        var users = await _userManager.Users.Include(u => u.Address).ToListAsync();
+        var mechanics = new List<UserResponse>();
+
+        foreach (var user in users)
+        {
+            var roles = await _userManager.GetRolesAsync(user);
+            if (roles.Contains("Mechanic"))
+            {
+                var mappedUser = _mapper.Map<UserResponse>(user);
+                mappedUser.Role = roles.FirstOrDefault();
+                mechanics.Add(mappedUser);
+            }
+        }
+        
+        if(!mechanics.Any())
+            return NotFound(new ApiResponse(404, "No users with 'Mechanic' role found"));
+        
+        return Ok(mechanics);
+    }
+
+
+    #endregion
+
     #region Get User By Id
     [HttpGet("{userId}")]
     [Authorize(Roles = $"{Roles.Admin},{Roles.Manager}")]
