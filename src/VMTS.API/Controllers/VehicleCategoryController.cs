@@ -7,7 +7,9 @@ using VMTS.Core.Interfaces.UnitOfWork;
 
 namespace VMTS.API.Controllers;
 
-public class VehicleCategoryController: BaseApiController
+[Route("api/vehicle/category")]
+[ApiController]
+public class VehicleCategoryController: ControllerBase
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly IMapper _mapper;
