@@ -4,6 +4,7 @@ using VMTS.Core.Interfaces.Repositories;
 using VMTS.Core.Interfaces.Services;
 using VMTS.Core.Interfaces.UnitOfWork;
 using VMTS.Core.Specifications.VehicleSpecification;
+using VMTS.Service.Exceptions;
 
 namespace VMTS.Service.Services;
 
@@ -21,9 +22,9 @@ public class VehicleServices : IVehicleSerivces
     public async Task<Vehicle> CreateVehicleAsync(Vehicle vehicle)
     {
         if (!await IsExsistAsync<VehicleCategory>(vehicle.CategoryId))
-            throw new Exception("Categroy Not Found");
+            throw new NotFoundException("Categroy Not Found");
         if (!await IsExsistAsync<VehicleCategory>(vehicle.ModelId))
-            throw new Exception("Model Not Found");
+            throw new NotFoundException("Model Not Found");
 
         await _repo.CreateAsync(vehicle);
         await _unitOfWork.SaveChanges();
@@ -31,7 +32,7 @@ public class VehicleServices : IVehicleSerivces
         var spec = new VehicleIncludesSpecification(vehicle.Id);
         var returnVehicle =
             await _repo.GetByIdWithSpecificationAsync(spec)
-            ?? throw new Exception("Vehicle Not Found");
+            ?? throw new NotFoundException("Vehicle Not Found");
         return returnVehicle;
     }
 
@@ -55,7 +56,7 @@ public class VehicleServices : IVehicleSerivces
         var spec = new VehicleIncludesSpecification(id);
         var vehicle =
             await _repo.GetByIdWithSpecificationAsync(spec)
-            ?? throw new Exception("Vehicle Not Found");
+            ?? throw new NotFoundException("Vehicle Not Found");
         return vehicle;
     }
 
@@ -69,11 +70,11 @@ public class VehicleServices : IVehicleSerivces
     public async Task<Vehicle> UpdateVehicleAsync(Vehicle vehicle)
     {
         if (!await IsExsistAsync<Vehicle>(vehicle.Id))
-            throw new Exception("Vehicle Not Found");
+            throw new NotFoundException("Vehicle Not Found");
         if (!await IsExsistAsync<VehicleCategory>(vehicle.CategoryId))
-            throw new Exception("Categroy Not Found");
+            throw new NotFoundException("Categroy Not Found");
         if (!await IsExsistAsync<VehicleCategory>(vehicle.ModelId))
-            throw new Exception("Model Not Found");
+            throw new NotFoundException("Model Not Found");
 
         _repo.Update(vehicle);
         await _unitOfWork.SaveChanges();
