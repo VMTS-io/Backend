@@ -23,7 +23,9 @@ public class MappingProfile : Profile
             .ForMember(dest => dest.AppUserId, opt => opt.Ignore()) // Explicitly ignore this
             .ForAllMembers(opts => opts.Condition((src, dest, srcMember) => srcMember != null)); // Apply null-check to all others
 
-        CreateMap<AppUser, UserResponse>();
+        CreateMap<AppUser, UserResponse>()
+            .ForMember(dest => dest.DateOfBirth, opt => opt.MapFrom(src => src.DateOfBirth))
+            .ForMember(dest => dest.NationalId, opt => opt.MapFrom(src => src.NationalId));
         
         CreateMap<MaintenanceRequestDto, MaintenaceRequest>();
         CreateMap<MaintenaceRequest, MaintenanceRequestResponse>();
