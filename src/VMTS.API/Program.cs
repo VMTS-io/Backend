@@ -12,18 +12,11 @@ namespace VMTS.API
 
             // Add services to the container.
 
-            builder.Services.AddAppServices(builder.Configuration, builder.Environment);
-            builder.Services.AddIdentityServices(builder.Configuration, builder.Environment);
+            builder.Services.AddAppServices(builder.Configuration);
+            builder.Services.AddIdentityServices(builder.Configuration);
 
-            
-            
-            
             var app = builder.Build();
 
-            
-         
-
-            
             await app.ApplyMigrationAsync();
             await app.ApplySeedAsync();
 
@@ -32,11 +25,12 @@ namespace VMTS.API
 
             app.UseHttpsRedirection();
             app.UseMiddleware<ExceptionMiddleware>();
-            app.UseStatusCodePagesWithReExecute("/errors/{0}");
+            // app.UseExceptionHandler();
             app.UseStaticFiles();
             app.UseCors(c => c.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin());
             app.UseAuthentication();
             app.UseAuthorization();
+            app.UseStatusCodePagesWithReExecute("/errors/{0}");
             app.MapControllers();
             app.Run();
         }
