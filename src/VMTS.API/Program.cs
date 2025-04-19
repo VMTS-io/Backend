@@ -1,5 +1,6 @@
 using Scalar.AspNetCore;
 using VMTS.API.Extensions;
+using VMTS.API.Helpers;
 using VMTS.API.Middlewares;
 
 namespace VMTS.API
@@ -15,7 +16,7 @@ namespace VMTS.API
             builder.Services.AddAppServices(builder.Configuration, builder.Environment);
             builder.Services.AddIdentityServices(builder.Configuration, builder.Environment);
 
-            
+         
             
             
             var app = builder.Build();
