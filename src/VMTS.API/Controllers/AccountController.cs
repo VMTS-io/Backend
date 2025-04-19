@@ -44,9 +44,11 @@ public class AccountController : BaseApiController
             return Unauthorized(new MustChangePasswordDto
             {
                 MustChangePassword = true,
-                ApiResponse = new ApiResponse(401)
+                StatusCode = 401,
+                Message = "Password reset required"
             });
         }
+
 
         var result = await _signInManager.CheckPasswordSignInAsync(user, request.Password, false);
 
@@ -66,7 +68,7 @@ public class AccountController : BaseApiController
     #region Reset Password
     [HttpPost("resetpassword")]
     [ProducesResponseType(typeof(ResetPasswordResponse), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<ResetPasswordResponse>> ResetPasswordAsync(Reset_PasswordRequest model)
     {
         var user = await _userManager.FindByEmailAsync(model.Email);
@@ -75,7 +77,7 @@ public class AccountController : BaseApiController
 
         var result = await _userManager.ResetPasswordAsync(user, model.Token, model.NewPassword);
         if (!result.Succeeded)
-            return Unauthorized(new ApiResponse(401));
+            return BadRequest(new ApiResponse(400));
 
         user.MustChangePassword = false;
         await _userManager.UpdateAsync(user);
