@@ -65,15 +65,15 @@ public class AccountController : BaseApiController
 
         var result = await _userManager.CreateAsync(user, password);
         if (!result.Succeeded)
-            return BadRequest(new ApiResponse(400));
+            return BadRequest(new ApiErrorResponse(400));
 
         var role = await _roleManager.RoleExistsAsync(model.Role);
         if (!role)
-            return NotFound(new ApiResponse(404));
+            return NotFound(new ApiErrorResponse(404));
 
         var userRole = await _userManager.AddToRoleAsync(user, model.Role);
         if (!userRole.Succeeded)
-            return BadRequest(new ApiResponse(400));
+            return BadRequest(new ApiErrorResponse(400));
 
         var businessUser = new BusinessUser()
         {
@@ -91,7 +91,7 @@ public class AccountController : BaseApiController
     }
 
     #endregion
-    
+
     #region login
 
     [HttpPost("login")]
@@ -100,19 +100,25 @@ public class AccountController : BaseApiController
         var user = await _userManager.FindByEmailAsync(request.Email);
 
         if (user is null)
-            return Unauthorized(new ApiResponse(401));
+            return Unauthorized(new ApiErrorResponse(401));
 
         // Force password reset check BEFORE checking password
         if (user.MustChangePassword)
         {
             var token = await _userManager.GeneratePasswordResetTokenAsync(user);
-            return Unauthorized(new MustChangePasswordDto(){MustChangePassword = true,ApiResponse = new ApiResponse(401)});
+            return Unauthorized(
+                new MustChangePasswordDto()
+                {
+                    MustChangePassword = true,
+                    ApiResponse = new ApiErrorResponse(401),
+                }
+            );
         }
 
         var result = await _signInManager.CheckPasswordSignInAsync(user, request.Password, false);
 
         if (!result.Succeeded)
-            return Unauthorized(new ApiResponse(401, "Invalid credentials"));
+            return Unauthorized(new ApiErrorResponse(401, "Invalid credentials"));
 
         var tokenString = await _authService.CreateTokenAsync(user, _userManager);
 
@@ -127,7 +133,7 @@ public class AccountController : BaseApiController
     }
 
     #endregion
-    
+
     #region reset password endpoints
 
     [HttpPost("resetpassword")]
@@ -138,12 +144,12 @@ public class AccountController : BaseApiController
         var user = await _userManager.FindByEmailAsync(model.Email);
 
         if (user is null)
-            return Unauthorized(new ApiResponse(401));
+            return Unauthorized(new ApiErrorResponse(401));
 
         var result = await _userManager.ResetPasswordAsync(user, model.Token, model.NewPassword);
 
         if (!result.Succeeded)
-            return Unauthorized(new ApiResponse(401));
+            return Unauthorized(new ApiErrorResponse(401));
 
         var token = await _userManager.GeneratePasswordResetTokenAsync(user);
 
@@ -174,7 +180,7 @@ public class AccountController : BaseApiController
     }
 
     #endregion
-    
+
     #region delete user
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
     [HttpDelete("{userId}")]
@@ -182,22 +188,26 @@ public class AccountController : BaseApiController
     {
         var user = await _userManager.FindByIdAsync(userId);
         if (user == null)
-            return NotFound(new ApiResponse(404, "User not found"));
+            return NotFound(new ApiErrorResponse(404, "User not found"));
 
         var result = await _userManager.DeleteAsync(user);
         if (!result.Succeeded)
-            return BadRequest(new ApiResponse(400, string.Join(", ", result.Errors.Select(e => e.Description))));
+            return BadRequest(
+                new ApiErrorResponse(
+                    400,
+                    string.Join(", ", result.Errors.Select(e => e.Description))
+                )
+            );
 
-        return Ok(new ApiResponse(200, "User deleted successfully"));
+        return Ok(new ApiErrorResponse(200, "User deleted successfully"));
     }
 
-    
     #endregion
-    
+
     #region edit user
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
     [HttpPut("{userId}")]
-    public async Task<ActionResult> Edit(EditUserRequest request, [FromRoute]string userId)
+    public async Task<ActionResult> Edit(EditUserRequest request, [FromRoute] string userId)
     {
         var result = await _userService.EditUserAsync(
             userId,
@@ -210,79 +220,80 @@ public class AccountController : BaseApiController
             request.Role
         );
 
-        if (!result) return BadRequest(new ApiResponse(400, "Failed to update user"));
+        if (!result)
+            return BadRequest(new ApiErrorResponse(400, "Failed to update user"));
 
         return Ok(result);
     }
 
-
     #endregion
 
     #region Get User By Id
-    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = $"{Roles.Admin},{Roles.Manager}")]
+    [Authorize(
+        AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme,
+        Roles = $"{Roles.Admin},{Roles.Manager}"
+    )]
     [HttpGet("{userId}")]
-    public async Task<ActionResult<UserResponse>> GetById([FromRoute]string userId)
+    public async Task<ActionResult<UserResponse>> GetById([FromRoute] string userId)
     {
-        var result = await _userManager.Users
-            .Include(u => u.Address)
+        var result = await _userManager
+            .Users.Include(u => u.Address)
             .FirstOrDefaultAsync(u => u.Id == userId);
 
         if (result == null)
-            return NotFound(new ApiResponse(404, "User not found"));
+            return NotFound(new ApiErrorResponse(404, "User not found"));
 
         var roles = await _userManager.GetRolesAsync(result);
         var role = roles.FirstOrDefault();
 
-        return Ok(new UserResponse()
-        {
-            Email = result.Email,
-            UserName = result.UserName,
-            PhoneNumber = result.PhoneNumber,
-            Role = role,
-            Address = new AddressDto()
+        return Ok(
+            new UserResponse()
             {
-                Street = result.Address?.Street,
-                Area = result.Address?.Area,
-                Governorate = result.Address?.Governorate,
-                Country = result.Address?.Country,
+                Email = result.Email,
+                UserName = result.UserName,
+                PhoneNumber = result.PhoneNumber,
+                Role = role,
+                Address = new AddressDto()
+                {
+                    Street = result.Address?.Street,
+                    Area = result.Address?.Area,
+                    Governorate = result.Address?.Governorate,
+                    Country = result.Address?.Country,
+                },
             }
-        });
+        );
     }
-
-
 
     #endregion
 
     #region Get All Users
 
-    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = $"{Roles.Admin},{Roles.Manager}")]
+    [Authorize(
+        AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme,
+        Roles = $"{Roles.Admin},{Roles.Manager}"
+    )]
     [HttpGet("getall")]
     public async Task<ActionResult<IReadOnlyList<UserResponse>>> GetAllUsers()
     {
-        var users = await _userManager.Users
-            .Include(u => u.Address)
-            .ToListAsync();
-        
+        var users = await _userManager.Users.Include(u => u.Address).ToListAsync();
+
         if (users == null)
-            return NotFound(new ApiResponse(404, "Users not found"));
+            return NotFound(new ApiErrorResponse(404, "Users not found"));
 
         var userResponeses = new List<UserResponse>();
         foreach (var user in users)
         {
             var mappedUser = _mapper.Map<UserResponse>(user);
-            
+
             var roles = await _userManager.GetRolesAsync(user);
-            
+
             mappedUser.Role = roles.FirstOrDefault();
-            
+
             userResponeses.Add(mappedUser);
-            
         }
 
         return Ok(userResponeses);
     }
 
-
     #endregion
 }
-

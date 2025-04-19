@@ -6,5 +6,6 @@ public class MustChangePasswordDto
 {
     public bool MustChangePassword { get; set; }
 
-    public ApiResponse ApiResponse { get; set; }
+    public ApiErrorResponse ApiResponse { get; set; }
 }
+
