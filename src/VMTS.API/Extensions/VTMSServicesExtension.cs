@@ -41,7 +41,11 @@ public static class VTMSServicesExtension
             .AddJsonOptions(options =>
             {
                 options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()); // Convert enums to strings
-            });
+            })
+            .AddJsonOptions(options =>
+            {
+                options.JsonSerializerOptions.Converters.Add(new DateOnlyJsonConverter());
+            });;
         services.AddCors();
         services.AddOpenApi();
         services.AddSingleton<ExceptionMiddleware>();
