@@ -12,13 +12,13 @@ EXPOSE 8080
 FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
-COPY ["src/VMTS.API/VMTS.API.csproj", "src/VMTS.API/"]
-COPY ["src/VMTS.Service/VMTS.Service.csproj", "src/VMTS.Service/"]
-COPY ["src/VMTS.Repository/VMTS.Repository.csproj", "src/VMTS.Repository/"]
-COPY ["src/VMTS.Core/VMTS.Core.csproj", "src/VMTS.Core/"]
-RUN dotnet restore "./src/VMTS.API/VMTS.API.csproj"
+COPY ["src/VMTS.API/VMTS.API.csproj", "./VMTS.API/"]
+COPY ["src/VMTS.Service/VMTS.Service.csproj", "./VMTS.Service/"]
+COPY ["src/VMTS.Repository/VMTS.Repository.csproj", "./VMTS.Repository/"]
+COPY ["src/VMTS.Core/VMTS.Core.csproj", "./VMTS.Core/"]
+RUN dotnet restore "./VMTS.API/VMTS.API.csproj"
+WORKDIR /src/VMTS.API/
 COPY . .
-WORKDIR "/src/src/VMTS.API"
 RUN dotnet build "./VMTS.API.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
 # This stage is used to publish the service project to be copied to the final stage
