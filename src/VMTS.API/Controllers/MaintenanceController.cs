@@ -57,7 +57,7 @@ public class MaintenanceRequestController : BaseApiController
         /*var claimEmail = User.FindFirstValue(ClaimTypes.Email);*/
         var result = await _services.GetByIdAsync(id);
         if (result is null)
-            return NotFound(new ApiResponse(404));
+            return NotFound(new ApiErrorResponse(404));
         /*if (role == "Mechanic" && claimEmail != result.MechanicEmail)*/
         /*    return Unauthorized(new ApiResponse(401));*/
         var mappedModel = _mapper.Map<MaintenaceRequest, MaintenanceRequestResponse>(result);

@@ -1,6 +1,6 @@
 ﻿namespace VMTS.API.Errors;
 
-public class ApiErrorValidationResponse : ApiResponse
+public class ApiErrorValidationResponse : ApiErrorResponse
 {
     public Dictionary<string, List<string>> Errors { get; set; }
 

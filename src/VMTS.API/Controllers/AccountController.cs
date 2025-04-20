@@ -30,14 +30,14 @@ public class AccountController : BaseApiController
     [HttpPost("login")]
     [ProducesResponseType(typeof(UserDto), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(MustChangePasswordDto), StatusCodes.Status401Unauthorized)]
-    [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status404NotFound)]
-    [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status401Unauthorized)]
     public async Task<ActionResult<UserDto>> Login(LoginRequest request)
     {
         var user = await _userManager.FindByEmailAsync(request.Email);
 
         if (user is null)
-            return NotFound(new ApiResponse(404));
+            return NotFound(new ApiErrorResponse(404));
 
         if (user.MustChangePassword)
         {
@@ -53,7 +53,7 @@ public class AccountController : BaseApiController
         var result = await _signInManager.CheckPasswordSignInAsync(user, request.Password, false);
 
         if (!result.Succeeded)
-            return Unauthorized(new ApiResponse(401, "Invalid credentials"));
+            return Unauthorized(new ApiErrorResponse(401, "Invalid credentials"));
 
         var tokenString = await _authService.CreateTokenAsync(user, _userManager);
 
@@ -68,16 +68,16 @@ public class AccountController : BaseApiController
     #region Reset Password
     [HttpPost("resetpassword")]
     [ProducesResponseType(typeof(ResetPasswordResponse), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<ResetPasswordResponse>> ResetPasswordAsync(Reset_PasswordRequest model)
     {
         var user = await _userManager.FindByEmailAsync(model.Email);
         if (user is null)
-            return Unauthorized(new ApiResponse(401));
+            return Unauthorized(new ApiErrorResponse(401));
 
         var result = await _userManager.ResetPasswordAsync(user, model.Token, model.NewPassword);
         if (!result.Succeeded)
-            return BadRequest(new ApiResponse(400));
+            return BadRequest(new ApiErrorResponse(400));
 
         user.MustChangePassword = false;
         await _userManager.UpdateAsync(user);
@@ -92,12 +92,12 @@ public class AccountController : BaseApiController
     #region Forgot Password
     [HttpPost("forgotpassword")]
     [ProducesResponseType(typeof(ForgetPasswordResponse), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<ForgetPasswordResponse>> ForgotPasswordAsync(Forgot_PasswordRequest model)
     {
         var user = await _userManager.FindByEmailAsync(model.Email);
         if (user is null)
-            return BadRequest(new ApiResponse(400, "User not found"));
+            return BadRequest(new ApiErrorResponse(400, "User not found"));
 
         var token = await _userManager.GeneratePasswordResetTokenAsync(user);
 
@@ -107,5 +107,7 @@ public class AccountController : BaseApiController
             Token = token
         });
     }
+    }
+
+
     #endregion
-}

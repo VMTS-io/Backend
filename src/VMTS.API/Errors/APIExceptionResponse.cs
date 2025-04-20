@@ -1,17 +1,15 @@
-﻿namespace VMTS.API.Errors;
+﻿using System.Text.Json.Serialization;
 
-public class ApiExceptionResponse : ApiResponse
+namespace VMTS.API.Errors;
+
+public class ApiExceptionResponse : ApiErrorResponse
 {
-    public string? ExceptionMessage { get; set; }
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public string? StackTracer { get; set; }
 
-    public ApiExceptionResponse(
-        int statusCode,
-        string? message = null,
-        string? exceptionMessage = null
-    )
+    public ApiExceptionResponse(int statusCode, string message, string? stackTracer = null)
         : base(statusCode, message)
     {
-        ExceptionMessage = exceptionMessage;
+        StackTracer = stackTracer;
     }
 }
-

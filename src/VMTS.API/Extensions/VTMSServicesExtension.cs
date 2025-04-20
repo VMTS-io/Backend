@@ -1,8 +1,8 @@
 ﻿using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 using VMTS.API.Errors;
+using VMTS.API.GlobalExceptionHnadler;
 using VMTS.API.Helpers;
 using VMTS.API.Middlewares;
 using VMTS.Core.Interfaces.Services;
@@ -18,12 +18,12 @@ public static class VTMSServicesExtension
 {
     public static IServiceCollection AddAppServices(
         this IServiceCollection services,
-        IConfiguration configuration,
-        IWebHostEnvironment environment
+        IConfiguration configuration
     )
     {
         services.Configure<ApiBehaviorOptions>(options =>
-            options.InvalidModelStateResponseFactory = (actionContext) => {
+            options.InvalidModelStateResponseFactory = (actionContext) =>
+            {
                 var errors = actionContext
                     .ModelState.Where(M => M.Value?.Errors.Count > 0)
                     .ToDictionary(
@@ -34,6 +34,8 @@ public static class VTMSServicesExtension
                 return new BadRequestObjectResult(response);
             }
         );
+        services.AddProblemDetails();
+        services.AddExceptionHandler<GlobalEaxceptionHandler>();
         services
             .AddControllers()
             .AddJsonOptions(options =>
@@ -49,7 +51,7 @@ public static class VTMSServicesExtension
         services.AddSingleton<ExceptionMiddleware>();
         services.AddDbContext<VTMSDbContext>(options =>
         {
-                options.UseSqlServer(configuration.GetConnectionString("DefaultDeploymentConnection"));
+            options.UseSqlServer(configuration.GetConnectionString("DefaultDeploymentConnection"));
         });
 
         services.AddScoped<IUnitOfWork, UnitOfWork>();

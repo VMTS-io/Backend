@@ -1,6 +1,7 @@
 using System.Net;
 using System.Text.Json;
 using VMTS.API.Errors;
+using VMTS.Service.Exceptions;
 
 namespace VMTS.API.Middlewares;
 
@@ -23,26 +24,41 @@ public class ExceptionMiddleware : IMiddleware
         {
             await next.Invoke(context);
         }
+        catch (NotFoundException ex)
+        {
+            await WriteErrorResponseAsync(context, 404, ex);
+        }
+        catch (BadRequestException ex)
+        {
+            await WriteErrorResponseAsync(context, 400, ex);
+        }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "{message}", ex.Message);
-
-            context.Response.ContentType = "application/json";
-
-            context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
-
-            var responsBody = _env.IsDevelopment()
-                ? new ApiExceptionResponse(500, ex.Message, ex.StackTrace?.ToString())
-                : new ApiExceptionResponse(500, ex.Message);
-
-            JsonSerializerOptions jsonSerializerOptions = new()
-            {
-                PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-            };
-            var opts = jsonSerializerOptions;
-
-            var jsonRespons = JsonSerializer.Serialize(responsBody, opts);
-            await context.Response.WriteAsync(jsonRespons);
+            await WriteErrorResponseAsync(context, 400, ex, true);
         }
+    }
+
+    private static async Task WriteErrorResponseAsync(
+        HttpContext context,
+        int statusCode,
+        Exception exception,
+        bool isException = false
+    )
+    {
+        var responseBody = new ApiErrorResponse(statusCode, exception.Message);
+        context.Response.StatusCode = statusCode;
+        context.Response.ContentType = "application/json";
+
+        JsonSerializerOptions jsonSerializerOptions = new()
+        {
+            PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+        };
+
+        if (isException && exception.StackTrace is not null)
+            responseBody.StackTrace = exception.StackTrace;
+        var options = jsonSerializerOptions;
+
+        var json = JsonSerializer.Serialize(responseBody, options);
+        await context.Response.WriteAsync(json);
     }
 }

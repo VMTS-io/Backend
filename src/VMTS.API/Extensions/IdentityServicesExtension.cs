@@ -1,8 +1,10 @@
 ﻿using System.Text;
+using System.Text.Json;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using VMTS.API.Errors;
 using VMTS.Core.Entities.Identity;
 using VMTS.Repository.Identity;
 
@@ -12,13 +14,12 @@ public static class IdentityServicesExtension
 {
     public static IServiceCollection AddIdentityServices(
         this IServiceCollection services,
-        IConfiguration configuration,
-        IWebHostEnvironment environment
+        IConfiguration configuration
     )
     {
         services.AddDbContext<IdentityDbContext>(options =>
         {
-                options.UseSqlServer(configuration.GetConnectionString("IdentityDeploymentConnection"));
+            options.UseSqlServer(configuration.GetConnectionString("IdentityDeploymentConnection"));
         });
 
         services
@@ -35,8 +36,10 @@ public static class IdentityServicesExtension
             {
                 options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
                 options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
             })
             .AddJwtBearer(options =>
+            {
                 options.TokenValidationParameters = new TokenValidationParameters()
                 {
                     ValidateAudience = true,
@@ -49,8 +52,26 @@ public static class IdentityServicesExtension
                     ),
                     ValidateLifetime = true,
                     ClockSkew = TimeSpan.FromDays(double.Parse(configuration["JWT:Expires"])),
-                }
-            );
+                };
+                options.Events = new JwtBearerEvents
+                {
+                    OnChallenge = context =>
+                    {
+                        context.HandleResponse(); // Important!
+                        context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+                        context.Response.ContentType = "application/json";
+                        var result = JsonSerializer.Serialize(new ApiErrorResponse(401));
+                        return context.Response.WriteAsync(result);
+                    },
+                    OnForbidden = context =>
+                    {
+                        context.Response.StatusCode = StatusCodes.Status403Forbidden;
+                        context.Response.ContentType = "application/json";
+                        var result = JsonSerializer.Serialize(new ApiErrorResponse(403));
+                        return context.Response.WriteAsync(result);
+                    },
+                };
+            });
 
         return services;
     }
