@@ -19,11 +19,12 @@ public class VehicleServices : IVehicleSerivces
         _repo = _unitOfWork.GetRepo<Vehicle>();
     }
 
+    #region Create
     public async Task<Vehicle> CreateVehicleAsync(Vehicle vehicle)
     {
         if (!await IsExsistAsync<VehicleCategory>(vehicle.CategoryId))
             throw new NotFoundException("Categroy Not Found");
-        if (!await IsExsistAsync<VehicleCategory>(vehicle.ModelId))
+        if (!await IsExsistAsync<VehicleModel>(vehicle.ModelId))
             throw new NotFoundException("Model Not Found");
 
         await _repo.CreateAsync(vehicle);
@@ -35,7 +36,9 @@ public class VehicleServices : IVehicleSerivces
             ?? throw new NotFoundException("Vehicle Not Found");
         return returnVehicle;
     }
+    #endregion
 
+    #region Delete
     public async Task<bool> DeleteVehicleAsync(string id)
     {
         var vehicle = await _repo.GetByIdAsync(id) ?? throw new Exception("Vehicle Not Found");
@@ -50,7 +53,9 @@ public class VehicleServices : IVehicleSerivces
         }
         return true;
     }
+    #endregion
 
+    #region Get By Id
     public async Task<Vehicle> GetVehicleByIdAsync(string id)
     {
         var spec = new VehicleIncludesSpecification(id);
@@ -59,14 +64,18 @@ public class VehicleServices : IVehicleSerivces
             ?? throw new NotFoundException("Vehicle Not Found");
         return vehicle;
     }
+    #endregion
 
+    #region Get All
     public async Task<IReadOnlyList<Vehicle>> GetAllVehiclesAsync(VehicleSpecParams specParams)
     {
         var spec = new VehicleIncludesSpecification(specParams);
         var vehicles = await _repo.GetAllWithSpecificationAsync(spec);
         return vehicles;
     }
+    #endregion
 
+    #region Update
     public async Task<Vehicle> UpdateVehicleAsync(Vehicle vehicle)
     {
         if (!await IsExsistAsync<Vehicle>(vehicle.Id))
@@ -83,6 +92,7 @@ public class VehicleServices : IVehicleSerivces
         var returnVehicle = await _repo.GetByIdWithSpecificationAsync(spec);
         return returnVehicle!;
     }
+    #endregion
 
     public async Task<bool> IsExsistAsync<T>(string id)
         where T : BaseEntity

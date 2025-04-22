@@ -1,5 +1,7 @@
 using VMTS.API.Dtos.Maintenance;
 using VMTS.API.Dtos.Trip;
+using VMTS.API.Dtos.Vehicles.Category;
+using VMTS.API.Dtos.Vehicles.Model;
 using VMTS.Core.Entities.Vehicle_Aggregate;
 
 namespace VMTS.API.Dtos.Vehicles;

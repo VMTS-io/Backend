@@ -1,4 +1,4 @@
-namespace VMTS.API.Dtos.Vehicles;
+namespace VMTS.API.Dtos.Vehicles.Category;
 
 public class VehicleCategoryDto
 {

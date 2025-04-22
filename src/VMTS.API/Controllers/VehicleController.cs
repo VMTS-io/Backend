@@ -1,6 +1,7 @@
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using VMTS.API.Dtos.Vehicles;
+using VMTS.API.Errors;
 using VMTS.Core.Entities.Vehicle_Aggregate;
 using VMTS.Core.Interfaces.Services;
 using VMTS.Core.Specifications.VehicleSpecification;
@@ -18,18 +19,35 @@ public class VehicleController : BaseApiController
         _mapper = mapper;
     }
 
+    // [ProducesResponseType<IReadOnlyList<VehicleListDto>>(StatusCodes.Status200OK)]
+    // [HttpGet]
+    // public async Task<ActionResult<IReadOnlyList<VehicleListDto>>> GetAll(
+    //     [FromQuery] VehicleSpecParams specParams
+    // )
+    // {
+    //     var vehicles = await _services.GetAllVehiclesAsync(specParams);
+    //     var returnVehicle = _mapper.Map<IReadOnlyList<Vehicle>, IReadOnlyList<VehicleListDto>>(
+    //         vehicles
+    //     );
+    //     return Ok(returnVehicle);
+    // }
+
+
+    [ProducesResponseType<IReadOnlyList<AdminVehicleListDto>>(StatusCodes.Status200OK)]
     [HttpGet]
-    public async Task<ActionResult<IReadOnlyList<VehicleListDto>>> GetAll(
+    public async Task<ActionResult<IReadOnlyList<AdminVehicleListDto>>> GetAll(
         [FromQuery] VehicleSpecParams specParams
     )
     {
         var vehicles = await _services.GetAllVehiclesAsync(specParams);
-        var returnVehicle = _mapper.Map<IReadOnlyList<Vehicle>, IReadOnlyList<VehicleListDto>>(
+        var returnVehicle = _mapper.Map<IReadOnlyList<Vehicle>, IReadOnlyList<AdminVehicleListDto>>(
             vehicles
         );
         return Ok(returnVehicle);
     }
 
+    [ProducesResponseType<VehicleDetailsDto>(StatusCodes.Status200OK)]
+    [ProducesResponseType<ApiErrorResponse>(StatusCodes.Status404NotFound)]
     [HttpGet("{id}")]
     public async Task<ActionResult<VehicleDetailsDto>> GetById([FromRoute] string id)
     {
@@ -38,6 +56,8 @@ public class VehicleController : BaseApiController
         return Ok(mappedVehicle);
     }
 
+    [ProducesResponseType<VehicleDetailsDto>(StatusCodes.Status200OK)]
+    [ProducesResponseType<ApiErrorResponse>(StatusCodes.Status404NotFound)]
     [HttpPost]
     public async Task<ActionResult<VehicleDetailsDto>> Create(VehicleCreateRequest vehicle)
     {
@@ -47,12 +67,16 @@ public class VehicleController : BaseApiController
         return Ok(returnVehicle);
     }
 
+    [ProducesResponseType<bool>(StatusCodes.Status200OK)]
+    [ProducesResponseType<ApiErrorResponse>(StatusCodes.Status404NotFound)]
     [HttpDelete("{id}")]
     public async Task<ActionResult<bool>> Delete([FromRoute] string id)
     {
         return Ok(await _services.DeleteVehicleAsync(id));
     }
 
+    [ProducesResponseType<VehicleDetailsDto>(StatusCodes.Status200OK)]
+    [ProducesResponseType<ApiErrorResponse>(StatusCodes.Status404NotFound)]
     [HttpPut("{id}")]
     public async Task<ActionResult<VehicleDetailsDto>> Update(
         [FromRoute] string id,
