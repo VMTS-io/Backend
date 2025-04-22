@@ -7,8 +7,8 @@ public class ApiExceptionResponse : ApiErrorResponse
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public string? StackTracer { get; set; }
 
-    public ApiExceptionResponse(int statusCode, string message, string? stackTracer = null)
-        : base(statusCode, message)
+    public ApiExceptionResponse(string message, string? stackTracer = null)
+        : base(500, message)
     {
         StackTracer = stackTracer;
     }

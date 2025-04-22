@@ -1,9 +1,6 @@
 ﻿using System.Security.Claims;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc;
 using VMTS.API.Dtos;
 using VMTS.API.Errors;
@@ -57,4 +54,3 @@ public class TripRequestController : BaseApiController
         return Ok(response);
     }
 }
-
