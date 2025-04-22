@@ -8,6 +8,7 @@ using VMTS.Core.Interfaces.UnitOfWork;
 
 namespace VMTS.API.Controllers;
 
+[Tags("Vehicle/Category")]
 [Route("api/Vehicle/Category")]
 [ApiController]
 public class VehicleCategoryController : ControllerBase
@@ -54,5 +55,50 @@ public class VehicleCategoryController : ControllerBase
             IReadOnlyList<VehicleCategoryDto>
         >(allVehicleModels);
         return Ok(returnVehicleList);
+    }
+
+    [ProducesResponseType<VehicleCategoryDto>(StatusCodes.Status200OK)]
+    [ProducesResponseType<ApiErrorResponse>(StatusCodes.Status404NotFound)]
+    [HttpPut("{id}")]
+    public async Task<ActionResult<VehicleCategoryDto>> Edit(
+        [FromRoute] string id,
+        [FromBody] VehicleCategoryCreateDto model
+    )
+    {
+        var mappedCategory = _mapper.Map<VehicleCategoryCreateDto, VehicleCategory>(model);
+        var vehicleCategory = await _repo.GetByIdAsync(id);
+        if (vehicleCategory is null)
+            return BadRequest(
+                new ApiErrorResponse(
+                    StatusCodes.Status404NotFound,
+                    $"Veicle Model Not Found With Id {id}"
+                )
+            );
+        mappedCategory.Id = id;
+        _repo.Update(mappedCategory);
+        await _unitOfWork.SaveChanges();
+        vehicleCategory = await _repo.GetByIdAsync(id);
+        var returnVehicleCategory = _mapper.Map<VehicleCategory, VehicleCategoryDto>(
+            vehicleCategory!
+        );
+        return Ok(returnVehicleCategory!);
+    }
+
+    [ProducesResponseType<bool>(StatusCodes.Status200OK)]
+    [ProducesResponseType<ApiErrorResponse>(StatusCodes.Status404NotFound)]
+    [HttpDelete("{id}")]
+    public async Task<ActionResult<bool>> Delete(string id)
+    {
+        var vehicleCategory = await _repo.GetByIdAsync(id);
+        if (vehicleCategory is null)
+            return BadRequest(
+                new ApiErrorResponse(
+                    StatusCodes.Status404NotFound,
+                    $"Veicle Model Not Found With Id {id}"
+                )
+            );
+        _repo.Delete(vehicleCategory);
+        await _unitOfWork.SaveChanges();
+        return true;
     }
 }
