@@ -1,9 +1,7 @@
-namespace VMTS.API.Dtos.Vehicles;
+namespace VMTS.API.Dtos.Vehicles.Model;
 
-public class VehicleModelDto
+public class VehicleModelCreateDto
 {
-    public string Id { get; set; }
-
     public string Name { get; set; }
 
     public DateTime Year { get; set; }

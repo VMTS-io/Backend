@@ -1,15 +1,16 @@
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
-using VMTS.API.Dtos.Vehicles;
+using VMTS.API.Dtos.Vehicles.Category;
+using VMTS.API.Errors;
 using VMTS.Core.Entities.Vehicle_Aggregate;
 using VMTS.Core.Interfaces.Repositories;
 using VMTS.Core.Interfaces.UnitOfWork;
 
 namespace VMTS.API.Controllers;
 
-[Route("api/vehicle/category")]
+[Route("api/Vehicle/Category")]
 [ApiController]
-public class VehicleCategoryController: ControllerBase
+public class VehicleCategoryController : ControllerBase
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly IMapper _mapper;
@@ -22,18 +23,28 @@ public class VehicleCategoryController: ControllerBase
         _repo = _unitOfWork.GetRepo<VehicleCategory>();
     }
 
+    [ProducesResponseType<VehicleCategoryDto>(StatusCodes.Status200OK)]
+    [ProducesResponseType<ApiErrorResponse>(StatusCodes.Status404NotFound)]
     [HttpPost]
-    public async Task<ActionResult<VehicleCategoryDto>> Create(VehicleCategoryDto vehilceModel)
+    public async Task<ActionResult<VehicleCategoryDto>> Create(
+        VehicleCategoryCreateDto vehilceModel
+    )
     {
-        var mappedVehicleModel = _mapper.Map<VehicleCategoryDto, VehicleCategory>(vehilceModel);
+        var mappedVehicleModel = _mapper.Map<VehicleCategoryCreateDto, VehicleCategory>(
+            vehilceModel
+        );
         await _repo.CreateAsync(mappedVehicleModel);
+        await _unitOfWork.SaveChanges();
         var eturnVehicleModel = await _repo.GetByIdAsync(mappedVehicleModel.Id);
+        if (eturnVehicleModel is null)
+            return NotFound(new ApiErrorResponse(404));
         var returnVehilceModel = _mapper.Map<VehicleCategory, VehicleCategoryDto>(
             eturnVehicleModel
         );
         return Ok(returnVehilceModel);
     }
 
+    [ProducesResponseType<IReadOnlyList<VehicleCategoryDto>>(StatusCodes.Status200OK)]
     [HttpGet]
     public async Task<ActionResult<IReadOnlyList<VehicleCategoryDto>>> GetAll()
     {

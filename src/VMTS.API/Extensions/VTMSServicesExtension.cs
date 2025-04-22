@@ -45,7 +45,7 @@ public static class VTMSServicesExtension
             .AddJsonOptions(options =>
             {
                 options.JsonSerializerOptions.Converters.Add(new DateOnlyJsonConverter());
-            });;
+            });
         services.AddCors();
         services.AddOpenApi();
         services.AddSingleton<ExceptionMiddleware>();

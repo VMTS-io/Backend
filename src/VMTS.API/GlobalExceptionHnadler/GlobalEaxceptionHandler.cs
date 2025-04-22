@@ -42,12 +42,8 @@ public class GlobalEaxceptionHandler : IExceptionHandler
             default:
 
                 responseBody = _env.IsDevelopment()
-                    ? new ApiErrorResponse(
-                        StatusCodes.Status500InternalServerError,
-                        exception.Message,
-                        exception.StackTrace?.ToString()
-                    )
-                    : new ApiErrorResponse(500, "Internal Server Error", exception.Message);
+                    ? new ApiExceptionResponse(exception.Message, exception.StackTrace?.ToString())
+                    : new ApiErrorResponse(500, exception.Message);
                 _logger.LogError(exception, "{message}", exception.Message);
                 break;
         }
