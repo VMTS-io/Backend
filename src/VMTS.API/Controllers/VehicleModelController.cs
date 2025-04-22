@@ -8,7 +8,8 @@ using VMTS.Core.Interfaces.UnitOfWork;
 
 namespace VMTS.API.Controllers;
 
-[Route("api/vehicle/model")]
+[Tags("Vehicle/Models")]
+[Route("api/Vehicle/model")]
 [ApiController]
 public class VehicleModelController : ControllerBase
 {
@@ -48,5 +49,48 @@ public class VehicleModelController : ControllerBase
             IReadOnlyList<VehicleModelDto>
         >(allVehicleModels);
         return Ok(returnVehicleList);
+    }
+
+    [ProducesResponseType<VehicleModelDto>(StatusCodes.Status200OK)]
+    [ProducesResponseType<ApiErrorResponse>(StatusCodes.Status404NotFound)]
+    [HttpPut("{id}")]
+    public async Task<ActionResult<VehicleModelDto>> Edit(
+        [FromRoute] string id,
+        [FromBody] VehicleModelCreateDto model
+    )
+    {
+        var mappedModel = _mapper.Map<VehicleModelCreateDto, VehicleModel>(model);
+        var vehicleModel = await _repo.GetByIdAsync(id);
+        if (vehicleModel is null)
+            return BadRequest(
+                new ApiErrorResponse(
+                    StatusCodes.Status404NotFound,
+                    $"Veicle Model Not Found With Id {id}"
+                )
+            );
+        mappedModel.Id = id;
+        _repo.Update(mappedModel);
+        await _unitOfWork.SaveChanges();
+        vehicleModel = await _repo.GetByIdAsync(id);
+        var returnVehicleModel = _mapper.Map<VehicleModel, VehicleModelDto>(vehicleModel!);
+        return Ok(returnVehicleModel!);
+    }
+
+    [ProducesResponseType<bool>(StatusCodes.Status200OK)]
+    [ProducesResponseType<ApiErrorResponse>(StatusCodes.Status404NotFound)]
+    [HttpDelete("{id}")]
+    public async Task<ActionResult<bool>> Delete(string id)
+    {
+        var vehicleModel = await _repo.GetByIdAsync(id);
+        if (vehicleModel is null)
+            return BadRequest(
+                new ApiErrorResponse(
+                    StatusCodes.Status404NotFound,
+                    $"Veicle Model Not Found With Id {id}"
+                )
+            );
+        _repo.Delete(vehicleModel);
+        await _unitOfWork.SaveChanges();
+        return true;
     }
 }
