@@ -26,26 +26,38 @@ public class ExceptionMiddleware : IMiddleware
         }
         catch (NotFoundException ex)
         {
-            await WriteErrorResponseAsync(context, 404, ex);
+            await WriteErrorResponseAsync(context, 404, ex.Message);
         }
         catch (BadRequestException ex)
         {
-            await WriteErrorResponseAsync(context, 400, ex);
+            await WriteErrorResponseAsync(context, 400, ex.Message);
         }
         catch (Exception ex)
         {
-            await WriteErrorResponseAsync(context, 400, ex, true);
+            var responseBodyV2 = new ApiExceptionResponse(ex.Message, ex.StackTrace?.ToString());
+
+            context.Response.StatusCode = StatusCodes.Status500InternalServerError;
+            context.Response.ContentType = "application/json";
+
+            JsonSerializerOptions jsonSerializerOptions = new()
+            {
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+            };
+            var options = jsonSerializerOptions;
+
+            var json = JsonSerializer.Serialize(responseBodyV2, options);
+            await context.Response.WriteAsync(json);
         }
     }
 
     private static async Task WriteErrorResponseAsync(
         HttpContext context,
         int statusCode,
-        Exception exception,
-        bool isException = false
+        string message
     )
     {
-        var responseBody = new ApiErrorResponse(statusCode, exception.Message);
+        var responseBody = new ApiErrorResponse(statusCode, message);
+
         context.Response.StatusCode = statusCode;
         context.Response.ContentType = "application/json";
 
@@ -54,8 +66,6 @@ public class ExceptionMiddleware : IMiddleware
             PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
         };
 
-        if (isException && exception.StackTrace is not null)
-            responseBody.StackTrace = exception.StackTrace;
         var options = jsonSerializerOptions;
 
         var json = JsonSerializer.Serialize(responseBody, options);
