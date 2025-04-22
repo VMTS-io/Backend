@@ -6,7 +6,10 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using VMTS.API.Errors;
 using VMTS.Core.Entities.Identity;
+using VMTS.Core.Helpers;
+using VMTS.Core.Interfaces.Services;
 using VMTS.Repository.Identity;
+using VMTS.Service.Services;
 
 namespace VMTS.API.Extensions;
 
@@ -72,6 +75,8 @@ public static class IdentityServicesExtension
                     },
                 };
             });
+        services.AddScoped<IEmailService, EmailService>();
+        services.Configure<EmailSettings>(configuration.GetSection("EmailSettings"));
 
         return services;
     }
