@@ -39,14 +39,13 @@ public class AccountController : BaseApiController
     [HttpPost("login")]
     [ProducesResponseType(typeof(UserDto), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(MustChangePasswordDto), StatusCodes.Status401Unauthorized)]
-    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status401Unauthorized)]
-    public async Task<ActionResult<UserDto>> Login(LoginRequest request)
+    public async Task<ActionResult> Login(LoginRequest request)
     {
         var user = await _userManager.FindByEmailAsync(request.Email);
 
         if (user is null)
-            return NotFound(new ApiErrorResponse(404));
+            return Unauthorized(new ApiErrorResponse(401, "Invalid credentials"));
 
         if (user.MustChangePassword)
         {
@@ -131,13 +130,9 @@ public class AccountController : BaseApiController
     #endregion
 
     [HttpPost("send-email")]
-    public async Task<IActionResult> SendTestEmail()
+    public async Task<IActionResult> SendTestEmail(SendEmailRequest request)
     {
-        await _emailService.SendEmailAsync(
-            "basselr11@gmail.com",
-            "Test Email",
-            "hello mr.Bassel Raafat"
-        );
-        return Ok("Email sent!");
+        await _emailService.SendEmailAsync(request.toEmail, request.subject, request.body);
+        return Ok("Email sent , please check your inbox");
     }
 }
