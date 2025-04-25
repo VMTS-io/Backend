@@ -31,7 +31,8 @@ public class UserController : BaseApiController
         IUnitOfWork iunitOfWork,
         IMapper mapper,
         IUserService userService,
-        IAuthService authService)
+        IAuthService authService
+    )
     {
         _userManager = userManager;
         _roleManager = roleManager;
@@ -118,6 +119,7 @@ public class UserController : BaseApiController
     #region GetAllManagers
 
     [HttpGet("managers")]
+    [Authorize(Roles = Roles.Admin)]
     [ProducesResponseType(typeof(IReadOnlyList<UserResponse>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status404NotFound)]
     public async Task<ActionResult<IReadOnlyList<UserResponse>>> GetManagers()
@@ -142,12 +144,12 @@ public class UserController : BaseApiController
         return Ok(managers);
     }
 
-
     #endregion
 
     #region Get All Drivers
-    
+
     [HttpGet("drivers")]
+    [Authorize(Roles = Roles.Admin)]
     [ProducesResponseType(typeof(IReadOnlyList<UserResponse>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status404NotFound)]
     public async Task<ActionResult<IReadOnlyList<UserResponse>>> GetDrivers()
@@ -172,13 +174,12 @@ public class UserController : BaseApiController
         return Ok(drivers);
     }
 
-
     #endregion
 
     #region Get All Mechanics
-    
-    [HttpGet("mechanics")]
 
+    [HttpGet("mechanics")]
+    [Authorize(Roles = Roles.Admin)]
     [ProducesResponseType(typeof(IReadOnlyList<UserResponse>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status404NotFound)]
     public async Task<ActionResult<IReadOnlyList<UserResponse>>> GetMechanics()
@@ -196,13 +197,12 @@ public class UserController : BaseApiController
                 mechanics.Add(mappedUser);
             }
         }
-        
-        if(!mechanics.Any())
+
+        if (!mechanics.Any())
             return NotFound(new ApiErrorResponse(404, "No users with 'Mechanic' role found"));
-        
+
         return Ok(mechanics);
     }
-
 
     #endregion
 
@@ -213,7 +213,9 @@ public class UserController : BaseApiController
     [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status404NotFound)]
     public async Task<ActionResult<UserResponse>> GetById([FromRoute] string userId)
     {
-        var user = await _userManager.Users.Include(u => u.Address).FirstOrDefaultAsync(u => u.Id == userId);
+        var user = await _userManager
+            .Users.Include(u => u.Address)
+            .FirstOrDefaultAsync(u => u.Id == userId);
 
         if (user == null)
             return NotFound(new ApiErrorResponse(404, "User not found"));
@@ -221,20 +223,22 @@ public class UserController : BaseApiController
         var roles = await _userManager.GetRolesAsync(user);
         var role = roles.FirstOrDefault();
 
-        return Ok(new UserResponse
-        {
-            Email = user.Email,
-            UserName = user.UserName,
-            PhoneNumber = user.PhoneNumber,
-            Role = role,
-            Address = new AddressDto
+        return Ok(
+            new UserResponse
             {
-                Street = user.Address?.Street,
-                Area = user.Address?.Area,
-                Governorate = user.Address?.Governorate,
-                Country = user.Address?.Country,
+                Email = user.Email,
+                UserName = user.UserName,
+                PhoneNumber = user.PhoneNumber,
+                Role = role,
+                Address = new AddressDto
+                {
+                    Street = user.Address?.Street,
+                    Area = user.Address?.Area,
+                    Governorate = user.Address?.Governorate,
+                    Country = user.Address?.Country,
+                },
             }
-        });
+        );
     }
     #endregion
 
@@ -252,7 +256,12 @@ public class UserController : BaseApiController
 
         var result = await _userManager.DeleteAsync(user);
         if (!result.Succeeded)
-            return BadRequest(new ApiErrorResponse(400, string.Join(", ", result.Errors.Select(e => e.Description))));
+            return BadRequest(
+                new ApiErrorResponse(
+                    400,
+                    string.Join(", ", result.Errors.Select(e => e.Description))
+                )
+            );
 
         return Ok(new ApiErrorResponse(200, "User deleted successfully"));
     }
