@@ -52,6 +52,9 @@ public class UserController : BaseApiController
     {
         var email = await _authService.GenerateUniqueEmailAsync(model.FirstName, model.LastName);
         var password = "Pa$$w0rd";
+
+        var displayName = $"{model.FirstName?.Trim()} {model.LastName?.Trim()}";
+
         var address = _mapper.Map<Address>(model.Address);
 
         var user = new AppUser
@@ -61,15 +64,20 @@ public class UserController : BaseApiController
             PhoneNumber = model.PhoneNumber,
             DateOfBirth = model.DateOfBirth,
             NationalId = model.NationalId,
-            Address = address,
+            DisplayName = displayName,
+            PictureUrl = "default-profile.png",
         };
 
         var result = await _userManager.CreateAsync(user, password);
         if (!result.Succeeded)
+        {
             return BadRequest(new ApiErrorResponse(400));
+        }
 
         if (!await _roleManager.RoleExistsAsync(model.Role))
-            return NotFound(new ApiErrorResponse(404));
+        {
+            return BadRequest(new ApiErrorResponse(400, "Invalid role"));
+        }
 
         var userRole = await _userManager.AddToRoleAsync(user, model.Role);
         if (!userRole.Succeeded)
