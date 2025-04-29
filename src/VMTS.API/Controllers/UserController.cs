@@ -53,10 +53,10 @@ public class UserController : BaseApiController
         var password = "Pa$$w0rd";
 
         if (await _userManager.Users.AnyAsync(u => u.PhoneNumber == model.PhoneNumber))
-            return BadRequest(new ApiErrorResponse(400, "Phone number is already in use."));
+            return BadRequest(new ApiErrorResponse(400, "Phone number is already exists."));
 
         if (await _userManager.Users.AnyAsync(u => u.NationalId == model.NationalId))
-            return BadRequest(new ApiErrorResponse(400, "National ID is already in use."));
+            return BadRequest(new ApiErrorResponse(400, "National ID is already exists."));
 
         var displayName = $"{model.FirstName?.Trim()} {model.LastName?.Trim()}";
         var address = _mapper.Map<Address>(model.Address);
