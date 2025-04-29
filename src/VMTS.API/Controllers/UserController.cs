@@ -52,8 +52,13 @@ public class UserController : BaseApiController
         var email = await _authService.GenerateUniqueEmailAsync(model.FirstName, model.LastName);
         var password = "Pa$$w0rd";
 
-        var displayName = $"{model.FirstName?.Trim()} {model.LastName?.Trim()}";
+        if (await _userManager.Users.AnyAsync(u => u.PhoneNumber == model.PhoneNumber))
+            return BadRequest(new ApiErrorResponse(400, "Phone number is already in use."));
 
+        if (await _userManager.Users.AnyAsync(u => u.NationalId == model.NationalId))
+            return BadRequest(new ApiErrorResponse(400, "National ID is already in use."));
+
+        var displayName = $"{model.FirstName?.Trim()} {model.LastName?.Trim()}";
         var address = _mapper.Map<Address>(model.Address);
 
         var user = new AppUser
