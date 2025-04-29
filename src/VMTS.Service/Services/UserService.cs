@@ -8,7 +8,6 @@ namespace VMTS.Service.Services;
 public class UserService : IUserService
 {
     private readonly UserManager<AppUser> _userManager;
-   
 
     public UserService(UserManager<AppUser> userManager)
     {
@@ -17,31 +16,36 @@ public class UserService : IUserService
 
     public async Task<bool> EditUserAsync(
         string userId,
-        string? userName,
-        string? phoneNumber,
+        string firstName,
+        string lastName,
+        string nationalId,
+        DateOnly dateOfBirth,
+        string phoneNumber,
         string street,
         string area,
         string governorate,
         string country,
-        string? role)
+        string? role
+    )
     {
-        var user = await _userManager.Users
-            .Include(u => u.Address)
+        var user = await _userManager
+            .Users.Include(u => u.Address)
             .FirstOrDefaultAsync(u => u.Id == userId);
 
         if (user == null)
             return false;
 
-        
-        user.UserName = userName;
+        user.FirstName = firstName;
+        user.LastName = lastName;
         user.PhoneNumber = phoneNumber;
-
+        user.NationalId = nationalId;
+        user.DateOfBirth = dateOfBirth;
         // Address update
         user.Address.Street = street;
         user.Address.Area = area;
         user.Address.Governorate = governorate;
         user.Address.Country = country;
-        
+
         // Role update
         if (!string.IsNullOrWhiteSpace(role))
         {

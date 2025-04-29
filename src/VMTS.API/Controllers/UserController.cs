@@ -47,7 +47,6 @@ public class UserController : BaseApiController
     [Authorize(Roles = Roles.Admin)]
     [ProducesResponseType(typeof(RegisterResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status404NotFound)]
     public async Task<ActionResult<RegisterResponse>> CreateUser(RegisterRequest model)
     {
         var email = await _authService.GenerateUniqueEmailAsync(model.FirstName, model.LastName);
@@ -59,6 +58,8 @@ public class UserController : BaseApiController
 
         var user = new AppUser
         {
+            FirstName = model.FirstName,
+            LastName = model.LastName,
             Email = email,
             UserName = email.Split('@')[0],
             PhoneNumber = model.PhoneNumber,
@@ -66,6 +67,7 @@ public class UserController : BaseApiController
             NationalId = model.NationalId,
             DisplayName = displayName,
             PictureUrl = "default-profile.png",
+            Address = address,
         };
 
         var result = await _userManager.CreateAsync(user, password);
@@ -81,12 +83,14 @@ public class UserController : BaseApiController
 
         var userRole = await _userManager.AddToRoleAsync(user, model.Role);
         if (!userRole.Succeeded)
+        {
             return BadRequest(new ApiErrorResponse(400));
+        }
 
         var businessUser = new BusinessUser
         {
             Id = user.Id,
-            DisplayName = $"{model.FirstName?.Trim()} {model.LastName?.Trim()}",
+            DisplayName = displayName,
             Email = user.Email,
             PhoneNumber = user.PhoneNumber,
             NormalizedEmail = user.NormalizedEmail,
@@ -97,23 +101,25 @@ public class UserController : BaseApiController
 
         return Ok(new RegisterResponse { Email = email });
     }
+
     #endregion
 
     #region Get All Users
     [HttpGet("all")]
     [Authorize(Roles = Roles.Admin)]
     [ProducesResponseType(typeof(IReadOnlyList<UserResponse>), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<IReadOnlyList<UserResponse>>> GetAllUsers()
     {
         var users = await _userManager.Users.Include(u => u.Address).ToListAsync();
 
-        if (users == null)
-            return NotFound(new ApiErrorResponse(404, "Users not found"));
-
         var userResponses = new List<UserResponse>();
         foreach (var user in users)
         {
+            var role = await _userManager.GetRolesAsync(user);
+
+            if (role.Contains(Roles.Admin))
+                continue;
             var mappedUser = _mapper.Map<UserResponse>(user);
             var roles = await _userManager.GetRolesAsync(user);
             mappedUser.Role = roles.FirstOrDefault();
@@ -122,6 +128,7 @@ public class UserController : BaseApiController
 
         return Ok(userResponses);
     }
+
     #endregion
 
     #region GetAllManagers
@@ -129,7 +136,6 @@ public class UserController : BaseApiController
     [HttpGet("managers")]
     [Authorize(Roles = Roles.Admin)]
     [ProducesResponseType(typeof(IReadOnlyList<UserResponse>), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status404NotFound)]
     public async Task<ActionResult<IReadOnlyList<UserResponse>>> GetManagers()
     {
         var users = await _userManager.Users.Include(u => u.Address).ToListAsync();
@@ -146,9 +152,6 @@ public class UserController : BaseApiController
             }
         }
 
-        if (!managers.Any())
-            return NotFound(new ApiErrorResponse(404, "No users with 'Manager' role found"));
-
         return Ok(managers);
     }
 
@@ -159,7 +162,6 @@ public class UserController : BaseApiController
     [HttpGet("drivers")]
     [Authorize(Roles = Roles.Admin)]
     [ProducesResponseType(typeof(IReadOnlyList<UserResponse>), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status404NotFound)]
     public async Task<ActionResult<IReadOnlyList<UserResponse>>> GetDrivers()
     {
         var users = await _userManager.Users.Include(u => u.Address).ToListAsync();
@@ -176,9 +178,6 @@ public class UserController : BaseApiController
             }
         }
 
-        if (!drivers.Any())
-            return NotFound(new ApiErrorResponse(404, "No users with 'Driver' role found"));
-
         return Ok(drivers);
     }
 
@@ -189,7 +188,6 @@ public class UserController : BaseApiController
     [HttpGet("mechanics")]
     [Authorize(Roles = Roles.Admin)]
     [ProducesResponseType(typeof(IReadOnlyList<UserResponse>), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status404NotFound)]
     public async Task<ActionResult<IReadOnlyList<UserResponse>>> GetMechanics()
     {
         var users = await _userManager.Users.Include(u => u.Address).ToListAsync();
@@ -206,9 +204,6 @@ public class UserController : BaseApiController
             }
         }
 
-        if (!mechanics.Any())
-            return NotFound(new ApiErrorResponse(404, "No users with 'Mechanic' role found"));
-
         return Ok(mechanics);
     }
 
@@ -218,7 +213,7 @@ public class UserController : BaseApiController
     [HttpGet("{userId}")]
     [Authorize(Roles = $"{Roles.Admin},{Roles.Manager}")]
     [ProducesResponseType(typeof(UserResponse), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<UserResponse>> GetById([FromRoute] string userId)
     {
         var user = await _userManager
@@ -226,7 +221,7 @@ public class UserController : BaseApiController
             .FirstOrDefaultAsync(u => u.Id == userId);
 
         if (user == null)
-            return NotFound(new ApiErrorResponse(404, "User not found"));
+            return BadRequest(new ApiErrorResponse(400, "User not found"));
 
         var roles = await _userManager.GetRolesAsync(user);
         var role = roles.FirstOrDefault();
@@ -234,6 +229,11 @@ public class UserController : BaseApiController
         return Ok(
             new UserResponse
             {
+                Id = user.Id,
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+                DateOfBirth = user.DateOfBirth,
+                NationalId = user.NationalId,
                 Email = user.Email,
                 UserName = user.UserName,
                 PhoneNumber = user.PhoneNumber,
@@ -248,6 +248,7 @@ public class UserController : BaseApiController
             }
         );
     }
+
     #endregion
 
     #region Delete User
@@ -255,12 +256,11 @@ public class UserController : BaseApiController
     [Authorize(Roles = Roles.Admin)]
     [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status404NotFound)]
     public async Task<ActionResult> DeleteUser([FromRoute] string userId)
     {
         var user = await _userManager.FindByIdAsync(userId);
         if (user == null)
-            return NotFound(new ApiErrorResponse(404, "User not found"));
+            return BadRequest(new ApiErrorResponse(400, "User not found"));
 
         var result = await _userManager.DeleteAsync(user);
         if (!result.Succeeded)
@@ -273,6 +273,7 @@ public class UserController : BaseApiController
 
         return Ok(new ApiErrorResponse(200, "User deleted successfully"));
     }
+
     #endregion
 
     #region Edit User
@@ -284,7 +285,10 @@ public class UserController : BaseApiController
     {
         var result = await _userService.EditUserAsync(
             userId,
-            request.UserName,
+            request.FirstName,
+            request.LastName,
+            request.NationalId,
+            request.DateOfBirth,
             request.PhoneNumber,
             request.Address.Street,
             request.Address.Area,
