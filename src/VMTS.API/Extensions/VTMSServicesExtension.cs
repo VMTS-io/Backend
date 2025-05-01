@@ -41,11 +41,11 @@ public static class VTMSServicesExtension
             .AddJsonOptions(options =>
             {
                 options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()); // Convert enums to strings
-            })
-            .AddJsonOptions(options =>
-            {
-                options.JsonSerializerOptions.Converters.Add(new DateOnlyJsonConverter());
+                options.JsonSerializerOptions.Converters.Add(new DateOnlyJsonConverter()); // Custom DateOnly converter
+
+                options.JsonSerializerOptions.MaxDepth = 128;
             });
+
         services.AddCors();
         services.AddOpenApi();
 
