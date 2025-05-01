@@ -38,7 +38,7 @@ public class AccountController : BaseApiController
 
     [HttpPost("login")]
     [ProducesResponseType(typeof(UserDto), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(MustChangePasswordDto), StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(MustChangePasswordDto), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status401Unauthorized)]
     public async Task<ActionResult> Login(LoginRequest request)
     {
@@ -49,7 +49,7 @@ public class AccountController : BaseApiController
 
         if (user.MustChangePassword)
         {
-            return Unauthorized(
+            return Ok(
                 new MustChangePasswordDto
                 {
                     MustChangePassword = true,
