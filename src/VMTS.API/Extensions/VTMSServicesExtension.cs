@@ -48,6 +48,7 @@ public static class VTMSServicesExtension
             });
         services.AddCors();
         services.AddOpenApi();
+
         services.AddSingleton<ExceptionMiddleware>();
         services.AddDbContext<VTMSDbContext>(options =>
         {

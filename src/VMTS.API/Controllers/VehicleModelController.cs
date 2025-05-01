@@ -9,7 +9,7 @@ using VMTS.Core.Interfaces.UnitOfWork;
 namespace VMTS.API.Controllers;
 
 [Tags("Vehicle/Models")]
-[Route("api/Vehicle/model")]
+[Route("api/Vehicle/Model")]
 [ApiController]
 public class VehicleModelController : ControllerBase
 {
