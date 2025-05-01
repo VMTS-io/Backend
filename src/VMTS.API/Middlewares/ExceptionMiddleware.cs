@@ -1,4 +1,3 @@
-using System.Net;
 using System.Text.Json;
 using VMTS.API.Errors;
 using VMTS.Service.Exceptions;
@@ -8,14 +7,10 @@ namespace VMTS.API.Middlewares;
 public class ExceptionMiddleware : IMiddleware
 {
     private readonly ILogger _logger;
-    private readonly IHostEnvironment _env;
 
-    /*private readonly RequestDelegate _next;*/
-
-    public ExceptionMiddleware(ILogger<ExceptionMiddleware> logger, IHostEnvironment env)
+    public ExceptionMiddleware(ILogger<ExceptionMiddleware> logger)
     {
         _logger = logger;
-        _env = env;
     }
 
     public async Task InvokeAsync(HttpContext context, RequestDelegate next)
@@ -34,6 +29,7 @@ public class ExceptionMiddleware : IMiddleware
         }
         catch (Exception ex)
         {
+            _logger.LogError(ex, "{message}", ex.Message);
             var responseBodyV2 = new ApiExceptionResponse(ex.Message, ex.StackTrace?.ToString());
 
             context.Response.StatusCode = StatusCodes.Status500InternalServerError;

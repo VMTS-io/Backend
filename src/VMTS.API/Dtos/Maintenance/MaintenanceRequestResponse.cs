@@ -1,5 +1,5 @@
+using VMTS.API.Dtos.Vehicles;
 using VMTS.Core.Entities.Maintenace;
-using VMTS.Core.Entities.Vehicle_Aggregate;
 
 namespace VMTS.API.Dtos.Maintenance;
 
@@ -14,5 +14,5 @@ public class MaintenanceRequestResponse
     /*public BusinessUser Manager { get; set; }*/
     /*public BusinessUser Mechanic { get; set; }*/
 
-    public Vehicle Vehicle { get; set; }
+    public VehicleListDto Vehicle { get; set; }
 }
