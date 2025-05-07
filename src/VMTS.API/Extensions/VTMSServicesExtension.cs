@@ -1,8 +1,8 @@
-﻿using System.Reflection;
-using System.Text.Json.Serialization;
+﻿using System.Text.Json.Serialization;
 using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using VMTS.API.Controllers;
 using VMTS.API.Errors;
 using VMTS.API.GlobalExceptionHnadler;
 using VMTS.API.Helpers;
@@ -65,6 +65,7 @@ public static class VTMSServicesExtension
             );
         });
 
+        services.AddAutoMapper(typeof(MappingProfile));
         services.AddScoped<IUnitOfWork, UnitOfWork>();
         services.AddScoped<IAuthService, AuthService>();
         services.AddScoped<IReportService, ReportService>();
@@ -72,7 +73,7 @@ public static class VTMSServicesExtension
         services.AddScoped<IMaintenanceRequestServices, MaintenanceRequestServices>();
         services.AddScoped<IVehicleSerivces, VehicleServices>();
         services.AddScoped<IUserService, UserService>();
-        services.AddAutoMapper(typeof(MappingProfile));
+        services.AddScoped<IVehicleModelServices, VehicleModelServices>();
         services.AddScoped<IVehicleCategoryServices, VehicleCategoryServices>();
 
         return services;

@@ -1,4 +1,3 @@
-using VMTS.Core.Entities;
 using VMTS.Core.Entities.Vehicle_Aggregate;
 using VMTS.Core.Interfaces.Repositories;
 using VMTS.Core.Interfaces.Services;
@@ -11,26 +10,28 @@ namespace VMTS.Service.Services;
 public class VehicleServices : IVehicleSerivces
 {
     private readonly IUnitOfWork _unitOfWork;
-    private readonly IGenericRepository<Vehicle> _repo;
+    private readonly IGenericRepository<Vehicle> _vehicleRepo;
+    private readonly IGenericRepository<VehicleModel> _vehicleModelRepo;
 
     public VehicleServices(IUnitOfWork unitOfWork)
     {
         _unitOfWork = unitOfWork;
-        _repo = _unitOfWork.GetRepo<Vehicle>();
+        _vehicleRepo = _unitOfWork.GetRepo<Vehicle>();
+        _vehicleModelRepo = _unitOfWork.GetRepo<VehicleModel>();
     }
 
     #region Create
     public async Task<Vehicle> CreateVehicleAsync(Vehicle vehicle)
     {
-        if (!await IsExsistAsync<VehicleModel>(vehicle.ModelId))
+        if (!_vehicleModelRepo.Exist(vehicle.ModelId))
             throw new NotFoundException("Model Not Found");
 
-        await _repo.CreateAsync(vehicle);
+        await _vehicleRepo.CreateAsync(vehicle);
         await _unitOfWork.SaveChanges();
 
         var spec = new VehicleIncludesSpecification(vehicle.Id);
         var returnVehicle =
-            await _repo.GetByIdWithSpecificationAsync(spec)
+            await _vehicleRepo.GetByIdWithSpecificationAsync(spec)
             ?? throw new NotFoundException("Vehicle Not Found");
         return returnVehicle;
     }
@@ -39,16 +40,10 @@ public class VehicleServices : IVehicleSerivces
     #region Delete
     public async Task<bool> DeleteVehicleAsync(string id)
     {
-        var vehicle = await _repo.GetByIdAsync(id) ?? throw new Exception("Vehicle Not Found");
-        try
-        {
-            _repo.Delete(vehicle);
-            await _unitOfWork.SaveChanges();
-        }
-        catch
-        {
-            return false;
-        }
+        var vehicle =
+            await _vehicleRepo.GetByIdAsync(id) ?? throw new Exception("Vehicle Not Found");
+        _vehicleRepo.Delete(vehicle);
+        await _unitOfWork.SaveChanges();
         return true;
     }
     #endregion
@@ -58,7 +53,7 @@ public class VehicleServices : IVehicleSerivces
     {
         var spec = new VehicleIncludesSpecification(id);
         var vehicle =
-            await _repo.GetByIdWithSpecificationAsync(spec)
+            await _vehicleRepo.GetByIdWithSpecificationAsync(spec)
             ?? throw new NotFoundException("Vehicle Not Found");
         return vehicle;
     }
@@ -68,7 +63,7 @@ public class VehicleServices : IVehicleSerivces
     public async Task<IReadOnlyList<Vehicle>> GetAllVehiclesAsync(VehicleSpecParams specParams)
     {
         var spec = new VehicleIncludesSpecification(specParams);
-        var vehicles = await _repo.GetAllWithSpecificationAsync(spec);
+        var vehicles = await _vehicleRepo.GetAllWithSpecificationAsync(spec);
         return vehicles;
     }
     #endregion
@@ -76,23 +71,17 @@ public class VehicleServices : IVehicleSerivces
     #region Update
     public async Task<Vehicle> UpdateVehicleAsync(Vehicle vehicle)
     {
-        if (!await IsExsistAsync<Vehicle>(vehicle.Id))
+        if (!_vehicleRepo.Exist(vehicle.Id))
             throw new NotFoundException("Vehicle Not Found");
-        if (!await IsExsistAsync<VehicleCategory>(vehicle.ModelId))
+        if (!_vehicleModelRepo.Exist(vehicle.ModelId))
             throw new NotFoundException("Model Not Found");
 
-        _repo.Update(vehicle);
+        _vehicleRepo.Update(vehicle);
         await _unitOfWork.SaveChanges();
 
         var spec = new VehicleIncludesSpecification(vehicle.Id);
-        var returnVehicle = await _repo.GetByIdWithSpecificationAsync(spec);
+        var returnVehicle = await _vehicleRepo.GetByIdWithSpecificationAsync(spec);
         return returnVehicle!;
     }
     #endregion
-
-    public async Task<bool> IsExsistAsync<T>(string id)
-        where T : BaseEntity
-    {
-        return await _unitOfWork.GetRepo<T>().GetByIdAsync(id) is not null;
-    }
 }
