@@ -63,4 +63,9 @@ public class GenericRepository<T> : IGenericRepository<T>
     {
         return SpecificationElvaluator<T>.BuildQuery(_dbContext.Set<T>(), specs);
     }
+
+    public bool Exist(string id)
+    {
+        return _dbContext.Set<T>().Any(entity => entity.Id == id);
+    }
 }

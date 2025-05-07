@@ -14,4 +14,5 @@ public interface IGenericRepository<T>
     Task<IReadOnlyList<T>> GetAllWithSpecificationAsync(ISpecification<T> specs);
     Task<T?> GetByIdWithSpecificationAsync(ISpecification<T> specs);
     Task<int> GetCountAsync(ISpecification<T> specs);
+    bool Exist(string id);
 }

@@ -5,12 +5,8 @@ namespace VMTS.Core.Interfaces.UnitOfWork;
 
 public interface IUnitOfWork : IAsyncDisposable
 {
-    Task SaveChanges();
+    Task<int> SaveChanges();
 
     IGenericRepository<T> GetRepo<T>()
         where T : BaseEntity;
-    
-    public Task<int> CompleteAsync();
-    
-
 }
