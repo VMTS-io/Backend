@@ -2,11 +2,11 @@ namespace VMTS.API.Dtos.Vehicles.Model;
 
 public class VehicleModelCreateDto
 {
-    public string Name { get; set; }
+    public string Name { get; set; } = default!;
 
-    public DateTime Year { get; set; }
+    public string Manufacturer { get; set; } = default!;
 
-    public string Manufacturer { get; set; }
+    public string FuelEfficiency { get; set; } = default!;
 
-    public string FuelEfficiency { get; set; }
+    public string CategoryId { get; set; } = default!;
 }

@@ -6,14 +6,14 @@ public class VehicleIncludesSpecification : BaseSpecification<Vehicle>
 {
     private void ApplyIncludes()
     {
-        Includes.Add(v => v.VehicleCategory);
-        Includes.Add(v => v.VehicleModel);
+        // Includes.Add(v => v.VehicleModel);
+        IncludeStrings.Add($"{nameof(VehicleModel)}.{nameof(VehicleModel.Category)}");
     }
 
     private void ApplyAllIncludes()
     {
-        Includes.Add(v => v.VehicleCategory);
-        Includes.Add(v => v.VehicleModel);
+        IncludeStrings.Add($"{nameof(VehicleModel)}.{nameof(VehicleModel.Category)}");
+        // Includes.Add(v => v.VehicleModel);
         Includes.Add(v => v.TripRequests);
         Includes.Add(v => v.TripReports);
         Includes.Add(v => v.MaintenaceReports);
@@ -41,9 +41,6 @@ public class VehicleIncludesSpecification : BaseSpecification<Vehicle>
                     specParams.Search,
                     StringComparison.CurrentCultureIgnoreCase
                 )
-            )
-            && (
-                string.IsNullOrEmpty(specParams.CategoryId) || v.CategoryId == specParams.CategoryId
             )
             && (string.IsNullOrEmpty(specParams.ModelId) || v.ModelId == specParams.ModelId)
         )

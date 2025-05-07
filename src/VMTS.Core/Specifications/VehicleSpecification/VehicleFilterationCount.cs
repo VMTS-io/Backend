@@ -20,9 +20,6 @@ public class VehicleFilterationCount : BaseSpecification<Vehicle>
                     StringComparison.CurrentCultureIgnoreCase
                 )
             )
-            && (
-                string.IsNullOrEmpty(specParams.CategoryId) || v.CategoryId == specParams.CategoryId
-            )
             && (string.IsNullOrEmpty(specParams.ModelId) || v.ModelId == specParams.ModelId)
         ) { }
 }

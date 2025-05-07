@@ -22,8 +22,6 @@ public class VehicleServices : IVehicleSerivces
     #region Create
     public async Task<Vehicle> CreateVehicleAsync(Vehicle vehicle)
     {
-        if (!await IsExsistAsync<VehicleCategory>(vehicle.CategoryId))
-            throw new NotFoundException("Categroy Not Found");
         if (!await IsExsistAsync<VehicleModel>(vehicle.ModelId))
             throw new NotFoundException("Model Not Found");
 
@@ -80,8 +78,6 @@ public class VehicleServices : IVehicleSerivces
     {
         if (!await IsExsistAsync<Vehicle>(vehicle.Id))
             throw new NotFoundException("Vehicle Not Found");
-        if (!await IsExsistAsync<VehicleCategory>(vehicle.CategoryId))
-            throw new NotFoundException("Categroy Not Found");
         if (!await IsExsistAsync<VehicleCategory>(vehicle.ModelId))
             throw new NotFoundException("Model Not Found");
 

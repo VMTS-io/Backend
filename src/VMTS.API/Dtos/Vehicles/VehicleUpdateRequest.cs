@@ -4,9 +4,9 @@ namespace VMTS.API.Dtos.Vehicles;
 
 public class VehicleUpdateRequest
 {
-    public string PalletNumber { get; set; }
+    public string PalletNumber { get; set; } = default!;
 
-    public DateTime JoindYear { get; set; }
+    public DateOnly JoindYear { get; set; }
 
     public FuelType FuelType { get; set; }
 
@@ -14,7 +14,8 @@ public class VehicleUpdateRequest
 
     public VehicleStatus Status { get; set; }
 
-    public string ModelId { get; set; }
+    public string ModelId { get; set; } = default!;
 
-    public string CategoryId { get; set; }
+    public DateOnly ModelYear { get; set; }
+    // public string CategoryId { get; set; }
 }

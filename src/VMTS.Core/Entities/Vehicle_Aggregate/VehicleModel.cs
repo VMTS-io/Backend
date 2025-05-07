@@ -2,14 +2,15 @@
 
 public class VehicleModel : BaseEntity
 {
-    public string Name { get; set; }
+    public string Name { get; set; } = default!;
 
-    public DateTime Year { get; set; }
+    public string Manufacturer { get; set; } = default!;
 
-    public string Manufacturer { get; set; }
+    public string FuelEfficiency { get; set; } = default!;
 
-    public string FuelEfficiency { get; set; }
+    public string CategoryId { get; set; } = default!;
 
-    public ICollection<Vehicle> Vehicle { get; set; } = new HashSet<Vehicle>();
+    public VehicleCategory Category { get; set; } = default!;
+
+    public ICollection<Vehicle> Vehicle { get; set; } = [];
 }
-

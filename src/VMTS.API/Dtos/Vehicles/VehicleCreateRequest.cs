@@ -4,15 +4,18 @@ namespace VMTS.API.Dtos.Vehicles;
 
 public class VehicleCreateRequest
 {
-    public string PalletNumber { get; set; }
+    public string PalletNumber { get; set; } = default!;
 
-    public DateTime JoindYear { get; set; }
+    public short JoinedYear { get; set; }
 
     public FuelType FuelType { get; set; }
 
     public int KMDriven { get; set; }
 
-    public string ModelId { get; set; }
+    public VehicleStatus Status { get; set; }
 
-    public string CategoryId { get; set; }
+    public string ModelId { get; set; } = default!;
+
+    public short ModelYear { get; set; }
+    // public string CategoryId { get; set; }=default!;
 }

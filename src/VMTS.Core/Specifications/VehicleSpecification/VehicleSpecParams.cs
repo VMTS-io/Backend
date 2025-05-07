@@ -10,9 +10,7 @@ public class VehicleSpecParams
 
     public int? MaxKMDriven { get; set; }
 
-    public DateTime? MaxJoindYear { get; set; }
-
-    public string? CategoryId { get; set; }
+    public DateOnly? MaxJoindYear { get; set; }
 
     public string? ModelId { get; set; }
 

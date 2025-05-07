@@ -2,13 +2,14 @@ namespace VMTS.API.Dtos.Vehicles;
 
 public class AdminVehicleListDto
 {
-    public string Id { get; set; }
+    public string Id { get; set; } = default!;
 
-    public string Name { get; set; }
+    public string Name { get; set; } = default!;
 
-    public string PalletNumber { get; set; }
+    public string PalletNumber { get; set; } = default!;
 
-    public DateTime JoindYear { get; set; }
+    public DateOnly JoindYear { get; set; }
 
-    public string Category { get; set; }
+    public DateOnly? ModelYear { get; set; }
+    // public string CategoryId { get; set; }=default!;
 }

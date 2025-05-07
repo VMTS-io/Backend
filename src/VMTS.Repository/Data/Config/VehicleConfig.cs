@@ -15,12 +15,6 @@ public class VehicleConfig : IEntityTypeConfiguration<Vehicle>
             .IsRequired();
 
         builder
-            .HasOne(v => v.VehicleCategory)
-            .WithMany(c => c.Vehicle)
-            .HasForeignKey("CategoryId")
-            .IsRequired();
-
-        builder
             .HasMany(v => v.TripRequests)
             .WithOne(t => t.Vehicle)
             .HasForeignKey("VehicleId")
@@ -49,4 +43,3 @@ public class VehicleConfig : IEntityTypeConfiguration<Vehicle>
             .OnDelete(DeleteBehavior.Restrict);
     }
 }
-

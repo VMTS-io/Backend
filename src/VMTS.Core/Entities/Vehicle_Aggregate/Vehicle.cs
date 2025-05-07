@@ -5,9 +5,9 @@ namespace VMTS.Core.Entities.Vehicle_Aggregate;
 
 public class Vehicle : BaseEntity
 {
-    public string PalletNumber { get; set; }
+    public string PalletNumber { get; set; } = default!;
 
-    public DateTime JoindYear { get; set; }
+    public DateOnly JoindYear { get; set; }
 
     public FuelType FuelType { get; set; }
 
@@ -15,17 +15,15 @@ public class Vehicle : BaseEntity
 
     public VehicleStatus Status { get; set; } = VehicleStatus.Active;
 
+    public DateOnly? ModelYear { get; set; }
+
     public DateTime? LastAssignedDate { get; set; } = DateTime.UtcNow;
-    public string ModelId { get; set; }
-    public string CategoryId { get; set; }
 
-    public VehicleModel VehicleModel { get; set; }
-    public VehicleCategory VehicleCategory { get; set; }
+    public string ModelId { get; set; } = default!;
+    public VehicleModel VehicleModel { get; set; } = default!;
 
-    public ICollection<TripRequest> TripRequests { get; set; } = new HashSet<TripRequest>();
-    public ICollection<TripReport> TripReports { get; set; } = new HashSet<TripReport>();
-    public ICollection<MaintenaceReport> MaintenaceReports { get; set; } =
-        new HashSet<MaintenaceReport>();
-    public ICollection<MaintenaceRequest> MaintenaceRequests { get; set; } =
-        new HashSet<MaintenaceRequest>();
+    public ICollection<TripRequest> TripRequests { get; set; } = [];
+    public ICollection<TripReport> TripReports { get; set; } = [];
+    public ICollection<MaintenaceReport> MaintenaceReports { get; set; } = [];
+    public ICollection<MaintenaceRequest> MaintenaceRequests { get; set; } = [];
 }

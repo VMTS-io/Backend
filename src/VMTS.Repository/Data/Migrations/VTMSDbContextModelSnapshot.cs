@@ -17,7 +17,7 @@ namespace VMTS.Repository.Data.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "9.0.0")
+                .HasAnnotation("ProductVersion", "9.0.4")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -114,6 +114,127 @@ namespace VMTS.Repository.Data.Migrations
                     b.HasIndex("VehicleId");
 
                     b.ToTable("TripsRequests");
+                });
+
+            modelBuilder.Entity("VMTS.Core.Entities.Identity.Address", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("AppUserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("Area")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Country")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Governorate")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Street")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AppUserId")
+                        .IsUnique();
+
+                    b.ToTable("Address");
+                });
+
+            modelBuilder.Entity("VMTS.Core.Entities.Identity.AppUser", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("AccessFailedCount")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ConcurrencyStamp")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateOnly>("DateOfBirth")
+                        .HasColumnType("date");
+
+                    b.Property<string>("DisplayName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Email")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("EmailConfirmed")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("FirstName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("LastName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("LockoutEnabled")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTimeOffset?>("LockoutEnd")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<bool>("MustChangePassword")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("NationalId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("NormalizedEmail")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("NormalizedUserName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PasswordHash")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PhoneNumber")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<bool>("PhoneNumberConfirmed")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("PictureUrl")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("SecurityStamp")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("TwoFactorEnabled")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("UserName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("NationalId")
+                        .IsUnique();
+
+                    b.HasIndex("PhoneNumber")
+                        .IsUnique()
+                        .HasFilter("[PhoneNumber] IS NOT NULL");
+
+                    b.ToTable("AppUser");
                 });
 
             modelBuilder.Entity("VMTS.Core.Entities.Maintenace.MaintenaceCategory", b =>
@@ -333,15 +454,11 @@ namespace VMTS.Repository.Data.Migrations
                     b.Property<string>("Id")
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("CategoryId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
                     b.Property<int>("FuelType")
                         .HasColumnType("int");
 
-                    b.Property<DateTime>("JoindYear")
-                        .HasColumnType("datetime2");
+                    b.Property<DateOnly>("JoindYear")
+                        .HasColumnType("date");
 
                     b.Property<int>("KMDriven")
                         .HasColumnType("int");
@@ -353,6 +470,9 @@ namespace VMTS.Repository.Data.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
+                    b.Property<DateOnly?>("ModelYear")
+                        .HasColumnType("date");
+
                     b.Property<string>("PalletNumber")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -361,8 +481,6 @@ namespace VMTS.Repository.Data.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("CategoryId");
 
                     b.HasIndex("ModelId");
 
@@ -392,6 +510,10 @@ namespace VMTS.Repository.Data.Migrations
                     b.Property<string>("Id")
                         .HasColumnType("nvarchar(450)");
 
+                    b.Property<string>("CategoryId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
                     b.Property<string>("FuelEfficiency")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -404,10 +526,9 @@ namespace VMTS.Repository.Data.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("Year")
-                        .HasColumnType("datetime2");
-
                     b.HasKey("Id");
+
+                    b.HasIndex("CategoryId");
 
                     b.ToTable("Models");
                 });
@@ -464,6 +585,15 @@ namespace VMTS.Repository.Data.Migrations
                     b.Navigation("Manager");
 
                     b.Navigation("Vehicle");
+                });
+
+            modelBuilder.Entity("VMTS.Core.Entities.Identity.Address", b =>
+                {
+                    b.HasOne("VMTS.Core.Entities.Identity.AppUser", null)
+                        .WithOne("Address")
+                        .HasForeignKey("VMTS.Core.Entities.Identity.Address", "AppUserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("VMTS.Core.Entities.Maintenace.MaintenaceReport", b =>
@@ -533,26 +663,35 @@ namespace VMTS.Repository.Data.Migrations
 
             modelBuilder.Entity("VMTS.Core.Entities.Vehicle_Aggregate.Vehicle", b =>
                 {
-                    b.HasOne("VMTS.Core.Entities.Vehicle_Aggregate.VehicleCategory", "VehicleCategory")
-                        .WithMany("Vehicle")
-                        .HasForeignKey("CategoryId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("VMTS.Core.Entities.Vehicle_Aggregate.VehicleModel", "VehicleModel")
                         .WithMany("Vehicle")
                         .HasForeignKey("ModelId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("VehicleCategory");
-
                     b.Navigation("VehicleModel");
+                });
+
+            modelBuilder.Entity("VMTS.Core.Entities.Vehicle_Aggregate.VehicleModel", b =>
+                {
+                    b.HasOne("VMTS.Core.Entities.Vehicle_Aggregate.VehicleCategory", "Category")
+                        .WithMany("VehicleModels")
+                        .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Category");
                 });
 
             modelBuilder.Entity("TripRequest", b =>
                 {
                     b.Navigation("FaultReports");
+                });
+
+            modelBuilder.Entity("VMTS.Core.Entities.Identity.AppUser", b =>
+                {
+                    b.Navigation("Address")
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("VMTS.Core.Entities.User_Business.BusinessUser", b =>
@@ -585,7 +724,7 @@ namespace VMTS.Repository.Data.Migrations
 
             modelBuilder.Entity("VMTS.Core.Entities.Vehicle_Aggregate.VehicleCategory", b =>
                 {
-                    b.Navigation("Vehicle");
+                    b.Navigation("VehicleModels");
                 });
 
             modelBuilder.Entity("VMTS.Core.Entities.Vehicle_Aggregate.VehicleModel", b =>

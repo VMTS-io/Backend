@@ -1,6 +1,5 @@
 using VMTS.API.Dtos.Maintenance;
 using VMTS.API.Dtos.Trip;
-using VMTS.API.Dtos.Vehicles.Category;
 using VMTS.API.Dtos.Vehicles.Model;
 using VMTS.Core.Entities.Vehicle_Aggregate;
 
@@ -8,9 +7,9 @@ namespace VMTS.API.Dtos.Vehicles;
 
 public class VehicleDetailsDto
 {
-    public string PalletNumber { get; set; }
+    public string PalletNumber { get; set; } = default!;
 
-    public DateTime JoindYear { get; set; }
+    public DateOnly JoindYear { get; set; }
 
     public FuelType FuelType { get; set; }
 
@@ -18,16 +17,17 @@ public class VehicleDetailsDto
 
     public VehicleStatus Status { get; set; } = VehicleStatus.Active;
 
-    public VehicleModelDto VehicleModel { get; set; }
+    public VehicleModelDto VehicleModel { get; set; } = default!;
 
-    public VehicleCategoryDto VehicleCategory { get; set; }
+    public DateOnly? ModelYear { get; set; }
 
-    public ICollection<TripRequestDto> TripRequests { get; set; } = new HashSet<TripRequestDto>();
+    // public VehicleCategoryDto VehicleCategory { get; set; }
 
-    public ICollection<TripReportDto> TripReports { get; set; } = new HashSet<TripReportDto>();
+    public ICollection<TripRequestDto> TripRequests { get; set; } = [];
 
-    public ICollection<MaintenanceReportDto> MaintenaceReports { get; set; } =
-        new HashSet<MaintenanceReportDto>();
-    public ICollection<VehicleMaintenanceRequestDto> MaintenaceRequests { get; set; } =
-        new HashSet<VehicleMaintenanceRequestDto>();
+    public ICollection<TripReportDto> TripReports { get; set; } = [];
+
+    public ICollection<MaintenanceReportDto> MaintenaceReports { get; set; } = [];
+
+    public ICollection<VehicleMaintenanceRequestDto> MaintenaceRequests { get; set; } = [];
 }
