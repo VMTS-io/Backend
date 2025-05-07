@@ -46,7 +46,7 @@ public class MappingProfile : Profile
                 dest => dest.Name,
                 opt =>
                     opt.MapFrom(src =>
-                        $"{src.VehicleModel.Manufacturer} {src.VehicleModel.Name} {src.ModelYear}"
+                        $"{src.VehicleModel.Manufacturer} {src.VehicleModel.Name} {src.ModelYear.Year}"
                     )
             )
             .ForMember(dest => dest.ModelYear, opt => opt.MapFrom(src => src.ModelYear.Year));
