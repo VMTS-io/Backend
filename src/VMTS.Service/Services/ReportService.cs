@@ -59,7 +59,7 @@ public class ReportService : IReportService
         };
 
         await _unitOfWork.GetRepo<FaultReport>().CreateAsync(faultReport);
-        var result = await _unitOfWork.CompleteAsync();
+        var result = await _unitOfWork.SaveChanges();
 
         return result > 0 ? faultReport : null;
     }

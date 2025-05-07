@@ -67,9 +67,8 @@ public class TripRequestService : ITripRequestService
 
         // Save to database
         await _unitOfWork.GetRepo<TripRequest>().CreateAsync(tripRequest);
-        var result = await _unitOfWork.CompleteAsync();
+        var result = await _unitOfWork.SaveChanges();
 
         return result > 0 ? tripRequest : null;
     }
 }
-

@@ -12,7 +12,7 @@ public class VehicleFilterationCount : BaseSpecification<Vehicle>
             )
             && (!specParams.Status.HasValue || v.Status == specParams.Status)
             && (!specParams.MaxKMDriven.HasValue || v.KMDriven <= specParams.MaxKMDriven)
-            && (specParams.MaxJoindYear.HasValue || v.JoindYear <= specParams.MaxJoindYear)
+            && (specParams.MaxJoindYear.HasValue || v.JoinedYear <= specParams.MaxJoindYear)
             && (
                 string.IsNullOrEmpty(specParams.Search)
                 || v.PalletNumber.Contains(
