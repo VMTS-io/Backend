@@ -7,7 +7,7 @@ public class Vehicle : BaseEntity
 {
     public string PalletNumber { get; set; } = default!;
 
-    public DateOnly JoindYear { get; set; }
+    public DateOnly JoinedYear { get; set; }
 
     public FuelType FuelType { get; set; }
 
@@ -15,9 +15,9 @@ public class Vehicle : BaseEntity
 
     public VehicleStatus Status { get; set; } = VehicleStatus.Active;
 
-    public DateOnly? ModelYear { get; set; }
+    public DateOnly ModelYear { get; set; }
 
-    public DateTime? LastAssignedDate { get; set; } = DateTime.UtcNow;
+    public DateTime? LastAssignedDate { get; set; }
 
     public string ModelId { get; set; } = default!;
     public VehicleModel VehicleModel { get; set; } = default!;

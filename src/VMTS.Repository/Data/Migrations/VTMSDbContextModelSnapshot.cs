@@ -457,7 +457,7 @@ namespace VMTS.Repository.Data.Migrations
                     b.Property<int>("FuelType")
                         .HasColumnType("int");
 
-                    b.Property<DateOnly>("JoindYear")
+                    b.Property<DateOnly>("JoinedYear")
                         .HasColumnType("date");
 
                     b.Property<int>("KMDriven")
@@ -470,7 +470,7 @@ namespace VMTS.Repository.Data.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<DateOnly?>("ModelYear")
+                    b.Property<DateOnly>("ModelYear")
                         .HasColumnType("date");
 
                     b.Property<string>("PalletNumber")
