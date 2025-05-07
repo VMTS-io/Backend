@@ -13,17 +13,17 @@ public class VehicleController : BaseApiController
 {
     private readonly IVehicleSerivces _services;
     private readonly IMapper _mapper;
-    private readonly IValidator<VehicleCreateRequest> _validator;
+    private readonly IValidator<VehicleUpsertDto> _validator;
 
     public VehicleController(
         IVehicleSerivces services,
         IMapper mapper,
-        IValidator<VehicleCreateRequest> vehicleValidator
+        IValidator<VehicleUpsertDto> validator
     )
     {
         _services = services;
         _mapper = mapper;
-        _validator = vehicleValidator;
+        _validator = validator;
     }
 
     // [ProducesResponseType<IReadOnlyList<VehicleListDto>>(StatusCodes.Status200OK)]
@@ -40,6 +40,7 @@ public class VehicleController : BaseApiController
     // }
 
 
+    #region Get All
     [ProducesResponseType<IReadOnlyList<AdminVehicleListDto>>(StatusCodes.Status200OK)]
     [HttpGet]
     public async Task<ActionResult<IReadOnlyList<AdminVehicleListDto>>> GetAll(
@@ -52,7 +53,9 @@ public class VehicleController : BaseApiController
         );
         return Ok(returnVehicle);
     }
+    #endregion
 
+    #region Get By Id
     [ProducesResponseType<VehicleDetailsDto>(StatusCodes.Status200OK)]
     [ProducesResponseType<ApiErrorResponse>(StatusCodes.Status404NotFound)]
     [HttpGet("{id}")]
@@ -62,22 +65,47 @@ public class VehicleController : BaseApiController
         var mappedVehicle = _mapper.Map<Vehicle, VehicleDetailsDto>(vehicle);
         return Ok(mappedVehicle);
     }
+    #endregion
 
+    #region Create
     [ProducesResponseType<VehicleDetailsDto>(StatusCodes.Status200OK)]
     [ProducesResponseType<ApiErrorResponse>(StatusCodes.Status404NotFound)]
     [HttpPost]
-    public async Task<ActionResult<VehicleDetailsDto>> Create(VehicleCreateRequest vehicle)
+    public async Task<ActionResult<VehicleDetailsDto>> Create(VehicleUpsertDto vehicle)
+    {
+        var validationResult = _validator.Validate(vehicle);
+        if (!validationResult.IsValid)
+            return BadRequest(ValidationProblemDetails(validationResult.ToDictionary()));
+
+        var mappedVehicle = _mapper.Map<VehicleUpsertDto, Vehicle>(vehicle);
+        var tempVehicle = await _services.CreateVehicleAsync(mappedVehicle);
+        var returnVehicle = _mapper.Map<Vehicle, VehicleListDto>(tempVehicle);
+        return Ok(returnVehicle);
+    }
+    #endregion
+
+    #region Update
+    [ProducesResponseType<VehicleDetailsDto>(StatusCodes.Status200OK)]
+    [ProducesResponseType<ApiErrorResponse>(StatusCodes.Status404NotFound)]
+    [HttpPut("{id}")]
+    public async Task<ActionResult<VehicleDetailsDto>> Update(
+        [FromRoute] string id,
+        [FromBody] VehicleUpsertDto vehicle
+    )
     {
         var validationResult = _validator.Validate(vehicle);
         if (!validationResult.IsValid)
             return BadRequest(new HttpValidationProblemDetails(validationResult.ToDictionary()));
 
-        var mappedVehicle = _mapper.Map<VehicleCreateRequest, Vehicle>(vehicle);
-        var tempVehicle = await _services.CreateVehicleAsync(mappedVehicle);
-        var returnVehicle = _mapper.Map<Vehicle, VehicleListDto>(tempVehicle);
+        var mappedVehicle = _mapper.Map<VehicleUpsertDto, Vehicle>(vehicle);
+        mappedVehicle.Id = id;
+        var updatedVehicle = await _services.UpdateVehicleAsync(mappedVehicle);
+        var returnVehicle = _mapper.Map<Vehicle, VehicleDetailsDto>(updatedVehicle);
         return Ok(returnVehicle);
     }
+    #endregion
 
+    #region Delete
     [ProducesResponseType<bool>(StatusCodes.Status200OK)]
     [ProducesResponseType<ApiErrorResponse>(StatusCodes.Status404NotFound)]
     [HttpDelete("{id}")]
@@ -85,23 +113,5 @@ public class VehicleController : BaseApiController
     {
         return Ok(await _services.DeleteVehicleAsync(id));
     }
-
-    [ProducesResponseType<VehicleDetailsDto>(StatusCodes.Status200OK)]
-    [ProducesResponseType<ApiErrorResponse>(StatusCodes.Status404NotFound)]
-    [HttpPut("{id}")]
-    public async Task<ActionResult<VehicleDetailsDto>> Update(
-        [FromRoute] string id,
-        [FromBody] VehicleCreateRequest vehicle
-    )
-    {
-        var validationResult = _validator.Validate(vehicle);
-        if (!validationResult.IsValid)
-            return BadRequest(new HttpValidationProblemDetails(validationResult.ToDictionary()));
-
-        var mappedVehicle = _mapper.Map<VehicleCreateRequest, Vehicle>(vehicle);
-        mappedVehicle.Id = id;
-        var updatedVehicle = await _services.UpdateVehicleAsync(mappedVehicle);
-        var returnVehicle = _mapper.Map<Vehicle, VehicleDetailsDto>(updatedVehicle);
-        return Ok(returnVehicle);
-    }
+    #endregion
 }

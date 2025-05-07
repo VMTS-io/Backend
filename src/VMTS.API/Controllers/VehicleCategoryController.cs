@@ -3,112 +3,87 @@ using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
 using VMTS.API.Dtos.Vehicles.Category;
 using VMTS.API.Errors;
+using VMTS.API.Extensions;
 using VMTS.Core.Entities.Vehicle_Aggregate;
-using VMTS.Core.Interfaces.Repositories;
-using VMTS.Core.Interfaces.UnitOfWork;
+using VMTS.Core.Interfaces.Services;
 
 namespace VMTS.API.Controllers;
 
 [Tags("Vehicle/Category")]
 [Route("api/Vehicle/Category")]
-[ApiController]
-public class VehicleCategoryController : ControllerBase
+public class VehicleCategoryController : BaseApiController
 {
-    private readonly IUnitOfWork _unitOfWork;
     private readonly IMapper _mapper;
-    private readonly IValidator<VehicleCategoryCreateDto> _validator;
-    private readonly IGenericRepository<VehicleCategory> _repo;
+    private readonly IValidator<VehicleCategoryUpsertDto> _validator;
+    private readonly IVehicleCategoryServices _services;
 
     public VehicleCategoryController(
-        IUnitOfWork unitOfWork,
         IMapper mapper,
-        IValidator<VehicleCategoryCreateDto> validator
+        IValidator<VehicleCategoryUpsertDto> validator,
+        IVehicleCategoryServices services
     )
     {
-        _unitOfWork = unitOfWork;
         _mapper = mapper;
         _validator = validator;
-        _repo = _unitOfWork.GetRepo<VehicleCategory>();
+        _services = services;
     }
 
     [ProducesResponseType<VehicleCategoryDto>(StatusCodes.Status200OK)]
     [ProducesResponseType<ApiErrorResponse>(StatusCodes.Status404NotFound)]
     [HttpPost]
-    public async Task<ActionResult<VehicleCategoryDto>> Create(
-        VehicleCategoryCreateDto vehilceModel
-    )
+    public async Task<ActionResult<VehicleCategoryDto>> Create(VehicleCategoryUpsertDto createDto)
     {
-        var validatorResult = _validator.Validate(vehilceModel);
-        if (validatorResult.IsValid)
-            return BadRequest(new HttpValidationProblemDetails(validatorResult.ToDictionary()));
-        var mappedVehicleModel = _mapper.Map<VehicleCategoryCreateDto, VehicleCategory>(
-            vehilceModel
-        );
-        await _repo.CreateAsync(mappedVehicleModel);
-        await _unitOfWork.SaveChanges();
-        var eturnVehicleModel = await _repo.GetByIdAsync(mappedVehicleModel.Id);
-        if (eturnVehicleModel is null)
-            return NotFound(new ApiErrorResponse(404));
-        var returnVehilceModel = _mapper.Map<VehicleCategory, VehicleCategoryDto>(
-            eturnVehicleModel
-        );
-        return Ok(returnVehilceModel);
+        var validationResult = _validator.Validate(createDto);
+        if (!validationResult.IsValid)
+            return BadRequest(ValidationProblemDetails(validationResult.ToDictionary()));
+
+        var vehicleCategory = _mapper.Map<VehicleCategoryUpsertDto, VehicleCategory>(createDto);
+        vehicleCategory = await _services.CreateVehicleCategoryAsync(vehicleCategory);
+
+        var categoryDto = _mapper.Map<VehicleCategory, VehicleCategoryDto>(vehicleCategory);
+        return Ok(categoryDto);
     }
 
     [ProducesResponseType<IReadOnlyList<VehicleCategoryDto>>(StatusCodes.Status200OK)]
     [HttpGet]
     public async Task<ActionResult<IReadOnlyList<VehicleCategoryDto>>> GetAll()
     {
-        var allVehicleModels = await _repo.GetAllAsync();
-        var returnVehicleList = _mapper.Map<
+        var vehicleCategoryList = await _services.GetAllVehicleCategoryAsync();
+        var vehicleCategoryDtoList = _mapper.Map<
             IReadOnlyList<VehicleCategory>,
             IReadOnlyList<VehicleCategoryDto>
-        >(allVehicleModels);
-        return Ok(returnVehicleList);
+        >(vehicleCategoryList);
+        return Ok(vehicleCategoryDtoList);
     }
 
     [ProducesResponseType<VehicleCategoryDto>(StatusCodes.Status200OK)]
     [ProducesResponseType<ApiErrorResponse>(StatusCodes.Status404NotFound)]
     [HttpPut("{id}")]
-    public async Task<ActionResult<VehicleCategoryDto>> Edit(
+    public async Task<ActionResult<VehicleCategoryDto>> Update(
         [FromRoute] string id,
-        [FromBody] VehicleCategoryCreateDto model
+        [FromBody] VehicleCategoryUpsertDto updateDto
     )
     {
-        var mappedCategory = _mapper.Map<VehicleCategoryCreateDto, VehicleCategory>(model);
-        var vehicleCategory = await _repo.GetByIdAsync(id);
-        if (vehicleCategory is null)
-            return BadRequest(
-                new ApiErrorResponse(
-                    StatusCodes.Status404NotFound,
-                    $"Veicle Model Not Found With Id {id}"
-                )
-            );
-        mappedCategory.Id = id;
-        _repo.Update(mappedCategory);
-        await _unitOfWork.SaveChanges();
-        vehicleCategory = await _repo.GetByIdAsync(id);
-        var returnVehicleCategory = _mapper.Map<VehicleCategory, VehicleCategoryDto>(
-            vehicleCategory!
-        );
-        return Ok(returnVehicleCategory!);
+        var validationResult = _validator.Validate(updateDto);
+        if (!validationResult.IsValid)
+            return BadRequest(ValidationProblemDetails(validationResult.ToDictionary()));
+
+        var vehicleCategory = _mapper.Map<VehicleCategoryUpsertDto, VehicleCategory>(updateDto);
+        vehicleCategory.Id = id;
+        vehicleCategory = await _services.UpdateVehicleCategory(vehicleCategory);
+        var vehicleCategoryDto = _mapper.Map<VehicleCategory, VehicleCategoryDto>(vehicleCategory!);
+        return Ok(vehicleCategoryDto);
     }
 
     [ProducesResponseType<bool>(StatusCodes.Status200OK)]
     [ProducesResponseType<ApiErrorResponse>(StatusCodes.Status404NotFound)]
     [HttpDelete("{id}")]
-    public async Task<ActionResult<bool>> Delete(string id)
+    public async Task<ActionResult> Delete(string id)
     {
-        var vehicleCategory = await _repo.GetByIdAsync(id);
-        if (vehicleCategory is null)
-            return BadRequest(
-                new ApiErrorResponse(
-                    StatusCodes.Status404NotFound,
-                    $"Veicle Model Not Found With Id {id}"
-                )
-            );
-        _repo.Delete(vehicleCategory);
-        await _unitOfWork.SaveChanges();
-        return true;
+        await _services.DeleteVehicleCategory(id);
+        return Ok();
     }
 }
+/*
+ *
+ * */

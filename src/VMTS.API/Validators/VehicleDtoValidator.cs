@@ -3,7 +3,7 @@ using VMTS.API.Dtos.Vehicles;
 
 namespace VMTS.API.Validators
 {
-    public class VehicleDtoValidator : AbstractValidator<VehicleCreateRequest>
+    public class VehicleDtoValidator : AbstractValidator<VehicleUpsertDto>
     {
         public VehicleDtoValidator()
         {

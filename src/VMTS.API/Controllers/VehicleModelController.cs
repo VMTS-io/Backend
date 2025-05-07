@@ -4,88 +4,59 @@ using Microsoft.AspNetCore.Mvc;
 using VMTS.API.Dtos.Vehicles.Model;
 using VMTS.API.Errors;
 using VMTS.Core.Entities.Vehicle_Aggregate;
-using VMTS.Core.Interfaces.Repositories;
-using VMTS.Core.Interfaces.UnitOfWork;
-using VMTS.Core.Specifications.VehicleSpecification.VehicleModelSpecification;
+using VMTS.Core.Interfaces.Services;
 
 namespace VMTS.API.Controllers;
 
 [Tags("Vehicle/Models")]
 [Route("api/Vehicle/Model")]
-[ApiController]
-public class VehicleModelController : ControllerBase
+public class VehicleModelController : BaseApiController
 {
-    private readonly IUnitOfWork _unitOfWork;
     private readonly IMapper _mapper;
-    private readonly IValidator<VehicleModelCreateDto> _validator;
-    private readonly IGenericRepository<VehicleModel> _repo;
+    private readonly IValidator<VehicleModelUpsertDto> _validator;
+    private readonly IVehicleModelServices _services;
 
     public VehicleModelController(
-        IUnitOfWork unitOfWork,
         IMapper mapper,
-        IValidator<VehicleModelCreateDto> validator
+        IValidator<VehicleModelUpsertDto> validator,
+        IVehicleModelServices services
     )
     {
-        _unitOfWork = unitOfWork;
         _mapper = mapper;
         _validator = validator;
-        _repo = _unitOfWork.GetRepo<VehicleModel>();
+        _services = services;
     }
 
     [ProducesResponseType<VehicleModelDto>(StatusCodes.Status200OK)]
     [ProducesResponseType<ApiErrorResponse>(StatusCodes.Status404NotFound)]
     [HttpPost]
-    public async Task<ActionResult<VehicleModelDto>> Create(VehicleModelCreateDto vehicleModel)
+    public async Task<ActionResult<VehicleModelDto>> Create(VehicleModelUpsertDto createDto)
     {
-        var validatorResult = _validator.Validate(vehicleModel);
-        if (validatorResult.IsValid)
-            return BadRequest(new HttpValidationProblemDetails(validatorResult.ToDictionary()));
-        var mappedVehicleModel = _mapper.Map<VehicleModelCreateDto, VehicleModel>(vehicleModel);
+        var validationResult = _validator.Validate(createDto);
+        if (!validationResult.IsValid)
+            return BadRequest(ValidationProblemDetails(validationResult.ToDictionary()));
 
-        var vehicleCategory = await _unitOfWork
-            .GetRepo<VehicleCategory>()
-            .GetByIdAsync(vehicleModel.CategoryId);
-
-        if (vehicleCategory is null)
-            return NotFound(new ApiErrorResponse(404, "Vehicle Category Not Found"));
-        await _repo.CreateAsync(mappedVehicleModel);
-        await _unitOfWork.SaveChanges();
-        var eturnVehicleModel = await _repo.GetByIdAsync(mappedVehicleModel.Id);
-        if (eturnVehicleModel is null)
-            return NotFound(new ApiErrorResponse(404));
-        var returnVehilceModel = _mapper.Map<VehicleModel, VehicleModelDto>(eturnVehicleModel);
-        return Ok(returnVehilceModel);
+        var vehicleModel = _mapper.Map<VehicleModelUpsertDto, VehicleModel>(createDto);
+        vehicleModel = await _services.CreateVehicleModelAsync(vehicleModel);
+        var vehilceModelDto = _mapper.Map<VehicleModel, VehicleModelDto>(vehicleModel);
+        return Ok(vehilceModelDto);
     }
 
     [ProducesResponseType<VehicleModelDto>(StatusCodes.Status200OK)]
     [ProducesResponseType<ApiErrorResponse>(StatusCodes.Status404NotFound)]
     [HttpPut("{id}")]
-    public async Task<ActionResult<VehicleModelDto>> Edit(
+    public async Task<ActionResult<VehicleModelDto>> Update(
         [FromRoute] string id,
-        [FromBody] VehicleModelCreateDto model
+        [FromBody] VehicleModelUpsertDto UpdateDto
     )
     {
-        var validatorResult = _validator.Validate(model);
-        if (validatorResult.IsValid)
-            return BadRequest(new HttpValidationProblemDetails(validatorResult.ToDictionary()));
-        var mappedModel = _mapper.Map<VehicleModelCreateDto, VehicleModel>(model);
-        var vehicleCategory = await _unitOfWork
-            .GetRepo<VehicleCategory>()
-            .GetByIdAsync(model.CategoryId);
-        if (vehicleCategory is null)
-            return NotFound(new ApiErrorResponse(404, "Vehicle Category Not Found"));
-        var vehicleModel = await _repo.GetByIdAsync(id);
-        if (vehicleModel is null)
-            return BadRequest(
-                new ApiErrorResponse(
-                    StatusCodes.Status404NotFound,
-                    $"Veicle Model Not Found With Id {id}"
-                )
-            );
-        mappedModel.Id = id;
-        _repo.Update(mappedModel);
-        await _unitOfWork.SaveChanges();
-        vehicleModel = await _repo.GetByIdAsync(id);
+        var validationResult = _validator.Validate(UpdateDto);
+        if (!validationResult.IsValid)
+            return BadRequest(ValidationProblemDetails(validationResult.ToDictionary()));
+
+        var vehicleModel = _mapper.Map<VehicleModelUpsertDto, VehicleModel>(UpdateDto);
+        vehicleModel.Id = id;
+        vehicleModel = await _services.UpdateVehicleModelAsync(vehicleModel);
         var returnVehicleModel = _mapper.Map<VehicleModel, VehicleModelDto>(vehicleModel!);
         return Ok(returnVehicleModel!);
     }
@@ -93,31 +64,21 @@ public class VehicleModelController : ControllerBase
     [ProducesResponseType<bool>(StatusCodes.Status200OK)]
     [ProducesResponseType<ApiErrorResponse>(StatusCodes.Status404NotFound)]
     [HttpDelete("{id}")]
-    public async Task<ActionResult<bool>> Delete(string id)
+    public async Task<ActionResult> Delete(string id)
     {
-        var vehicleModel = await _repo.GetByIdAsync(id);
-        if (vehicleModel is null)
-            return BadRequest(
-                new ApiErrorResponse(
-                    StatusCodes.Status404NotFound,
-                    $"Veicle Model Not Found With Id {id}"
-                )
-            );
-        _repo.Delete(vehicleModel);
-        await _unitOfWork.SaveChanges();
-        return true;
+        await _services.DeleteVehicleModelAsync(id);
+        return Ok();
     }
 
     [ProducesResponseType<IReadOnlyList<VehicleModelDto>>(StatusCodes.Status200OK)]
     [HttpGet]
     public async Task<ActionResult<IReadOnlyList<VehicleModelDto>>> GetAll()
     {
-        var spec = new VehicleModelSpecification();
-        var allVehicleModels = await _repo.GetAllWithSpecificationAsync(spec);
-        var returnVehicleList = _mapper.Map<
+        var vehicleModelsList = await _services.GetAllVehicleModelsAsync();
+        var VehicleModelDtoList = _mapper.Map<
             IReadOnlyList<VehicleModel>,
             IReadOnlyList<VehicleModelDto>
-        >(allVehicleModels);
-        return Ok(returnVehicleList);
+        >(vehicleModelsList);
+        return Ok(VehicleModelDtoList);
     }
 }
