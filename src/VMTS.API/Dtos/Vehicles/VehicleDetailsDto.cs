@@ -9,17 +9,17 @@ public class VehicleDetailsDto
 {
     public string PalletNumber { get; set; } = default!;
 
-    public DateOnly JoindYear { get; set; }
+    public DateOnly JoinedYear { get; set; }
+
+    public short ModelYear { get; set; }
 
     public FuelType FuelType { get; set; }
 
     public int KMDriven { get; set; }
 
-    public VehicleStatus Status { get; set; } = VehicleStatus.Active;
+    public VehicleStatus Status { get; set; }
 
     public VehicleModelDto VehicleModel { get; set; } = default!;
-
-    public DateOnly? ModelYear { get; set; }
 
     // public VehicleCategoryDto VehicleCategory { get; set; }
 

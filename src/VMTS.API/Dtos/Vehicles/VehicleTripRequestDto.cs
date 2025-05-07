@@ -9,5 +9,5 @@ public class VehicleTripRequestDto
     public string Destination { get; set; } = default!;
     public DateTime Date { get; set; }
     public TripStatus Status { get; set; }
-    public DateTime? ModelYear { get; set; }
+    public DateTime ModelYear { get; set; }
 }

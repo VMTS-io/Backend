@@ -8,9 +8,9 @@ public class VehicleMaintenanceRequestDto
 
     public string Description { get; set; } = default!;
 
-    public DateTime Date { get; set; } = DateTime.UtcNow;
+    public DateTime Date { get; set; }
 
-    public Status Status { get; set; } = Status.Pending;
+    public Status Status { get; set; }
 
-    public DateTime? ModelYear { get; set; }
+    public DateTime ModelYear { get; set; }
 }

@@ -1,6 +1,6 @@
 namespace VMTS.API.Dtos.Vehicles.Category;
 
-public class VehicleCategoryCreateDto
+public class VehicleCategoryUpsertDto
 {
     public string Name { get; set; } = default!;
 

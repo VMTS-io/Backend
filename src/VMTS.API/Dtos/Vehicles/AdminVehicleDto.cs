@@ -8,8 +8,8 @@ public class AdminVehicleListDto
 
     public string PalletNumber { get; set; } = default!;
 
-    public DateOnly JoindYear { get; set; }
+    public DateOnly JoinedYear { get; set; }
 
-    public DateOnly? ModelYear { get; set; }
+    public short ModelYear { get; set; }
     // public string CategoryId { get; set; }=default!;
 }

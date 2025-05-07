@@ -2,7 +2,7 @@ using VMTS.Core.Entities.Vehicle_Aggregate;
 
 namespace VMTS.API.Dtos.Vehicles;
 
-public class VehicleCreateRequest
+public class VehicleUpsertDto
 {
     public string PalletNumber { get; set; } = default!;
 

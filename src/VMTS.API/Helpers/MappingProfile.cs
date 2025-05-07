@@ -31,34 +31,40 @@ public class MappingProfile : Profile
 
         CreateMap<MaintenanceRequestDto, MaintenaceRequest>();
         CreateMap<MaintenaceRequest, MaintenanceRequestResponse>();
-        CreateMap<VehicleCreateRequest, Vehicle>()
+        CreateMap<VehicleUpsertDto, Vehicle>()
             .ForMember(
                 dest => dest.ModelYear,
                 opt => opt.MapFrom(src => new DateOnly(src.ModelYear, 1, 1))
             )
             .ForMember(
-                dest => dest.JoindYear,
+                dest => dest.JoinedYear,
                 opt => opt.MapFrom(src => new DateOnly(src.JoinedYear, 1, 1))
             );
-        CreateMap<Vehicle, VehicleDetailsDto>();
-        CreateMap<Vehicle, VehicleListDto>();
-        CreateMap<VehicleUpdateRequest, Vehicle>();
+
+        CreateMap<Vehicle, AdminVehicleListDto>()
+            .ForMember(
+                dest => dest.Name,
+                opt =>
+                    opt.MapFrom(src =>
+                        $"{src.VehicleModel.Manufacturer} {src.VehicleModel.Name} {src.ModelYear}"
+                    )
+            )
+            .ForMember(dest => dest.ModelYear, opt => opt.MapFrom(src => src.ModelYear.Year));
+
+        CreateMap<Vehicle, VehicleDetailsDto>()
+            .ForMember(dest => dest.ModelYear, opt => opt.MapFrom(src => src.ModelYear.Year));
+
+        CreateMap<Vehicle, VehicleListDto>()
+            .ForMember(dest => dest.ModelYear, opt => opt.MapFrom(src => src.ModelYear.Year));
+
         CreateMap<VehicleCategory, VehicleCategoryDto>();
-        CreateMap<VehicleCategoryCreateDto, VehicleCategory>();
+        CreateMap<VehicleCategoryUpsertDto, VehicleCategory>();
         CreateMap<VehicleModel, VehicleModelDto>();
-        CreateMap<VehicleModelCreateDto, VehicleModel>();
+        CreateMap<VehicleModelUpsertDto, VehicleModel>();
         CreateMap<TripRequest, TripRequestDto>();
         CreateMap<TripReport, TripReportDto>();
         CreateMap<MaintenaceReport, MaintenanceReportDto>();
         CreateMap<MaintenaceRequest, VehicleMaintenanceRequestDto>();
-        CreateMap<Vehicle, AdminVehicleListDto>()
-            .ForMember(dest => dest.Name, opt => opt.MapFrom(src => FormatVehicleName(src)));
         // .ForMember(dest => dest.Category, opt => opt.MapFrom(src => src.VehicleCategory.Name));
-    }
-
-    private static string FormatVehicleName(Vehicle src)
-    {
-        var year = src.ModelYear?.Year.ToString() ?? "";
-        return $"{src.VehicleModel.Manufacturer} {src.VehicleModel.Name} {year}".Trim();
     }
 }
