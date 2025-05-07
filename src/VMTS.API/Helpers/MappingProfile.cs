@@ -52,13 +52,13 @@ public class MappingProfile : Profile
         CreateMap<MaintenaceReport, MaintenanceReportDto>();
         CreateMap<MaintenaceRequest, VehicleMaintenanceRequestDto>();
         CreateMap<Vehicle, AdminVehicleListDto>()
-            .ForMember(
-                dest => dest.Name,
-                opt =>
-                    opt.MapFrom(src =>
-                        $"{src.VehicleModel.Manufacturer} {src.VehicleModel.Name} {src.ModelYear.Value}"
-                    )
-            );
+            .ForMember(dest => dest.Name, opt => opt.MapFrom(src => FormatVehicleName(src)));
         // .ForMember(dest => dest.Category, opt => opt.MapFrom(src => src.VehicleCategory.Name));
+    }
+
+    private static string FormatVehicleName(Vehicle src)
+    {
+        var year = src.ModelYear?.Year.ToString() ?? "";
+        return $"{src.VehicleModel.Manufacturer} {src.VehicleModel.Name} {year}".Trim();
     }
 }
