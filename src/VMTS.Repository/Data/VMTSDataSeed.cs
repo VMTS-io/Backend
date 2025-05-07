@@ -9,7 +9,7 @@ public static class VMTSDataSeed
     {
         if (!dbContext.Set<Vehicle>().Any())
         {
-            var vehicleText = File.ReadAllText("../../VMTS.Repository/Data/DataSeed/Vehicel.json");
+            var vehicleText = File.ReadAllText("../VMTS.Repository/Data/DataSeed/Vehicle.json");
             var vehicles = JsonSerializer.Deserialize<List<Vehicle>>(vehicleText);
             if (vehicles!.Count > 0)
                 await dbContext.AddRangeAsync(vehicles);

@@ -4,7 +4,5 @@ namespace VMTS.API.Controllers;
 
 [Route("api/[Controller]")]
 [ApiController]
+public class BaseApiController : ControllerBase { }
 
-public class BaseApiController : ControllerBase
-{
-}

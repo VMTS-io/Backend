@@ -1,4 +1,5 @@
 using AutoMapper;
+using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
 using VMTS.API.Dtos.Vehicles;
 using VMTS.API.Errors;
@@ -12,11 +13,17 @@ public class VehicleController : BaseApiController
 {
     private readonly IVehicleSerivces _services;
     private readonly IMapper _mapper;
+    private readonly IValidator<VehicleCreateRequest> _validator;
 
-    public VehicleController(IVehicleSerivces services, IMapper mapper)
+    public VehicleController(
+        IVehicleSerivces services,
+        IMapper mapper,
+        IValidator<VehicleCreateRequest> vehicleValidator
+    )
     {
         _services = services;
         _mapper = mapper;
+        _validator = vehicleValidator;
     }
 
     // [ProducesResponseType<IReadOnlyList<VehicleListDto>>(StatusCodes.Status200OK)]
@@ -61,6 +68,10 @@ public class VehicleController : BaseApiController
     [HttpPost]
     public async Task<ActionResult<VehicleDetailsDto>> Create(VehicleCreateRequest vehicle)
     {
+        var validationResult = _validator.Validate(vehicle);
+        if (!validationResult.IsValid)
+            return BadRequest(new HttpValidationProblemDetails(validationResult.ToDictionary()));
+
         var mappedVehicle = _mapper.Map<VehicleCreateRequest, Vehicle>(vehicle);
         var tempVehicle = await _services.CreateVehicleAsync(mappedVehicle);
         var returnVehicle = _mapper.Map<Vehicle, VehicleListDto>(tempVehicle);
@@ -80,10 +91,14 @@ public class VehicleController : BaseApiController
     [HttpPut("{id}")]
     public async Task<ActionResult<VehicleDetailsDto>> Update(
         [FromRoute] string id,
-        [FromBody] VehicleUpdateRequest vehicle
+        [FromBody] VehicleCreateRequest vehicle
     )
     {
-        var mappedVehicle = _mapper.Map<VehicleUpdateRequest, Vehicle>(vehicle);
+        var validationResult = _validator.Validate(vehicle);
+        if (!validationResult.IsValid)
+            return BadRequest(new HttpValidationProblemDetails(validationResult.ToDictionary()));
+
+        var mappedVehicle = _mapper.Map<VehicleCreateRequest, Vehicle>(vehicle);
         mappedVehicle.Id = id;
         var updatedVehicle = await _services.UpdateVehicleAsync(mappedVehicle);
         var returnVehicle = _mapper.Map<Vehicle, VehicleDetailsDto>(updatedVehicle);

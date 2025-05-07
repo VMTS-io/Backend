@@ -1,4 +1,5 @@
 using AutoMapper;
+using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
 using VMTS.API.Dtos.Vehicles.Category;
 using VMTS.API.Errors;
@@ -15,12 +16,18 @@ public class VehicleCategoryController : ControllerBase
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly IMapper _mapper;
+    private readonly IValidator<VehicleCategoryCreateDto> _validator;
     private readonly IGenericRepository<VehicleCategory> _repo;
 
-    public VehicleCategoryController(IUnitOfWork unitOfWork, IMapper mapper)
+    public VehicleCategoryController(
+        IUnitOfWork unitOfWork,
+        IMapper mapper,
+        IValidator<VehicleCategoryCreateDto> validator
+    )
     {
         _unitOfWork = unitOfWork;
         _mapper = mapper;
+        _validator = validator;
         _repo = _unitOfWork.GetRepo<VehicleCategory>();
     }
 
@@ -31,6 +38,9 @@ public class VehicleCategoryController : ControllerBase
         VehicleCategoryCreateDto vehilceModel
     )
     {
+        var validatorResult = _validator.Validate(vehilceModel);
+        if (validatorResult.IsValid)
+            return BadRequest(new HttpValidationProblemDetails(validatorResult.ToDictionary()));
         var mappedVehicleModel = _mapper.Map<VehicleCategoryCreateDto, VehicleCategory>(
             vehilceModel
         );
