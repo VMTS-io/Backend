@@ -31,7 +31,15 @@ public class MappingProfile : Profile
 
         CreateMap<MaintenanceRequestDto, MaintenaceRequest>();
         CreateMap<MaintenaceRequest, MaintenanceRequestResponse>();
-        CreateMap<Vehicle, VehicleCreateRequest>().ReverseMap();
+        CreateMap<VehicleCreateRequest, Vehicle>()
+            .ForMember(
+                dest => dest.ModelYear,
+                opt => opt.MapFrom(src => new DateOnly(src.ModelYear, 1, 1))
+            )
+            .ForMember(
+                dest => dest.JoindYear,
+                opt => opt.MapFrom(src => new DateOnly(src.JoinedYear, 1, 1))
+            );
         CreateMap<Vehicle, VehicleDetailsDto>();
         CreateMap<Vehicle, VehicleListDto>();
         CreateMap<VehicleUpdateRequest, Vehicle>();
@@ -48,9 +56,9 @@ public class MappingProfile : Profile
                 dest => dest.Name,
                 opt =>
                     opt.MapFrom(src =>
-                        $"{src.VehicleModel.Manufacturer} {src.VehicleModel.Name} {src.VehicleModel.Year.Year}"
+                        $"{src.VehicleModel.Manufacturer} {src.VehicleModel.Name} {src.ModelYear.Value}"
                     )
-            )
-            .ForMember(dest => dest.Category, opt => opt.MapFrom(src => src.VehicleCategory.Name));
+            );
+        // .ForMember(dest => dest.Category, opt => opt.MapFrom(src => src.VehicleCategory.Name));
     }
 }

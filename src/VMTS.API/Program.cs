@@ -1,6 +1,5 @@
 using Scalar.AspNetCore;
 using VMTS.API.Extensions;
-using VMTS.API.Helpers;
 using VMTS.API.Middlewares;
 
 namespace VMTS.API

@@ -1,4 +1,6 @@
-﻿using System.Text.Json.Serialization;
+﻿using System.Reflection;
+using System.Text.Json.Serialization;
+using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using VMTS.API.Errors;
@@ -45,14 +47,22 @@ public static class VTMSServicesExtension
 
                 options.JsonSerializerOptions.MaxDepth = 128;
             });
-
+        services.AddValidatorsFromAssemblyContaining<Program>();
         services.AddCors();
         services.AddOpenApi();
 
         services.AddSingleton<ExceptionMiddleware>();
         services.AddDbContext<VTMSDbContext>(options =>
         {
-            options.UseSqlServer(configuration.GetConnectionString("DefaultDeploymentConnection"));
+            options.UseSqlServer(
+                configuration.GetConnectionString("DefaultDeploymentConnection"),
+                options =>
+                    options.EnableRetryOnFailure(
+                        maxRetryCount: 5,
+                        maxRetryDelay: TimeSpan.FromSeconds(30),
+                        errorNumbersToAdd: null
+                    )
+            );
         });
 
         services.AddScoped<IUnitOfWork, UnitOfWork>();
