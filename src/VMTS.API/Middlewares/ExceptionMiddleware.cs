@@ -1,4 +1,5 @@
 using System.Text.Json;
+using Microsoft.EntityFrameworkCore;
 using VMTS.API.Errors;
 using VMTS.Service.Exceptions;
 
@@ -27,10 +28,33 @@ public class ExceptionMiddleware : IMiddleware
         {
             await WriteErrorResponseAsync(context, 400, ex.Message);
         }
+        catch (DbUpdateConcurrencyException ex)
+        {
+            _logger.LogWarning(ex, "A concurrency conflict occurred.");
+            await WriteErrorResponseAsync(
+                context,
+                409,
+                "A concurrency conflict occurred while updating the resource."
+            );
+        }
+        catch (DbUpdateException ex)
+        {
+            _logger.LogError(ex, "A database update error occurred.");
+            await WriteErrorResponseAsync(
+                context,
+                500,
+                "A database update error occurred. Please try again later."
+            );
+        }
+        catch (OperationCanceledException ex)
+        {
+            _logger.LogWarning(ex, "The operation was canceled.");
+            await WriteErrorResponseAsync(context, 499, "The operation was canceled.");
+        }
         catch (Exception ex)
         {
             _logger.LogError(ex, "{message}", ex.Message);
-            var responseBodyV2 = new ApiExceptionResponse(ex.Message, ex.StackTrace?.ToString());
+            var responseBody = new ApiExceptionResponse(ex.Message, ex.StackTrace?.ToString());
 
             context.Response.StatusCode = StatusCodes.Status500InternalServerError;
             context.Response.ContentType = "application/json";
@@ -41,7 +65,7 @@ public class ExceptionMiddleware : IMiddleware
             };
             var options = jsonSerializerOptions;
 
-            var json = JsonSerializer.Serialize(responseBodyV2, options);
+            var json = JsonSerializer.Serialize(responseBody, options);
             await context.Response.WriteAsync(json);
         }
     }
