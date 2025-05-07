@@ -73,6 +73,7 @@ public static class VTMSServicesExtension
         services.AddScoped<IVehicleSerivces, VehicleServices>();
         services.AddScoped<IUserService, UserService>();
         services.AddAutoMapper(typeof(MappingProfile));
+        services.AddScoped<IVehicleCategoryServices, VehicleCategoryServices>();
 
         return services;
     }
