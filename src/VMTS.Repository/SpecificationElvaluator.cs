@@ -12,14 +12,10 @@ public static class SpecificationElvaluator<T>
         var query = inputQuery;
 
         if (specs.Criteria is not null)
-        {
             query = query.Where(specs.Criteria);
 
-            query = specs.Includes.Aggregate(
-                query,
-                (currentQuery, Expression) => currentQuery.Include(Expression)
-            );
-        }
+        if (specs.IsPaginaitonEnabled)
+            query = query.Skip(specs.Skip).Take(specs.Take);
 
         if (specs.OrderBy is not null)
             query = query.OrderBy(specs.OrderBy);
@@ -27,10 +23,15 @@ public static class SpecificationElvaluator<T>
         if (specs.OrderByDesc is not null)
             query = query.OrderByDescending(specs.OrderByDesc);
 
-        if (specs.IsPaginaitonEnabled)
-            query = query.Skip(specs.Skip).Take(specs.Take);
+        query = specs.Includes.Aggregate(
+            query,
+            (currentQuery, Expression) => currentQuery.Include(Expression)
+        );
 
+        query = specs.IncludeStrings.Aggregate(
+            query,
+            (currentQuery, Expression) => currentQuery.Include(Expression)
+        );
         return query;
     }
 }
-

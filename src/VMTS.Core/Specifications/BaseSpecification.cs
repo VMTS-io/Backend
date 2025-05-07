@@ -7,11 +7,14 @@ namespace VMTS.Core.Specifications;
 public class BaseSpecification<T> : ISpecification<T>
     where T : BaseEntity
 {
-    public Expression<Func<T, bool>> Criteria { get; set; } = null;
-    public List<Expression<Func<T, object>>> Includes { get; set; } =
-        new List<Expression<Func<T, object>>>();
-    public Expression<Func<T, object>> OrderBy { get; set; } = null;
-    public Expression<Func<T, object>> OrderByDesc { get; set; } = null;
+    public Expression<Func<T, bool>>? Criteria { get; set; } = null!;
+
+    public List<Expression<Func<T, object>>> Includes { get; set; } = [];
+    public List<string> IncludeStrings { get; set; } = [];
+
+    public Expression<Func<T, object>>? OrderBy { get; set; } = null;
+    public Expression<Func<T, object>>? OrderByDesc { get; set; } = null;
+
     public int Skip { get; set; }
     public int Take { get; set; }
     public bool IsPaginaitonEnabled { get; set; }
@@ -40,4 +43,3 @@ public class BaseSpecification<T> : ISpecification<T>
         IsPaginaitonEnabled = true;
     }
 }
-
