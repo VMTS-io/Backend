@@ -12,7 +12,10 @@ public class FaultReport : BaseEntity
     public string Details { get; set; }
     public DateTime ReportedAt { get; set; }
     public string Destination { get; set; }
+
+    public decimal Cost { get; set; }
     
+    public int FuelRefile { get; set; }
     public string FaultAddress { get; set; } 
     public MaintenanceType FaultType { get; set; }
     public FaultReportStatus Status { get; set; } = FaultReportStatus.Reported; 
