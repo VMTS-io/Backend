@@ -71,6 +71,36 @@ namespace VMTS.Repository.Data.Migrations
                     b.ToTable("FaultReports");
                 });
 
+            modelBuilder.Entity("MaintenaceCategoryMaintenanceInitialReport", b =>
+                {
+                    b.Property<string>("CategoryId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("MaintenanceInitialReportId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("CategoryId", "MaintenanceInitialReportId");
+
+                    b.HasIndex("MaintenanceInitialReportId");
+
+                    b.ToTable("MaintenaceCategoryMaintenanceInitialReport");
+                });
+
+            modelBuilder.Entity("MaintenanceInitialReportPart", b =>
+                {
+                    b.Property<string>("MaintenanceInitialReportId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("MissingPartsId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("MaintenanceInitialReportId", "MissingPartsId");
+
+                    b.HasIndex("MissingPartsId");
+
+                    b.ToTable("MaintenanceInitialReportPart");
+                });
+
             modelBuilder.Entity("TripRequest", b =>
                 {
                     b.Property<string>("Id")
@@ -349,6 +379,51 @@ namespace VMTS.Repository.Data.Migrations
                     b.ToTable("MaintenanceTrackings");
                 });
 
+            modelBuilder.Entity("VMTS.Core.Entities.Maintenace.MaintenanceInitialReport", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateTime>("Date")
+                        .HasColumnType("datetime2");
+
+                    b.Property<decimal>("ExpectedCost")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<DateOnly>("ExpectedFinishDate")
+                        .HasColumnType("date");
+
+                    b.Property<string>("MaintenaceRequestId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("MechanicId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("Notes")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<string>("VehicleId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("MaintenaceRequestId")
+                        .IsUnique();
+
+                    b.HasIndex("MechanicId");
+
+                    b.HasIndex("VehicleId");
+
+                    b.ToTable("MaintenanceInitialReport");
+                });
+
             modelBuilder.Entity("VMTS.Core.Entities.Parts.Part", b =>
                 {
                     b.Property<string>("Id")
@@ -560,6 +635,36 @@ namespace VMTS.Repository.Data.Migrations
                     b.Navigation("Vehicle");
                 });
 
+            modelBuilder.Entity("MaintenaceCategoryMaintenanceInitialReport", b =>
+                {
+                    b.HasOne("VMTS.Core.Entities.Maintenace.MaintenaceCategory", null)
+                        .WithMany()
+                        .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("VMTS.Core.Entities.Maintenace.MaintenanceInitialReport", null)
+                        .WithMany()
+                        .HasForeignKey("MaintenanceInitialReportId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("MaintenanceInitialReportPart", b =>
+                {
+                    b.HasOne("VMTS.Core.Entities.Maintenace.MaintenanceInitialReport", null)
+                        .WithMany()
+                        .HasForeignKey("MaintenanceInitialReportId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("VMTS.Core.Entities.Parts.Part", null)
+                        .WithMany()
+                        .HasForeignKey("MissingPartsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("TripRequest", b =>
                 {
                     b.HasOne("VMTS.Core.Entities.User_Business.BusinessUser", "Driver")
@@ -636,6 +741,33 @@ namespace VMTS.Repository.Data.Migrations
                         .IsRequired();
 
                     b.Navigation("Manager");
+
+                    b.Navigation("Mechanic");
+
+                    b.Navigation("Vehicle");
+                });
+
+            modelBuilder.Entity("VMTS.Core.Entities.Maintenace.MaintenanceInitialReport", b =>
+                {
+                    b.HasOne("VMTS.Core.Entities.Maintenace.MaintenaceRequest", "MaintenaceRequest")
+                        .WithOne()
+                        .HasForeignKey("VMTS.Core.Entities.Maintenace.MaintenanceInitialReport", "MaintenaceRequestId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("VMTS.Core.Entities.User_Business.BusinessUser", "Mechanic")
+                        .WithMany()
+                        .HasForeignKey("MechanicId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("VMTS.Core.Entities.Vehicle_Aggregate.Vehicle", "Vehicle")
+                        .WithMany()
+                        .HasForeignKey("VehicleId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("MaintenaceRequest");
 
                     b.Navigation("Mechanic");
 
