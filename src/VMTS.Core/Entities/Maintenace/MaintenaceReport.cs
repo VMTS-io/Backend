@@ -5,7 +5,7 @@ namespace VMTS.Core.Entities.Maintenace;
 
 public class MaintenaceReport : BaseEntity
 {
-    public string Description { get; set; }
+    public string Description { get; set; } = default!;
 
     public decimal Cost { get; set; }
 
@@ -13,9 +13,8 @@ public class MaintenaceReport : BaseEntity
 
     public Status Status { get; set; }
 
-    public BusinessUser Mechanic { get; set; }
-    
+    public BusinessUser Mechanic { get; set; } = default!;
 
-    public Vehicle Vehicle { get; set; }
-
+    public Vehicle Vehicle { get; set; } = default!;
 }
+
