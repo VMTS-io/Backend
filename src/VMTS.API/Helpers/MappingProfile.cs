@@ -8,6 +8,7 @@ using VMTS.API.Dtos.Vehicles.Model;
 using VMTS.Core.Entities.Identity;
 using VMTS.Core.Entities.Maintenace;
 using VMTS.Core.Entities.Trip;
+using VMTS.Core.Entities.User_Business;
 using VMTS.Core.Entities.Vehicle_Aggregate;
 
 namespace VMTS.API.Helpers;
@@ -16,6 +17,8 @@ public class MappingProfile : Profile
 {
     public MappingProfile()
     {
+        CreateMap<BusinessUser, BussinessUserDto>();
+        
         CreateMap<AddressDto, Address>().ReverseMap();
 
         CreateMap<FaultReport, FaultReportResponse>()
@@ -41,6 +44,11 @@ public class MappingProfile : Profile
                 opt => opt.MapFrom(src => new DateOnly(src.JoinedYear, 1, 1))
             );
 
+        CreateMap<AppUser, DriverDto>();
+        CreateMap<BusinessUser, DriverDto>();
+        CreateMap<Vehicle, VehicleDto >();
+        CreateMap<TripRequest, TripDto>();
+        
         CreateMap<Vehicle, AdminVehicleListDto>()
             .ForMember(
                 dest => dest.Name,
