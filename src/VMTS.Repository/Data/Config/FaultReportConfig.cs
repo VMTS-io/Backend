@@ -8,9 +8,12 @@ public class FaultReportConfig : IEntityTypeConfiguration<FaultReport>
 {
     public void Configure(EntityTypeBuilder<FaultReport> builder)
     {
-        builder.HasOne(f => f.Trip)
-               .WithMany(t => t.FaultReports)
-               .HasForeignKey(f => f.TripId)
-               .OnDelete(DeleteBehavior.Restrict);
+        builder
+            .HasOne(f => f.Trip)
+            .WithMany(t => t.FaultReports)
+            .HasForeignKey(f => f.TripId)
+            .OnDelete(DeleteBehavior.Restrict);
+        builder.Property(f => f.Cost).HasColumnType("decimal(18,2)");
     }
 }
+
