@@ -1,4 +1,5 @@
 ﻿using System.Net;
+using AutoMapper;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -6,7 +7,9 @@ using Microsoft.AspNetCore.Mvc;
 using VMTS.API.Dtos;
 using VMTS.API.Errors;
 using VMTS.Core.Entities.Identity;
+using VMTS.Core.Entities.User_Business;
 using VMTS.Core.Interfaces.Services;
+using VMTS.Core.Interfaces.UnitOfWork;
 using VMTS.Core.ServicesContract;
 
 namespace VMTS.API.Controllers;
@@ -18,13 +21,17 @@ public class AccountController : BaseApiController
     private readonly IAuthService _authService;
     private readonly IEmailService _emailService;
     private readonly IConfiguration _configuration;
+    private readonly IMapper _mapper;
+    private readonly IUnitOfWork _unitOfWork;
 
     public AccountController(
         UserManager<AppUser> userManager,
         SignInManager<AppUser> signInManager,
         IAuthService authService,
         IEmailService emailService,
-        IConfiguration configuration
+        IConfiguration configuration,
+        IMapper mapper,
+        IUnitOfWork unitOfWork
     )
     {
         _userManager = userManager;
@@ -32,13 +39,15 @@ public class AccountController : BaseApiController
         _authService = authService;
         _emailService = emailService;
         _configuration = configuration;
+        _mapper = mapper;
+        _unitOfWork = unitOfWork;
     }
 
     #region Login
 
     [HttpPost("login")]
     [ProducesResponseType(typeof(UserDto), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(MustChangePasswordDto), StatusCodes.Status200OK)] // Changed to 200 OK
+    [ProducesResponseType(typeof(MustChangePasswordDto), StatusCodes.Status200OK)] 
     [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status401Unauthorized)]
     public async Task<ActionResult> Login(LoginRequest request)
     {
@@ -63,10 +72,11 @@ public class AccountController : BaseApiController
 
         if (!result.Succeeded)
             return Unauthorized(new ApiErrorResponse(401, "Invalid credentials"));
-
+        var businessUser = await _unitOfWork.GetRepo<BusinessUser>().GetByIdAsync(user.Id);
+        var businessUserDto = _mapper.Map<BussinessUserDto>(businessUser);
         var tokenString = await _authService.CreateTokenAsync(user, _userManager);
 
-        return Ok(new UserDto { Email = user.Email, Token = tokenString });
+        return Ok(new UserDto { Email = user.Email, Token = tokenString , BussinessUserDto = businessUserDto });
     }
 
     #endregion
