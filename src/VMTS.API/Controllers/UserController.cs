@@ -165,7 +165,7 @@ public class UserController : BaseApiController
     #region Get All Drivers
 
     [HttpGet("drivers")]
-    [Authorize(Roles = Roles.Admin)]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = $"{Roles.Driver},{Roles.Manager}")]
     [ProducesResponseType(typeof(IReadOnlyList<UserResponse>), StatusCodes.Status200OK)]
     public async Task<ActionResult<IReadOnlyList<UserResponse>>> GetDrivers()
     {
@@ -191,7 +191,7 @@ public class UserController : BaseApiController
     #region Get All Mechanics
 
     [HttpGet("mechanics")]
-    [Authorize(Roles = Roles.Admin)]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = $"{Roles.Driver},{Roles.Manager}")]
     [ProducesResponseType(typeof(IReadOnlyList<UserResponse>), StatusCodes.Status200OK)]
     public async Task<ActionResult<IReadOnlyList<UserResponse>>> GetMechanics()
     {
@@ -216,7 +216,7 @@ public class UserController : BaseApiController
 
     #region Get User By Id
     [HttpGet("{userId}")]
-    [Authorize(Roles = $"{Roles.Admin},{Roles.Manager}")]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = $"{Roles.Driver},{Roles.Manager}")]
     [ProducesResponseType(typeof(UserResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<UserResponse>> GetById([FromRoute] string userId)
