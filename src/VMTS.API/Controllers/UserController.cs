@@ -258,7 +258,7 @@ public class UserController : BaseApiController
 
     #region Delete User
     [HttpDelete("{userId}")]
-    [Authorize(Roles = Roles.Admin)]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = Roles.Admin)]
     [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status400BadRequest)]
     public async Task<ActionResult> DeleteUser([FromRoute] string userId)

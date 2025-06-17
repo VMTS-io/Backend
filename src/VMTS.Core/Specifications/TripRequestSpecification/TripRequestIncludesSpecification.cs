@@ -7,8 +7,8 @@ public class TripRequestIncludesSpecification : BaseSpecification<TripRequest>
         public TripRequestIncludesSpecification(string driverId) 
             : base(t => 
                 t.Driver != null && t.DriverId == driverId &&
-                t.Status == TripStatus.Approved &&
-                t.Date <= DateTime.UtcNow)
+                t.Status == TripStatus.Approved 
+                )
         {
             ApplyIncludes();
         }

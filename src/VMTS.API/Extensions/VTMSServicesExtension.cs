@@ -7,11 +7,13 @@ using VMTS.API.Errors;
 using VMTS.API.GlobalExceptionHnadler;
 using VMTS.API.Helpers;
 using VMTS.API.Middlewares;
+using VMTS.Core.Interfaces.Repositories;
 using VMTS.Core.Interfaces.Services;
 using VMTS.Core.Interfaces.UnitOfWork;
 using VMTS.Core.ServicesContract;
 using VMTS.Repository;
 using VMTS.Repository.Data;
+using VMTS.Repository.Repositories;
 using VMTS.Service.Services;
 
 namespace VMTS.API.Extensions;
@@ -75,6 +77,8 @@ public static class VTMSServicesExtension
         services.AddScoped<IUserService, UserService>();
         services.AddScoped<IVehicleModelServices, VehicleModelServices>();
         services.AddScoped<IVehicleCategoryServices, VehicleCategoryServices>();
+        services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
+
 
         return services;
     }
