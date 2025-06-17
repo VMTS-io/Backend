@@ -12,17 +12,21 @@ public class FaultReportIncludesSpecification : BaseSpecification<FaultReport>
     }
     private void ApplyIncludes()
     {
-        Includes.Add(fr => fr.TripId); 
+        Includes.Add(fr => fr.Driver);
+        Includes.Add(fr => fr.Vehicle);
+        Includes.Add(fr => fr.Trip); 
     }
-    
+
+
+    #region basic
     
     public FaultReportIncludesSpecification(FaultReportSpecParams specParams) : base(fr =>
-            (string.IsNullOrEmpty(specParams.Search) || fr.Id == specParams.Search)&&
-            (string.IsNullOrEmpty(specParams.VehicleId) || fr.VehicleId == specParams.VehicleId)&&
-            (string.IsNullOrEmpty(specParams.TripId)|| fr.TripId == specParams.TripId)&&
-            (specParams.FaultType == null || fr.FaultType == specParams.FaultType)&&
-            (!specParams.ReportDate.HasValue || fr.ReportedAt == specParams.ReportDate)
-            )
+        (string.IsNullOrEmpty(specParams.Search) || fr.Id == specParams.Search)&&
+        (string.IsNullOrEmpty(specParams.VehicleId) || fr.VehicleId == specParams.VehicleId)&&
+        (string.IsNullOrEmpty(specParams.TripId)|| fr.TripId == specParams.TripId)&&
+        (specParams.FaultType == null || fr.FaultType == specParams.FaultType)&&
+        (!specParams.ReportDate.HasValue || fr.ReportedAt == specParams.ReportDate)
+    )
     {
         ApplyIncludes();
 
@@ -46,7 +50,85 @@ public class FaultReportIncludesSpecification : BaseSpecification<FaultReport>
             }
         }
         
-        AddPaginaiton((specParams.PageIndex -1),(specParams.PageSize));
+        AddPaginaiton(Math.Max(0, specParams.PageIndex - 1), specParams.PageSize);
     }
+
+    #endregion
+
+    #region with driver
+
+    public FaultReportIncludesSpecification(FaultReportSpecParams specParams, string driverId) : base(fr =>
+        fr.DriverId == driverId &&
+        (string.IsNullOrEmpty(specParams.Search) || fr.Id == specParams.Search)&&
+        (string.IsNullOrEmpty(specParams.VehicleId) || fr.VehicleId == specParams.VehicleId)&&
+        (string.IsNullOrEmpty(specParams.TripId)|| fr.TripId == specParams.TripId)&&
+        (specParams.FaultType == null || fr.FaultType == specParams.FaultType)&&
+        (!specParams.ReportDate.HasValue || fr.ReportedAt == specParams.ReportDate)
+    )
+    {
+        ApplyIncludes();
+
+        if (!string.IsNullOrEmpty(specParams.Sort))
+        {
+            switch (specParams.Sort)
+            {
+                case "DateAsc":
+                    AddOrderBy(fr => fr.ReportedAt);
+                    break;
+                case "DateDesc":
+                    AddOrderByDesc(fr => fr.ReportedAt);
+                    break;
+                case "FaultTypeAsc":
+                    AddOrderBy(fr => fr.FaultType);
+                    break;
+                case "FaultTypeDesc":
+                    AddOrderByDesc(fr => fr.FaultType);
+                    break;
+                
+            }
+        }
+        
+        AddPaginaiton(Math.Max(0, specParams.PageIndex - 1), specParams.PageSize);
+    }
+
+    #endregion
+
+    #region with vehicle
     
+    public FaultReportIncludesSpecification(string vehicleId ,FaultReportSpecParams specParams ) : base(fr =>
+        fr.VehicleId == vehicleId &&
+        (string.IsNullOrEmpty(specParams.Search) || fr.Id == specParams.Search)&&
+        (string.IsNullOrEmpty(specParams.VehicleId) || fr.VehicleId == specParams.VehicleId)&&
+        (string.IsNullOrEmpty(specParams.TripId)|| fr.TripId == specParams.TripId)&&
+        (specParams.FaultType == null || fr.FaultType == specParams.FaultType)&&
+        (!specParams.ReportDate.HasValue || fr.ReportedAt == specParams.ReportDate)
+    )
+    {
+        ApplyIncludes();
+
+        if (!string.IsNullOrEmpty(specParams.Sort))
+        {
+            switch (specParams.Sort)
+            {
+                case "DateAsc":
+                    AddOrderBy(fr => fr.ReportedAt);
+                    break;
+                case "DateDesc":
+                    AddOrderByDesc(fr => fr.ReportedAt);
+                    break;
+                case "FaultTypeAsc":
+                    AddOrderBy(fr => fr.FaultType);
+                    break;
+                case "FaultTypeDesc":
+                    AddOrderByDesc(fr => fr.FaultType);
+                    break;
+                
+            }
+        }
+        
+        AddPaginaiton(Math.Max(0, specParams.PageIndex - 1), specParams.PageSize);
+    }
+
+
+    #endregion
 }

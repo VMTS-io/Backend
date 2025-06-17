@@ -6,7 +6,6 @@ namespace VMTS.Core.Specifications.FaultReportSepcification;
 public class FaultReportSpecParams
 {
     public string? TripId { get; set; }
-
     public string? VehicleId { get; set; }
     
     public string? DriverId { get; set; }
