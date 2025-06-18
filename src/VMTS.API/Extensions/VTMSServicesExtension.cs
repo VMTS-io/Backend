@@ -2,11 +2,12 @@
 using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using VMTS.API.Controllers;
+using VMTS.API.ActionFilters;
 using VMTS.API.Errors;
 using VMTS.API.GlobalExceptionHnadler;
 using VMTS.API.Helpers;
 using VMTS.API.Middlewares;
+using VMTS.Core.Entities.Maintenace;
 using VMTS.Core.Interfaces.Repositories;
 using VMTS.Core.Interfaces.Services;
 using VMTS.Core.Interfaces.UnitOfWork;
@@ -50,6 +51,7 @@ public static class VTMSServicesExtension
                 options.JsonSerializerOptions.MaxDepth = 128;
             });
         services.AddValidatorsFromAssemblyContaining<Program>();
+        services.AddScoped(typeof(ValidateModelActionFilter<>));
         services.AddCors();
         services.AddOpenApi();
 
@@ -77,8 +79,12 @@ public static class VTMSServicesExtension
         services.AddScoped<IUserService, UserService>();
         services.AddScoped<IVehicleModelServices, VehicleModelServices>();
         services.AddScoped<IVehicleCategoryServices, VehicleCategoryServices>();
+        services.AddScoped<IBrandService, BrandService>();
+        services.AddScoped<IMaintenanceInitialReportServices, MaintenanceInitialReportServices>();
+        services.AddScoped<IMaintenanceFinalReportServices, MaintenanceFinalReportServices>();
+        services.AddScoped<IPartService, PartService>();
+        services.AddScoped<IMaintenanceCategoryServices, MaintenanceCategoryServices>();
         services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
-
 
         return services;
     }
