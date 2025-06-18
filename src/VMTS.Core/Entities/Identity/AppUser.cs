@@ -5,14 +5,14 @@ namespace VMTS.Core.Entities.Identity;
 
 public class AppUser : IdentityUser
 {
-    public string FirstName { get; set; }
+    public string FirstName { get; set; } = default!;
 
-    public string LastName { get; set; }
-    public string DisplayName { get; set; }
-    public Address Address { get; set; }
+    public string LastName { get; set; } = default!;
+    public string DisplayName { get; set; } = default!;
+    public Address Address { get; set; } = default!;
     public DateOnly DateOfBirth { get; set; }
-    public string NationalId { get; set; }
+    public string NationalId { get; set; } = default!;
 
-    public string PictureUrl { get; set; }
+    public string PictureUrl { get; set; } = default!;
     public bool MustChangePassword { get; set; } = true;
 }

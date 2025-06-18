@@ -6,19 +6,13 @@ namespace VMTS.Repository.Identity;
 
 public class IdentityDbContext : IdentityDbContext<AppUser>
 {
-    public IdentityDbContext (DbContextOptions<IdentityDbContext> options)
-        :base(options)
-    {
-        
-    }
+    public IdentityDbContext(DbContextOptions<IdentityDbContext> options)
+        : base(options) { }
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);
         builder.Entity<Address>().ToTable("Addresses");
-        builder.Entity<AppUser>()
-            .HasIndex(u => u.UserName)
-            .IsUnique(false);
-
+        builder.Entity<AppUser>().HasIndex(u => u.UserName).IsUnique(false);
     }
 }

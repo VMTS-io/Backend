@@ -1,0 +1,37 @@
+[
+    {
+        "Id": "1",
+        "Name": "FH16",
+        "BrandId": "1",
+        "FuelEfficiency": "8 km/L",
+        "CategoryId": "1"
+    },
+    {
+        "Id": "2",
+        "Name": "Sprinter",
+        "BrandId": "2",
+        "FuelEfficiency": "10 km/L",
+        "CategoryId": "3"
+    },
+    {
+        "Id": "3",
+        "Name": "Transit",
+        "BrandId": "3",
+        "FuelEfficiency": "9 km/L",
+        "CategoryId": "3"
+    },
+    {
+        "Id": "4",
+        "Name": "HiAce",
+        "BrandId": "4",
+        "FuelEfficiency": "11 km/L",
+        "CategoryId": "3"
+    },
+    {
+        "Id": "5",
+        "Name": "Model S",
+        "BrandId": "5",
+        "FuelEfficiency": "4 km/kWh",
+        "CategoryId": "4"
+    }
+]
