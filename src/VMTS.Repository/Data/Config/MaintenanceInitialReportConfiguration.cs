@@ -27,9 +27,9 @@ public class MaintenanceInitialReportConfiguration
             .OnDelete(DeleteBehavior.NoAction);
 
         builder
-            .HasOne(mir => mir.MaintenaceRequest)
+            .HasOne(mir => mir.MaintenanceRequest)
             .WithOne()
-            .HasForeignKey<MaintenanceInitialReport>(mir => mir.MaintenaceRequestId)
+            .HasForeignKey<MaintenanceInitialReport>(mir => mir.MaintenanceRequestId)
             .OnDelete(DeleteBehavior.Cascade);
 
         builder.Property(mir => mir.ExpectedCost).HasColumnType("decimal(18,2)");
