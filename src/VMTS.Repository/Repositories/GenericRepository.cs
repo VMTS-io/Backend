@@ -68,4 +68,9 @@ public class GenericRepository<T> : IGenericRepository<T>
     {
         return _dbContext.Set<T>().Any(entity => entity.Id == id);
     }
+
+    public async Task<IReadOnlyList<T>> GetByIdsAsync(IEnumerable<string> ids)
+    {
+        return await _dbContext.Set<T>().Where(e => ids.Contains(e.Id)).ToListAsync();
+    }
 }
