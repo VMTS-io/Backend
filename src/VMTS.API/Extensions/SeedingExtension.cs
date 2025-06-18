@@ -13,6 +13,7 @@ public static class SeedingExtension
         await using var scope = app.Services.CreateAsyncScope();
         var services = scope.ServiceProvider;
         var dbContext = services.GetRequiredService<VTMSDbContext>();
+        var identityDbContext = services.GetRequiredService<IdentityDbContext>();
         var loggerFactory = services.GetRequiredService<ILoggerFactory>();
         var unitOfWork = services.GetRequiredService<IUnitOfWork>();
         var userManager = services.GetRequiredService<UserManager<AppUser>>();
@@ -20,13 +21,14 @@ public static class SeedingExtension
         try
         {
             await VMTSDataSeed.SeedAsync(dbContext);
-            await IdentityDataSeed.SeedAsync(
-                userManager,
-                roleManager,
-                unitOfWork,
-                app.Configuration,
-                loggerFactory.CreateLogger<IdentityDataSeed>()
-            );
+            // await IdentityDataSeed.SeedAsync(
+            //     userManager,
+            //     roleManager,
+            //     dbContext,
+            //     identityDbContext,
+            //     app.Configuration,
+            //     loggerFactory.CreateLogger<IdentityDataSeed>()
+            // );
         }
         catch (Exception ex)
         {
