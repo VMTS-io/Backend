@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace VMTS.API.Dtos.Maintenance;
+namespace VMTS.API.Dtos.Maintenance.Request;
 
 public class MaintenanceRequestDto
 {

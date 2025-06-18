@@ -1,7 +1,7 @@
 using VMTS.API.Dtos.Vehicles;
 using VMTS.Core.Entities.Maintenace;
 
-namespace VMTS.API.Dtos.Maintenance;
+namespace VMTS.API.Dtos.Maintenance.Request;
 
 public class MaintenanceRequestEdit
 {
