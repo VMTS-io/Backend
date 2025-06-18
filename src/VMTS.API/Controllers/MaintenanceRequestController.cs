@@ -2,7 +2,7 @@ using AutoMapper;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using VMTS.API.Dtos.Maintenance;
+using VMTS.API.Dtos.Maintenance.Request;
 using VMTS.API.Errors;
 using VMTS.Core.Entities.Maintenace;
 using VMTS.Core.Helpers;
@@ -11,6 +11,8 @@ using VMTS.Core.Specifications.Maintenance;
 
 namespace VMTS.API.Controllers;
 
+[Tags("Maintenance/Request")]
+[Route("api/Maintenance/Request")]
 public class MaintenanceRequestController : BaseApiController
 {
     private readonly IMapper _mapper;
@@ -22,6 +24,7 @@ public class MaintenanceRequestController : BaseApiController
         _services = services;
     }
 
+    #region Create
     [Authorize(
         Roles = Roles.Manager,
         AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme
@@ -33,7 +36,9 @@ public class MaintenanceRequestController : BaseApiController
         await _services.CreateAsync(mappedModel, User);
         return Ok(model);
     }
+    #endregion
 
+    #region Edit
     [Authorize(
         Roles = Roles.Manager,
         AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme
@@ -45,7 +50,9 @@ public class MaintenanceRequestController : BaseApiController
         await _services.UpdateAsync(mappedModel, User);
         return Ok(model);
     }
+    #endregion
 
+    #region Get By Id
     [Authorize(
         Roles = $"{Roles.Manager},{Roles.Mechanic}",
         AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme
@@ -63,7 +70,9 @@ public class MaintenanceRequestController : BaseApiController
         var mappedModel = _mapper.Map<MaintenaceRequest, MaintenanceRequestResponse>(result);
         return Ok(mappedModel);
     }
+    #endregion
 
+    #region Get All
     [Authorize(
         Roles = Roles.Manager,
         AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme
@@ -80,7 +89,9 @@ public class MaintenanceRequestController : BaseApiController
         >(result);
         return Ok(mappedModel);
     }
+    #endregion
 
+    #region Get All For User
     [Authorize(
         Roles = Roles.Manager,
         AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme
@@ -98,4 +109,5 @@ public class MaintenanceRequestController : BaseApiController
         >(result);
         return Ok(mappedResult);
     }
+    #endregion
 }

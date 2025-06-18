@@ -6,10 +6,20 @@ public enum FuelType
 {
     [EnumMember(Value = "Petrol")]
     Petrol,
+
     [EnumMember(Value = "Diesel")]
     Diesel,
+
     [EnumMember(Value = "Electric")]
     Electric,
+
     [EnumMember(Value = "Hybrid")]
-    Hybrid
+    Hybrid,
+
+    [EnumMember(Value = "Natural Gas")]
+    CNG,
+
+    [EnumMember(Value = "Hydrogen")]
+    Hydrogen,
 }
+

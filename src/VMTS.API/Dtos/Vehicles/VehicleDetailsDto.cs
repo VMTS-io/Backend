@@ -1,4 +1,4 @@
-using VMTS.API.Dtos.Maintenance;
+using VMTS.API.Dtos.Maintenance.Request;
 using VMTS.API.Dtos.Trip;
 using VMTS.API.Dtos.Vehicles.Model;
 using VMTS.Core.Entities.Vehicle_Aggregate;

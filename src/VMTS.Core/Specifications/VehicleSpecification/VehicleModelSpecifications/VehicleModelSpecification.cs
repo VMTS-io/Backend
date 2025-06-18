@@ -7,5 +7,6 @@ public class VehicleModelSpecification : BaseSpecification<VehicleModel>
     public VehicleModelSpecification()
     {
         Includes.Add(vm => vm.Category);
+        Includes.Add(vm => vm.Brand);
     }
 }

@@ -4,7 +4,10 @@ public class VehicleModel : BaseEntity
 {
     public string Name { get; set; } = default!;
 
-    public string Manufacturer { get; set; } = default!;
+    // public string Manufacturer { get; set; } = default!;
+
+    public Brand Brand { get; set; } = default!;
+    public string BrandId { get; set; } = default!;
 
     public string FuelEfficiency { get; set; } = default!;
 

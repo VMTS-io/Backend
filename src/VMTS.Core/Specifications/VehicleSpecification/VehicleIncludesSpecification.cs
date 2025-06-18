@@ -8,11 +8,13 @@ public class VehicleIncludesSpecification : BaseSpecification<Vehicle>
     {
         // Includes.Add(v => v.VehicleModel);
         IncludeStrings.Add($"{nameof(VehicleModel)}.{nameof(VehicleModel.Category)}");
+        IncludeStrings.Add($"{nameof(VehicleModel)}.{nameof(VehicleModel.Brand)}");
     }
 
     private void ApplyAllIncludes()
     {
         IncludeStrings.Add($"{nameof(VehicleModel)}.{nameof(VehicleModel.Category)}");
+        IncludeStrings.Add($"{nameof(VehicleModel)}.{nameof(VehicleModel.Brand)}");
         // Includes.Add(v => v.VehicleModel);
         Includes.Add(v => v.TripRequests);
         Includes.Add(v => v.TripReports);
