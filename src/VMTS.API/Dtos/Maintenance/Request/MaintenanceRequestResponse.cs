@@ -1,11 +1,11 @@
 using VMTS.API.Dtos.Vehicles;
 using VMTS.Core.Entities.Maintenace;
 
-namespace VMTS.API.Dtos.Maintenance;
+namespace VMTS.API.Dtos.Maintenance.Request;
 
 public class MaintenanceRequestResponse
 {
-    public string Description { get; set; }
+    public string Description { get; set; } = default!;
 
     public DateTime Date { get; set; }
 
@@ -14,5 +14,5 @@ public class MaintenanceRequestResponse
     /*public BusinessUser Manager { get; set; }*/
     /*public BusinessUser Mechanic { get; set; }*/
 
-    public VehicleListDto Vehicle { get; set; }
+    public VehicleListDto Vehicle { get; set; } = default!;
 }

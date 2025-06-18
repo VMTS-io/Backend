@@ -1,9 +1,9 @@
 using AutoMapper;
 using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
+using VMTS.API.ActionFilters;
 using VMTS.API.Dtos.Vehicles.Category;
 using VMTS.API.Errors;
-using VMTS.API.Extensions;
 using VMTS.Core.Entities.Vehicle_Aggregate;
 using VMTS.Core.Interfaces.Services;
 
@@ -28,24 +28,9 @@ public class VehicleCategoryController : BaseApiController
         _services = services;
     }
 
-    [ProducesResponseType<VehicleCategoryDto>(StatusCodes.Status200OK)]
-    [ProducesResponseType<ApiErrorResponse>(StatusCodes.Status404NotFound)]
-    [HttpPost]
-    public async Task<ActionResult<VehicleCategoryDto>> Create(VehicleCategoryUpsertDto createDto)
-    {
-        var validationResult = _validator.Validate(createDto);
-        if (!validationResult.IsValid)
-            return BadRequest(ValidationProblemDetails(validationResult.ToDictionary()));
-
-        var vehicleCategory = _mapper.Map<VehicleCategoryUpsertDto, VehicleCategory>(createDto);
-        vehicleCategory = await _services.CreateVehicleCategoryAsync(vehicleCategory);
-
-        var categoryDto = _mapper.Map<VehicleCategory, VehicleCategoryDto>(vehicleCategory);
-        return Ok(categoryDto);
-    }
-
-    [ProducesResponseType<IReadOnlyList<VehicleCategoryDto>>(StatusCodes.Status200OK)]
+    #region Get All
     [HttpGet]
+    [ProducesResponseType<IReadOnlyList<VehicleCategoryDto>>(StatusCodes.Status200OK)]
     public async Task<ActionResult<IReadOnlyList<VehicleCategoryDto>>> GetAll()
     {
         var vehicleCategoryList = await _services.GetAllVehicleCategoryAsync();
@@ -55,18 +40,40 @@ public class VehicleCategoryController : BaseApiController
         >(vehicleCategoryList);
         return Ok(vehicleCategoryDtoList);
     }
+    #endregion
 
+    #region Create
+    [HttpPost]
+    [ServiceFilter<ValidateModelActionFilter<VehicleCategoryUpsertDto>>]
     [ProducesResponseType<VehicleCategoryDto>(StatusCodes.Status200OK)]
     [ProducesResponseType<ApiErrorResponse>(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<VehicleCategoryDto>> Create(VehicleCategoryUpsertDto createDto)
+    {
+        // var validationResult = _validator.Validate(createDto);
+        // if (!validationResult.IsValid)
+        //     return BadRequest(ValidationProblemDetails(validationResult.ToDictionary()));
+
+        var vehicleCategory = _mapper.Map<VehicleCategoryUpsertDto, VehicleCategory>(createDto);
+        vehicleCategory = await _services.CreateVehicleCategoryAsync(vehicleCategory);
+
+        var categoryDto = _mapper.Map<VehicleCategory, VehicleCategoryDto>(vehicleCategory);
+        return Ok(categoryDto);
+    }
+    #endregion
+
+    #region Update
     [HttpPut("{id}")]
+    [ServiceFilter<ValidateModelActionFilter<VehicleCategoryUpsertDto>>]
+    [ProducesResponseType<VehicleCategoryDto>(StatusCodes.Status200OK)]
+    [ProducesResponseType<ApiErrorResponse>(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<VehicleCategoryDto>> Update(
         [FromRoute] string id,
         [FromBody] VehicleCategoryUpsertDto updateDto
     )
     {
-        var validationResult = _validator.Validate(updateDto);
-        if (!validationResult.IsValid)
-            return BadRequest(ValidationProblemDetails(validationResult.ToDictionary()));
+        // var validationResult = _validator.Validate(updateDto);
+        // if (!validationResult.IsValid)
+        //     return BadRequest(ValidationProblemDetails(validationResult.ToDictionary()));
 
         var vehicleCategory = _mapper.Map<VehicleCategoryUpsertDto, VehicleCategory>(updateDto);
         vehicleCategory.Id = id;
@@ -74,7 +81,9 @@ public class VehicleCategoryController : BaseApiController
         var vehicleCategoryDto = _mapper.Map<VehicleCategory, VehicleCategoryDto>(vehicleCategory!);
         return Ok(vehicleCategoryDto);
     }
+    #endregion
 
+    #region Delete
     [ProducesResponseType<bool>(StatusCodes.Status200OK)]
     [ProducesResponseType<ApiErrorResponse>(StatusCodes.Status404NotFound)]
     [HttpDelete("{id}")]
@@ -83,7 +92,5 @@ public class VehicleCategoryController : BaseApiController
         await _services.DeleteVehicleCategory(id);
         return Ok();
     }
+    #endregion
 }
-/*
- *
- * */
