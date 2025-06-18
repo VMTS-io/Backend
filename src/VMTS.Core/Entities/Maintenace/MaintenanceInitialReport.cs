@@ -17,7 +17,7 @@ public class MaintenanceInitialReport : BaseEntity
 
     public ICollection<MaintenaceCategory> MaintenanceCategories { get; set; } = [];
 
-    public ICollection<Part>? MissingParts { get; set; } = [];
+    public ICollection<Part> MissingParts { get; set; } = [];
 
     public BusinessUser Mechanic { get; set; } = default!;
     public string MechanicId { get; set; } = default!;
@@ -28,6 +28,6 @@ public class MaintenanceInitialReport : BaseEntity
     public Vehicle Vehicle { get; set; } = default!;
     public string VehicleId { get; set; } = default!;
 
-    public MaintenaceRequest MaintenaceRequest { get; set; } = default!;
-    public string MaintenaceRequestId { get; set; } = default!;
+    public MaintenaceRequest MaintenanceRequest { get; set; } = default!;
+    public string MaintenanceRequestId { get; set; } = default!;
 }
