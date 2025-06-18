@@ -1,6 +1,6 @@
 using AutoMapper;
-using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
+using VMTS.API.ActionFilters;
 using VMTS.API.Dtos.Vehicles;
 using VMTS.API.Errors;
 using VMTS.Core.Entities.Vehicle_Aggregate;
@@ -13,17 +13,18 @@ public class VehicleController : BaseApiController
 {
     private readonly IVehicleSerivces _services;
     private readonly IMapper _mapper;
-    private readonly IValidator<VehicleUpsertDto> _validator;
+
+    // private readonly IValidator<VehicleUpsertDto> _validator;
 
     public VehicleController(
         IVehicleSerivces services,
-        IMapper mapper,
-        IValidator<VehicleUpsertDto> validator
+        IMapper mapper
+    // ,IValidator<VehicleUpsertDto> validator
     )
     {
         _services = services;
         _mapper = mapper;
-        _validator = validator;
+        // _validator = validator;
     }
 
     // [ProducesResponseType<IReadOnlyList<VehicleListDto>>(StatusCodes.Status200OK)]
@@ -68,15 +69,16 @@ public class VehicleController : BaseApiController
     #endregion
 
     #region Create
+    [HttpPost]
+    [ServiceFilter<ValidateModelActionFilter<VehicleUpsertDto>>]
     [ProducesResponseType<VehicleDetailsDto>(StatusCodes.Status200OK)]
     [ProducesResponseType<ApiErrorResponse>(StatusCodes.Status404NotFound)]
-    [HttpPost]
-    public async Task<ActionResult<VehicleDetailsDto>> Create(VehicleUpsertDto vehicle)
+    public async Task<ActionResult<VehicleDetailsDto>> Create([FromBody] VehicleUpsertDto vehicle)
     {
-        var validationResult = _validator.Validate(vehicle);
-        if (!validationResult.IsValid)
-            return BadRequest(ValidationProblemDetails(validationResult.ToDictionary()));
-
+        // var validationResult = _validator.Validate(vehicle);
+        // if (!validationResult.IsValid)
+        //     return BadRequest(ValidationProblemDetails(validationResult.ToDictionary()));
+        //
         var mappedVehicle = _mapper.Map<VehicleUpsertDto, Vehicle>(vehicle);
         var tempVehicle = await _services.CreateVehicleAsync(mappedVehicle);
         var returnVehicle = _mapper.Map<Vehicle, VehicleListDto>(tempVehicle);
@@ -85,18 +87,18 @@ public class VehicleController : BaseApiController
     #endregion
 
     #region Update
+    [HttpPut("{id}")]
+    [ServiceFilter<ValidateModelActionFilter<VehicleUpsertDto>>]
     [ProducesResponseType<VehicleDetailsDto>(StatusCodes.Status200OK)]
     [ProducesResponseType<ApiErrorResponse>(StatusCodes.Status404NotFound)]
-    [HttpPut("{id}")]
     public async Task<ActionResult<VehicleDetailsDto>> Update(
         [FromRoute] string id,
         [FromBody] VehicleUpsertDto vehicle
     )
     {
-        var validationResult = _validator.Validate(vehicle);
-        if (!validationResult.IsValid)
-            return BadRequest(new HttpValidationProblemDetails(validationResult.ToDictionary()));
-
+        // var validationResult = _validator.Validate(vehicle);
+        // if (!validationResult.IsValid)
+        //     return BadRequest(new HttpValidationProblemDetails(validationResult.ToDictionary()));
         var mappedVehicle = _mapper.Map<VehicleUpsertDto, Vehicle>(vehicle);
         mappedVehicle.Id = id;
         var updatedVehicle = await _services.UpdateVehicleAsync(mappedVehicle);
