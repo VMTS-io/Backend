@@ -69,8 +69,9 @@ public class FaultReportController : BaseApiController
 
     #region Get All Reports
     
-    [HttpGet]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = Roles.Manager)]
     [ProducesResponseType(typeof(FaultReportResponse), StatusCodes.Status200OK)]
+    [HttpGet]
     public async Task<ActionResult<IReadOnlyList<FaultReportResponse>>> GetAll([FromQuery] FaultReportSpecParams specParams)
     {
         var faultReports = await _ireportService.GetAllFaultReportsAsync(specParams);
