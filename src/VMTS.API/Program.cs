@@ -29,7 +29,7 @@ namespace VMTS.API
                         JwtBearerDefaults.AuthenticationScheme,
                         auth =>
                         {
-                            auth.Token = app.Configuration["AdminToken"];
+                            auth.Token = app.Configuration["Token:Admin"];
                         }
                     );
             });
