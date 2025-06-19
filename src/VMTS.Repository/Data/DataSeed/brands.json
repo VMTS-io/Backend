@@ -1,0 +1,27 @@
+[
+    {
+        "Id": "1",
+        "Name": "Volvo",
+        "Country": "Sweden"
+    },
+    {
+        "Id": "2",
+        "Name": "Mercedes-Benz",
+        "Country": "Germany"
+    },
+    {
+        "Id": "3",
+        "Name": "Ford",
+        "Country": "United States"
+    },
+    {
+        "Id": "4",
+        "Name": "Toyota",
+        "Country": "Japan"
+    },
+    {
+        "Id": "5",
+        "Name": "Tesla",
+        "Country": "United States"
+    }
+]

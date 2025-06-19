@@ -1,0 +1,78 @@
+[
+    {
+        "Email": "bassel.admin@raafat.com",
+        "UserName": "raafatadmin",
+        "FirstName": "Bassel",
+        "LastName": "Raafat",
+        "DisplayName": "Bassel Raafat",
+        "PhoneNumber": "1234567890",
+        "Address": {
+            "Street": "123 Admin St",
+            "Area": "Nasr City",
+            "Governorate": "Cairo",
+            "Country": "Egypt"
+        },
+        "DateOfBirth": "1985-03-15",
+        "NationalId": "EG123456789",
+        "PictureUrl": "https://example.com/images/admin.jpg",
+        "MustChangePassword": false,
+        "Role": "Admin"
+    },
+    {
+        "Email": "bassel.manager@raafat.com",
+        "UserName": "raafatmanager",
+        "FirstName": "Bassel",
+        "LastName": "Raafat",
+        "DisplayName": "Bassel Raafat",
+        "PhoneNumber": "1234567891",
+        "Address": {
+            "Street": "456 Manager Rd",
+            "Area": "Maadi",
+            "Governorate": "Cairo",
+            "Country": "Egypt"
+        },
+        "DateOfBirth": "1990-07-22",
+        "NationalId": "EG987654321",
+        "PictureUrl": "https://example.com/images/manager.jpg",
+        "MustChangePassword": false,
+        "Role": "Manager"
+    },
+    {
+        "Email": "bassel.mechanic@raafat.com",
+        "UserName": "raafatmechanic",
+        "FirstName": "Bassel",
+        "LastName": "Raafat",
+        "DisplayName": "Bassel Raafat",
+        "PhoneNumber": "1234567892",
+        "Address": {
+            "Street": "789 Mechanic Ave",
+            "Area": "Smouha",
+            "Governorate": "Alexandria",
+            "Country": "Egypt"
+        },
+        "DateOfBirth": "1988-11-10",
+        "NationalId": "EG456789123",
+        "PictureUrl": "https://example.com/images/mechanic.jpg",
+        "MustChangePassword": false,
+        "Role": "Mechanic"
+    },
+    {
+        "Email": "bassel.driver@raafat.com",
+        "UserName": "raafatdriver",
+        "FirstName": "Bassel",
+        "LastName": "Raafat",
+        "DisplayName": "Bassel Raafat",
+        "PhoneNumber": "1234567893",
+        "Address": {
+            "Street": "101 Driver Ln",
+            "Area": "Al-Mansheya",
+            "Governorate": "Luxor",
+            "Country": "Egypt"
+        },
+        "DateOfBirth": "1992-04-05",
+        "NationalId": "EG789123456",
+        "PictureUrl": "https://example.com/images/driver.jpg",
+        "MustChangePassword": false,
+        "Role": "Driver"
+    }
+]
