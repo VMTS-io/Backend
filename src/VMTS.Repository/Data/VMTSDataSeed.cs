@@ -12,20 +12,9 @@ public static class VMTSDataSeed
     private static readonly JsonSerializerOptions _jsonOptions = new()
     {
         Converters = { new JsonStringEnumConverter() },
-        PropertyNameCaseInsensitive = true, // Optional: allows case-insensitive JSON property matching
+        PropertyNameCaseInsensitive = true,
     };
 
-    // public static async Task SeedAsync(VTMSDbContext dbContext)
-    // {
-    //     if (!dbContext.Set<Vehicle>().Any())
-    //     {
-    //         var vehicleText = File.ReadAllText("../VMTS.Repository/Data/DataSeed/vehicles.json");
-    //         var vehicles = JsonSerializer.Deserialize<List<Vehicle>>(vehicleText);
-    //         if (vehicles!.Count > 0)
-    //             await dbContext.AddRangeAsync(vehicles);
-    //         dbContext.SaveChanges();
-    //     }
-    // }
     public static async Task SeedAsync(VTMSDbContext dbContext)
     {
         var strategy = dbContext.Database.CreateExecutionStrategy();
@@ -43,7 +32,6 @@ public static class VMTSDataSeed
             }
             catch (Exception ex)
             {
-                // Log error (ILogger can be injected if needed)
                 Console.WriteLine($"Seeding failed: {ex.Message}");
                 throw;
             }
