@@ -1,0 +1,52 @@
+[
+  {
+    "Id": "1",
+    "Description": "Brake pad replacement due to wear",
+    "Date": "2025-06-01T10:00:00Z",
+    "Status": "Pending",
+    "ManagerId": "6fe15938-ace7-4136-a476-0b39f7bac498",
+    "MechanicId": "cf32c650-7e2a-4f28-bef3-b7909683f24c",
+    "VehicleId": "1",
+    "MaintenanceCategoryId": "17b84c4e-f402-4e2f-b6fd-f9235b9ad3fb"
+  },
+  {
+    "Id": "2",
+    "Description": "Oil change at 80,000 km",
+    "Date": "2025-06-05T14:30:00Z",
+    "Status": "Pending",
+    "ManagerId": "6fe15938-ace7-4136-a476-0b39f7bac498",
+    "MechanicId": "cf32c650-7e2a-4f28-bef3-b7909683f24c",
+    "VehicleId": "2",
+    "MaintenanceCategoryId": "ebc0e556-f2c1-4fca-8437-da028f03751e"
+  },
+  {
+    "Id": "3",
+    "Description": "Annual inspection",
+    "Date": "2025-06-10T09:00:00Z",
+    "Status": "Pending",
+    "ManagerId": "6fe15938-ace7-4136-a476-0b39f7bac498",
+    "MechanicId": "cf32c650-7e2a-4f28-bef3-b7909683f24c",
+    "VehicleId": "3",
+    "MaintenanceCategoryId": "24cc972e-c1d9-45eb-8b0d-8703c6b10c2e"
+  },
+  {
+    "Id": "4",
+    "Description": "Battery check for CNG system",
+    "Date": "2025-06-15T11:00:00Z",
+    "Status": "Pending",
+    "ManagerId": "6fe15938-ace7-4136-a476-0b39f7bac498",
+    "MechanicId": "cf32c650-7e2a-4f28-bef3-b7909683f24c",
+    "VehicleId": "4",
+    "MaintenanceCategoryId": "17b84c4e-f402-4e2f-b6fd-f9235b9ad3fb"
+  },
+  {
+    "Id": "5",
+    "Description": "Battery replacement",
+    "Date": "2025-06-18T13:00:00Z",
+    "Status": "Pending",
+    "ManagerId": "6fe15938-ace7-4136-a476-0b39f7bac498",
+    "MechanicId": "cf32c650-7e2a-4f28-bef3-b7909683f24c",
+    "VehicleId": "5",
+    "MaintenanceCategoryId": "17b84c4e-f402-4e2f-b6fd-f9235b9ad3fb"
+  }
+]

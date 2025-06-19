@@ -1,6 +1,8 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Microsoft.EntityFrameworkCore;
+using VMTS.Core.Entities.Maintenace;
+using VMTS.Core.Entities.Parts;
 using VMTS.Core.Entities.Vehicle_Aggregate;
 
 namespace VMTS.Repository.Data;
@@ -35,6 +37,8 @@ public static class VMTSDataSeed
                 await SeedBrandsAsync(dbContext);
                 await SeedVehicleModelsAsync(dbContext);
                 await SeedVehiclesAsync(dbContext);
+                await SeedPartsAsync(dbContext);
+                await SeedMaintenanceRequestsAsync(dbContext);
                 await dbContext.SaveChangesAsync();
             }
             catch (Exception ex)
@@ -126,6 +130,85 @@ public static class VMTSDataSeed
             {
                 await dbContext.AddRangeAsync(vehicles);
                 Console.WriteLine("Seeded Vehicles");
+            }
+        }
+    }
+
+    private static async Task SeedPartsAsync(VTMSDbContext dbContext)
+    {
+        if (!await dbContext.Set<Part>().AnyAsync())
+        {
+            var filePath = Path.Combine(
+                Directory.GetCurrentDirectory(),
+                "..",
+                "VMTS.Repository",
+                "Data/DataSeed/parts.json"
+            );
+            var jsonText = await File.ReadAllTextAsync(filePath);
+            var parts = JsonSerializer.Deserialize<List<Part>>(jsonText, _jsonOptions);
+            if (parts != null && parts.Count > 0)
+            {
+                await dbContext.AddRangeAsync(parts);
+                Console.WriteLine("Seeded Parts");
+            }
+        }
+    }
+
+    private static async Task SeedMaintenanceRequestsAsync(VTMSDbContext dbContext)
+    {
+        if (!await dbContext.Set<MaintenaceRequest>().AnyAsync())
+        {
+            var filePath = Path.Combine(
+                Directory.GetCurrentDirectory(),
+                "..",
+                "VMTS.Repository",
+                "Data/DataSeed/maintenance_requests.json"
+            );
+            var jsonText = await File.ReadAllTextAsync(filePath);
+            var maintenanceRequests = JsonSerializer.Deserialize<List<MaintenaceRequest>>(
+                jsonText,
+                _jsonOptions
+            );
+            if (maintenanceRequests != null && maintenanceRequests.Count > 0)
+            {
+                foreach (var request in maintenanceRequests)
+                {
+                    // Validate foreign keys
+                    if (!await dbContext.Vehicles.AnyAsync(v => v.Id == request.VehicleId))
+                    {
+                        Console.WriteLine(
+                            $"Invalid VehicleId {request.VehicleId} for maintenance request {request.Description}"
+                        );
+                        continue;
+                    }
+                    if (!await dbContext.BusinessUsers.AnyAsync(u => u.Id == request.ManagerId))
+                    {
+                        Console.WriteLine(
+                            $"Invalid ManagerId {request.ManagerId} for maintenance request {request.Description}"
+                        );
+                        continue;
+                    }
+                    if (!await dbContext.BusinessUsers.AnyAsync(u => u.Id == request.MechanicId))
+                    {
+                        Console.WriteLine(
+                            $"Invalid MechanicId {request.MechanicId} for maintenance request {request.Description}"
+                        );
+                        continue;
+                    }
+                    if (
+                        !await dbContext.MaintenanceCategories.AnyAsync(c =>
+                            c.Id == request.MaintenanceCategoryId
+                        )
+                    )
+                    {
+                        Console.WriteLine(
+                            $"Invalid MaintenanceCategoryId {request.MaintenanceCategoryId} for maintenance request {request.Description}"
+                        );
+                        continue;
+                    }
+                    await dbContext.AddAsync(request);
+                    Console.WriteLine($"Seeded MaintenanceRequest: {request.Description}");
+                }
             }
         }
     }
