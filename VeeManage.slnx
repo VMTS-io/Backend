@@ -1,0 +1,6 @@
+<Solution>
+  <Project Path="src/VMTS.API/VMTS.API.csproj" />
+  <Project Path="src/VMTS.Core/VMTS.Core.csproj" />
+  <Project Path="src/VMTS.Repository/VMTS.Repository.csproj" />
+  <Project Path="src/VMTS.Service/VMTS.Service.csproj" />
+</Solution>
