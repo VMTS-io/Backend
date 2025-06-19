@@ -13,5 +13,10 @@ public class MaintenanceRequestConfiguration : IEntityTypeConfiguration<Maintena
             .WithMany(V => V.MaintenaceRequests)
             .HasForeignKey(MR => MR.VehicleId)
             .OnDelete(DeleteBehavior.Cascade);
+        builder
+            .HasOne(m => m.MaintenanceCategory)
+            .WithMany()
+            .HasForeignKey(m => m.MaintenanceCategoryId)
+            .IsRequired(false);
     }
 }

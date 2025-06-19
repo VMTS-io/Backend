@@ -6,8 +6,10 @@ public enum Categorty
 {
     [EnumMember(Value = "Faults")]
     Faults,
+
     [EnumMember(Value = "Millage")]
     Millage,
-    [EnumMember(Value = "TimeBased")]
-    TimeBased
+
+    [EnumMember(Value = "Time Based")]
+    TimeBased,
 }

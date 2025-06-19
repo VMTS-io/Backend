@@ -17,7 +17,7 @@ namespace VMTS.Repository.Data.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "9.0.4")
+                .HasAnnotation("ProductVersion", "9.0.6")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -74,7 +74,7 @@ namespace VMTS.Repository.Data.Migrations
 
                     b.HasIndex("VehicleId");
 
-                    b.ToTable("FaultReports", (string)null);
+                    b.ToTable("FaultReports");
                 });
 
             modelBuilder.Entity("MaintenaceCategoryMaintenanceFinalReport", b =>
@@ -89,7 +89,7 @@ namespace VMTS.Repository.Data.Migrations
 
                     b.HasIndex("MaintenanceFinalReportId");
 
-                    b.ToTable("MaintenaceCategoryMaintenanceFinalReport", (string)null);
+                    b.ToTable("MaintenaceCategoryMaintenanceFinalReport");
                 });
 
             modelBuilder.Entity("MaintenaceCategoryMaintenanceInitialReport", b =>
@@ -104,7 +104,7 @@ namespace VMTS.Repository.Data.Migrations
 
                     b.HasIndex("MaintenanceInitialReportId");
 
-                    b.ToTable("MaintenaceCategoryMaintenanceInitialReport", (string)null);
+                    b.ToTable("MaintenaceCategoryMaintenanceInitialReport");
                 });
 
             modelBuilder.Entity("MaintenanceFinalReportPart", b =>
@@ -119,7 +119,7 @@ namespace VMTS.Repository.Data.Migrations
 
                     b.HasIndex("MaintenanceFinalReportId");
 
-                    b.ToTable("MaintenanceFinalReportPart", (string)null);
+                    b.ToTable("MaintenanceFinalReportPart");
                 });
 
             modelBuilder.Entity("MaintenanceInitialReportPart", b =>
@@ -134,7 +134,7 @@ namespace VMTS.Repository.Data.Migrations
 
                     b.HasIndex("MissingPartsId");
 
-                    b.ToTable("MaintenanceInitialReportPart", (string)null);
+                    b.ToTable("MaintenanceInitialReportPart");
                 });
 
             modelBuilder.Entity("TripRequest", b =>
@@ -179,7 +179,7 @@ namespace VMTS.Repository.Data.Migrations
 
                     b.HasIndex("VehicleId");
 
-                    b.ToTable("TripsRequests", (string)null);
+                    b.ToTable("TripsRequests");
                 });
 
             modelBuilder.Entity("VMTS.Core.Entities.Identity.Address", b =>
@@ -215,7 +215,7 @@ namespace VMTS.Repository.Data.Migrations
                     b.HasIndex("AppUserId")
                         .IsUnique();
 
-                    b.ToTable("Address", (string)null);
+                    b.ToTable("Address");
                 });
 
             modelBuilder.Entity("VMTS.Core.Entities.Identity.AppUser", b =>
@@ -300,7 +300,7 @@ namespace VMTS.Repository.Data.Migrations
                         .IsUnique()
                         .HasFilter("[PhoneNumber] IS NOT NULL");
 
-                    b.ToTable("AppUser", (string)null);
+                    b.ToTable("AppUser");
                 });
 
             modelBuilder.Entity("VMTS.Core.Entities.Maintenace.MaintenaceCategory", b =>
@@ -317,7 +317,7 @@ namespace VMTS.Repository.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("MaintenanceCategories", (string)null);
+                    b.ToTable("MaintenanceCategories");
                 });
 
             modelBuilder.Entity("VMTS.Core.Entities.Maintenace.MaintenaceReport", b =>
@@ -352,7 +352,7 @@ namespace VMTS.Repository.Data.Migrations
 
                     b.HasIndex("VehicleId");
 
-                    b.ToTable("MaintenanceReports", (string)null);
+                    b.ToTable("MaintenanceReports");
                 });
 
             modelBuilder.Entity("VMTS.Core.Entities.Maintenace.MaintenaceRequest", b =>
@@ -366,6 +366,9 @@ namespace VMTS.Repository.Data.Migrations
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("MaintenanceCategoryId")
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("ManagerId")
                         .IsRequired()
@@ -384,13 +387,15 @@ namespace VMTS.Repository.Data.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("MaintenanceCategoryId");
+
                     b.HasIndex("ManagerId");
 
                     b.HasIndex("MechanicId");
 
                     b.HasIndex("VehicleId");
 
-                    b.ToTable("MaintenanceRequests", (string)null);
+                    b.ToTable("MaintenanceRequests");
                 });
 
             modelBuilder.Entity("VMTS.Core.Entities.Maintenace.MaintenaceTracking", b =>
@@ -412,7 +417,7 @@ namespace VMTS.Repository.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("MaintenanceTrackings", (string)null);
+                    b.ToTable("MaintenanceTrackings");
                 });
 
             modelBuilder.Entity("VMTS.Core.Entities.Maintenace.MaintenanceFinalReport", b =>
@@ -456,7 +461,7 @@ namespace VMTS.Repository.Data.Migrations
 
                     b.HasIndex("VehicleId");
 
-                    b.ToTable("MaintenanceFinalReport", (string)null);
+                    b.ToTable("MaintenanceFinalReport");
                 });
 
             modelBuilder.Entity("VMTS.Core.Entities.Maintenace.MaintenanceInitialReport", b =>
@@ -498,7 +503,7 @@ namespace VMTS.Repository.Data.Migrations
 
                     b.HasIndex("VehicleId");
 
-                    b.ToTable("MaintenanceInitialReport", (string)null);
+                    b.ToTable("MaintenanceInitialReport");
                 });
 
             modelBuilder.Entity("VMTS.Core.Entities.Parts.Part", b =>
@@ -518,7 +523,7 @@ namespace VMTS.Repository.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Parts", (string)null);
+                    b.ToTable("Parts");
                 });
 
             modelBuilder.Entity("VMTS.Core.Entities.Parts.PartCategory", b =>
@@ -536,7 +541,7 @@ namespace VMTS.Repository.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("PartCategories", (string)null);
+                    b.ToTable("PartCategories");
                 });
 
             modelBuilder.Entity("VMTS.Core.Entities.Trip.TripReport", b =>
@@ -572,7 +577,7 @@ namespace VMTS.Repository.Data.Migrations
 
                     b.HasIndex("VehicleId");
 
-                    b.ToTable("TripsReports", (string)null);
+                    b.ToTable("TripsReports");
                 });
 
             modelBuilder.Entity("VMTS.Core.Entities.User_Business.BusinessUser", b =>
@@ -602,7 +607,7 @@ namespace VMTS.Repository.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("BusinessUsers", (string)null);
+                    b.ToTable("BusinessUsers");
                 });
 
             modelBuilder.Entity("VMTS.Core.Entities.Vehicle_Aggregate.Brand", b =>
@@ -620,7 +625,7 @@ namespace VMTS.Repository.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Brand", (string)null);
+                    b.ToTable("Brand");
                 });
 
             modelBuilder.Entity("VMTS.Core.Entities.Vehicle_Aggregate.Vehicle", b =>
@@ -658,7 +663,7 @@ namespace VMTS.Repository.Data.Migrations
 
                     b.HasIndex("ModelId");
 
-                    b.ToTable("Vehicles", (string)null);
+                    b.ToTable("Vehicles");
                 });
 
             modelBuilder.Entity("VMTS.Core.Entities.Vehicle_Aggregate.VehicleCategory", b =>
@@ -676,7 +681,7 @@ namespace VMTS.Repository.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Categories", (string)null);
+                    b.ToTable("Categories");
                 });
 
             modelBuilder.Entity("VMTS.Core.Entities.Vehicle_Aggregate.VehicleModel", b =>
@@ -705,7 +710,7 @@ namespace VMTS.Repository.Data.Migrations
 
                     b.HasIndex("CategoryId");
 
-                    b.ToTable("Models", (string)null);
+                    b.ToTable("Models");
                 });
 
             modelBuilder.Entity("FaultReport", b =>
@@ -852,6 +857,10 @@ namespace VMTS.Repository.Data.Migrations
 
             modelBuilder.Entity("VMTS.Core.Entities.Maintenace.MaintenaceRequest", b =>
                 {
+                    b.HasOne("VMTS.Core.Entities.Maintenace.MaintenaceCategory", "MaintenanceCategory")
+                        .WithMany()
+                        .HasForeignKey("MaintenanceCategoryId");
+
                     b.HasOne("VMTS.Core.Entities.User_Business.BusinessUser", "Manager")
                         .WithMany("ManagerMaintenaceRequests")
                         .HasForeignKey("ManagerId")
@@ -869,6 +878,8 @@ namespace VMTS.Repository.Data.Migrations
                         .HasForeignKey("VehicleId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("MaintenanceCategory");
 
                     b.Navigation("Manager");
 

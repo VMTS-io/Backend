@@ -22,4 +22,12 @@ public class MaintenaceRequest : BaseEntity
     public Vehicle Vehicle { get; set; } = default!;
 
     public string VehicleId { get; set; } = default!;
+
+    public MaintenaceCategory MaintenanceCategory { get; set; } = default!;
+
+    public string MaintenanceCategoryId { get; set; } = default!;
+
+    // public FaultReport FaultReport { get; set; } = default!;
+    //
+    // public string? FaultReportId { get; set; } = default!;
 }
