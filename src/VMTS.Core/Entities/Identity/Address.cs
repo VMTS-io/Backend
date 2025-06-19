@@ -1,15 +1,15 @@
-﻿namespace VMTS.Core.Entities.Identity;
+﻿using System.ComponentModel.DataAnnotations.Schema;
 
+namespace VMTS.Core.Entities.Identity;
 
 public class Address
 {
-        public int Id { get; set; }
-        public string Street { get; set; } // Example: "El Tahrir St."
-        public string Area { get; set; } // Example: "Nasr City, Maadi, Mohandessin"
-        public string Governorate { get; set; } // Example: "Cairo, Giza, Alexandria"
-        public string Country { get; set; }  // Default value since your system is for Egypt
-        
-        
-        public string AppUserId { get; set; } // foreign Key
-}
+    [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+    public int Id { get; set; }
+    public string Street { get; set; } = default!;
+    public string Area { get; set; } = default!;
+    public string Governorate { get; set; } = default!;
+    public string Country { get; set; } = default!;
 
+    public string AppUserId { get; set; } = default!;
+}

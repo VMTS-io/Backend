@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Scalar.AspNetCore;
 using VMTS.API.Extensions;
 using VMTS.API.Middlewares;
@@ -11,7 +12,6 @@ namespace VMTS.API
             var builder = WebApplication.CreateBuilder(args);
 
             // Add services to the container.
-
             builder.Services.AddAppServices(builder.Configuration);
             builder.Services.AddIdentityServices(builder.Configuration);
 
@@ -21,8 +21,18 @@ namespace VMTS.API
             await app.ApplySeedAsync();
 
             app.MapOpenApi();
-            app.MapScalarApiReference();
-
+            app.MapScalarApiReference(options =>
+            {
+                options
+                    .AddPreferredSecuritySchemes(JwtBearerDefaults.AuthenticationScheme)
+                    .AddHttpAuthentication(
+                        JwtBearerDefaults.AuthenticationScheme,
+                        auth =>
+                        {
+                            auth.Token = app.Configuration["Token:Admin"];
+                        }
+                    );
+            });
             app.UseHttpsRedirection();
             app.UseMiddleware<ExceptionMiddleware>();
             // app.UseExceptionHandler();

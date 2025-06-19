@@ -7,7 +7,6 @@ using VMTS.API.Errors;
 using VMTS.API.GlobalExceptionHnadler;
 using VMTS.API.Helpers;
 using VMTS.API.Middlewares;
-using VMTS.Core.Entities.Maintenace;
 using VMTS.Core.Interfaces.Repositories;
 using VMTS.Core.Interfaces.Services;
 using VMTS.Core.Interfaces.UnitOfWork;
@@ -53,7 +52,10 @@ public static class VTMSServicesExtension
         services.AddValidatorsFromAssemblyContaining<Program>();
         services.AddScoped(typeof(ValidateModelActionFilter<>));
         services.AddCors();
-        services.AddOpenApi();
+        services.AddOpenApi(options =>
+        {
+            options.AddDocumentTransformer<BearerSecuritySchemeTransformer>();
+        });
 
         services.AddSingleton<ExceptionMiddleware>();
         services.AddDbContext<VTMSDbContext>(options =>

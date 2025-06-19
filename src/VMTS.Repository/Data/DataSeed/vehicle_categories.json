@@ -1,0 +1,27 @@
+[
+    {
+        "Id": "1",
+        "Name": "Truck",
+        "Description": "Heavy-duty vehicles for transporting goods."
+    },
+    {
+        "Id": "2",
+        "Name": "Bus",
+        "Description": "Vehicles designed for passenger transport."
+    },
+    {
+        "Id": "3",
+        "Name": "Van",
+        "Description": "Medium-sized vehicles for cargo or passengers."
+    },
+    {
+        "Id": "4",
+        "Name": "Car",
+        "Description": "Light vehicles for small groups or individuals."
+    },
+    {
+        "Id": "5",
+        "Name": "Motorcycle",
+        "Description": "Two-wheeled vehicles for quick delivery or patrol."
+    }
+]

@@ -21,14 +21,14 @@ public static class SeedingExtension
         try
         {
             await VMTSDataSeed.SeedAsync(dbContext);
-            // await IdentityDataSeed.SeedAsync(
-            //     userManager,
-            //     roleManager,
-            //     dbContext,
-            //     identityDbContext,
-            //     app.Configuration,
-            //     loggerFactory.CreateLogger<IdentityDataSeed>()
-            // );
+            await IdentityDataSeed.SeedAsync(
+                userManager,
+                roleManager,
+                dbContext,
+                identityDbContext,
+                app.Configuration,
+                loggerFactory.CreateLogger<IdentityDataSeed>()
+            );
         }
         catch (Exception ex)
         {
