@@ -24,13 +24,13 @@ public class VehicleSpecParams
         set { search = value?.ToLower() ?? ""; }
     }
 
-    // public int PageIndex { get; set; }
-    // private int pagesize = 5;
-    // private const int maxsize = 10;
+    public int PageIndex { get; set; } = 1;
+    private int _pageSize = 5;
+    private const int _maxSize = 10;
 
-    // public int PageSize
-    // {
-    //     get { return pagesize; }
-    //     set { pagesize = value > maxsize ? maxsize : value; }
-    // }
+    public int PageSize
+    {
+        get { return _pageSize; }
+        set { _pageSize = value > _maxSize ? _maxSize : value; }
+    }
 }
