@@ -20,7 +20,6 @@ public static class SeedingExtension
         var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
         try
         {
-            await VMTSDataSeed.SeedAsync(dbContext);
             await IdentityDataSeed.SeedAsync(
                 userManager,
                 roleManager,
@@ -29,6 +28,7 @@ public static class SeedingExtension
                 app.Configuration,
                 loggerFactory.CreateLogger<IdentityDataSeed>()
             );
+            await VMTSDataSeed.SeedAsync(dbContext, loggerFactory.CreateLogger<VMTSDataSeed>());
         }
         catch (Exception ex)
         {
