@@ -78,6 +78,6 @@ public class VehicleIncludesSpecification : BaseSpecification<Vehicle>
             AddOrderBy(v => v.Status);
         }
 
-        // AddPaginaiton((specParams.PageIndex - 1), (specParams.PageSize));
+        AddPaginaiton(specParams.PageIndex - 1, specParams.PageSize);
     }
 }

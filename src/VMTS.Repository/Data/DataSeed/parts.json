@@ -1,0 +1,32 @@
+[
+    {
+        "Id": "1",
+        "Name": "Brake Pads",
+        "Quantity": 20,
+        "Cost": 50.00
+    },
+    {
+        "Id": "2",
+        "Name": "Oil Filter",
+        "Quantity": 30,
+        "Cost": 15.00
+    },
+    {
+        "Id": "3",
+        "Name": "Battery",
+        "Quantity": 10,
+        "Cost": 100.00
+    },
+    {
+        "Id": "4",
+        "Name": "Air Filter",
+        "Quantity": 25,
+        "Cost": 20.00
+    },
+    {
+        "Id": "5",
+        "Name": "Spark Plugs",
+        "Quantity": 40,
+        "Cost": 10.00
+    }
+]
