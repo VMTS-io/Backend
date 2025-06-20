@@ -1,6 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-
-namespace VMTS.Core.Entities.Maintenace;
+﻿namespace VMTS.Core.Entities.Maintenace;
 
 public class MaintenaceTracking : BaseEntity
 {
@@ -11,6 +9,4 @@ public class MaintenaceTracking : BaseEntity
     public DateTime NextMaintainDate { get; set; }
 
     public MaintenanceType MaintenanceType { get; set; }
-    
-    
 }
