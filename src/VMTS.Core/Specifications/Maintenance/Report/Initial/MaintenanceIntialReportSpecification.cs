@@ -7,7 +7,7 @@ public class MaintenanceIntialReportSpecification : BaseSpecification<Maintenanc
     private void ApplyIncludes()
     {
         Includes.Add(mir => mir.Vehicle);
-        Includes.Add(mir => mir.MaintenanceCategories);
+        Includes.Add(mir => mir.MaintenanceCategory);
         Includes.Add(mir => mir.MaintenanceRequest);
         Includes.Add(mir => mir.MissingParts);
     }

@@ -34,11 +34,10 @@ public class MaintenanceInitialReportServices : IMaintenanceInitialReportService
     #region Create
     public async Task CreateInitialReportAsync(
         MaintenanceInitialReport report,
-        List<string> categoryIds,
-        List<string>? partIds
+        List<string> partIds
     )
     {
-        var validatedReport = await ValidateAndResolveAsync(report, categoryIds, partIds);
+        var validatedReport = await ValidateAndResolveAsync(report, partIds);
 
         if (validatedReport.MissingParts is null || validatedReport.MissingParts.Count == 0)
         {
@@ -53,14 +52,13 @@ public class MaintenanceInitialReportServices : IMaintenanceInitialReportService
     #region Update
     public async Task UpdateInitialReportAsync(
         MaintenanceInitialReport updatedReport,
-        List<string> categoryIds,
-        List<string>? partIds
+        List<string> partIds
     )
     {
         var report = await GetReportOrThrowAsync(updatedReport.Id);
         // updatedReport.ManagerId = report.ManagerId;
         updatedReport.MechanicId = report.MechanicId;
-        var validatedReport = await ValidateAndResolveAsync(updatedReport, categoryIds, partIds);
+        var validatedReport = await ValidateAndResolveAsync(updatedReport, partIds);
         _reportRepo.Update(validatedReport);
         await _unitOfWork.SaveChanges();
     }
@@ -112,8 +110,7 @@ public class MaintenanceInitialReportServices : IMaintenanceInitialReportService
     #region Velidate And Resolve
     private async Task<MaintenanceInitialReport> ValidateAndResolveAsync(
         MaintenanceInitialReport report,
-        List<string> categoryIds,
-        List<string>? partIds
+        List<string> partIds
     )
     {
         report.MaintenanceRequest =
@@ -131,37 +128,43 @@ public class MaintenanceInitialReportServices : IMaintenanceInitialReportService
             await _userRepo.GetByIdAsync(report.MechanicId)
             ?? throw new NotFoundException($"Mechanic with ID {report.MechanicId} not found");
 
-        // report.Manager =
-        //     await _userRepo.GetByIdAsync(report.MaintenaceRequest.ManagerId)
-        //     ?? throw new NotFoundException($"Manager with ID {report.ManagerId} not found");
-
         report.Vehicle =
             await _vehicleRepo.GetByIdAsync(report.MaintenanceRequest.VehicleId)
             ?? throw new NotFoundException($"Vehicle with ID {report.VehicleId} not found");
 
-        // report.VehicleId = report.MaintenaceRequest.VehicleId;
-        // report.ManagerId = report.MaintenaceRequest.ManagerId;
-        // Validate and attach categories
-        var foundCategories = await _categoryRepo.GetByIdsAsync(categoryIds);
-        if (foundCategories.Count != categoryIds.Count)
-        {
-            var missing = categoryIds.Except(foundCategories.Select(c => c.Id));
-            throw new NotFoundException($"Missing categories: {string.Join(", ", missing)}");
-        }
-        report.MaintenanceCategories = [.. foundCategories];
+        report.MaintenanceCategory =
+            await _categoryRepo.GetByIdAsync(report.MaintenanceRequest.MaintenanceCategoryId)
+            ?? throw new NotFoundException($"Vehicle with ID {report.VehicleId} not found");
 
-        // Validate and attach parts (optional)
-        if (partIds is not null)
+        var foundParts = await _partRepo.GetByIdsAsync(partIds);
+        if (foundParts.Count != partIds.Count)
         {
-            var foundParts = await _partRepo.GetByIdsAsync(partIds);
-            if (foundParts.Count != partIds.Count)
-            {
-                var missing = partIds.Except(foundParts.Select(p => p.Id));
-                throw new NotFoundException($"Missing parts: {string.Join(", ", missing)}");
-            }
-            report.MissingParts = [.. foundParts];
+            var missingFromDb = partIds.Except(foundParts.Select(p => p.Id));
+            throw new NotFoundException(
+                $"The following part IDs do not exist: {string.Join(", ", missingFromDb)}"
+            );
         }
 
+        var outOfStockParts = foundParts.Where(p => p.Quantity <= 0).ToList();
+        // report.ExpectedChangedParts
+        // report.ExpectedChangedParts = [.. foundParts];
+        report.MissingParts = [.. outOfStockParts];
+
+        var partIdsV2 = report.ExpectedChangedParts.Select(ecp => ecp.PartId).ToList();
+        var foundPartsV2 = await _partRepo.GetByIdsAsync(partIdsV2);
+        if (foundPartsV2.Count != partIdsV2.Count)
+        {
+            var missingFromDb = partIds.Except(foundParts.Select(p => p.Id));
+            throw new NotFoundException(
+                $"The following part IDs do not exist: {string.Join(", ", missingFromDb)}"
+            );
+        }
+        var outOfStockPartsV2 = foundPartsV2.Where(p =>
+            p.Quantity < report.ExpectedChangedParts.First(ecp => ecp.PartId == p.Id).Quantity
+        );
+        // report.ExpectedChangedParts
+        // report.ExpectedChangedParts = [.. foundParts];
+        report.MissingParts = [.. outOfStockPartsV2];
         return report;
     }
     #endregion
