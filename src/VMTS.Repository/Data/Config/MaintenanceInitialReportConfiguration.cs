@@ -10,8 +10,12 @@ public class MaintenanceInitialReportConfiguration
     public void Configure(EntityTypeBuilder<MaintenanceInitialReport> builder)
     {
         builder.HasMany(mir => mir.MissingParts).WithMany();
+        // builder.HasMany(mir => mir.ExpectedChangedParts).WithMany();
 
-        builder.HasMany(mir => mir.MaintenanceCategories).WithMany();
+        builder
+            .HasOne(mir => mir.MaintenanceCategory)
+            .WithMany()
+            .HasForeignKey(mir => mir.MaintenanceCategoryId);
 
         builder
             .HasOne(mir => mir.Mechanic)

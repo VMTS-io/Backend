@@ -15,9 +15,11 @@ public class MaintenanceInitialReport : BaseEntity
 
     // public Status Status { get; set; } = Status.InProgress;
 
-    public ICollection<MaintenaceCategory> MaintenanceCategories { get; set; } = [];
+    public MaintenaceCategory MaintenanceCategory { get; set; } = default!;
+    public string MaintenanceCategoryId { get; set; } = default!;
 
     public ICollection<Part> MissingParts { get; set; } = [];
+    public ICollection<MaintnenanceInitialReportParts> ExpectedChangedParts { get; set; } = [];
 
     public BusinessUser Mechanic { get; set; } = default!;
     public string MechanicId { get; set; } = default!;
