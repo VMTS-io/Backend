@@ -401,6 +401,9 @@ namespace VMTS.Repository.Data.Migrations
                     b.Property<DateTime>("NextMaintainDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<DateTime>("PreviousMaintainDate")
+                        .HasColumnType("datetime2");
+
                     b.HasKey("Id");
 
                     b.ToTable("MaintenanceTrackings");
