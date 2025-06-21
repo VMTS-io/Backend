@@ -6,6 +6,5 @@ public class MaintenanceInitialReportRequestDto
     public decimal ExpectedCost { get; set; }
     public DateOnly ExpectedFinishDate { get; set; }
     public string MaintenaceRequestId { get; set; } = default!;
-    public List<string> ExpectedChangedParts { get; set; } = [];
-    public List<MaintenanceInitialReprotPartDto> ExpectedChangedPartsV2 { get; set; } = [];
+    public List<MaintenanceInitialReprotPartDto> ExpectedChangedParts { get; set; } = [];
 }
