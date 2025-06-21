@@ -15,23 +15,69 @@ internal sealed class BearerSecuritySchemeTransformer(
         CancellationToken cancellationToken
     )
     {
-        var authschemes = await authenticationSchemeProvider.GetAllSchemesAsync();
-        if (
-            authschemes.Any(authScheme => authScheme.Name == JwtBearerDefaults.AuthenticationScheme)
-        )
+        var authSchemes = await authenticationSchemeProvider.GetAllSchemesAsync();
+
+        if (authSchemes.Any(auth => auth.Name == JwtBearerDefaults.AuthenticationScheme))
         {
-            var requirements = new Dictionary<string, OpenApiSecurityScheme>
+            // Define multiple security schemes
+            var securitySchemes = new Dictionary<string, OpenApiSecurityScheme>
             {
-                [JwtBearerDefaults.AuthenticationScheme] = new OpenApiSecurityScheme
+                ["Admin"] = new OpenApiSecurityScheme
                 {
                     Type = SecuritySchemeType.Http,
-                    Scheme = JwtBearerDefaults.AuthenticationScheme.ToLower(),
+                    Scheme = "bearer",
                     In = ParameterLocation.Header,
-                    BearerFormat = "Json Web Token",
+                    BearerFormat = "JWT",
+                    Description = "JWT for regular users",
+                },
+                ["Manager"] = new OpenApiSecurityScheme
+                {
+                    Type = SecuritySchemeType.Http,
+                    Scheme = "bearer",
+                    In = ParameterLocation.Header,
+                    BearerFormat = "JWT",
+                    Description = "JWT for Manager users",
+                },
+                ["Driver"] = new OpenApiSecurityScheme
+                {
+                    Type = SecuritySchemeType.Http,
+                    Scheme = "bearer",
+                    In = ParameterLocation.Header,
+                    BearerFormat = "JWT",
+                    Description = "JWT for Driver users",
                 },
             };
+
+            // Ensure components are initialized
             document.Components ??= new OpenApiComponents();
-            document.Components.SecuritySchemes = requirements;
+
+            foreach (var kvp in securitySchemes)
+            {
+                document.Components.SecuritySchemes[kvp.Key] = kvp.Value;
+            }
+
+            // Add security requirements (both will show in Scalar)
+            document.SecurityRequirements ??= new List<OpenApiSecurityRequirement>();
+
+            foreach (var schemeKey in securitySchemes.Keys)
+            {
+                document.SecurityRequirements.Add(
+                    new OpenApiSecurityRequirement
+                    {
+                        {
+                            new OpenApiSecurityScheme
+                            {
+                                Reference = new OpenApiReference
+                                {
+                                    Type = ReferenceType.SecurityScheme,
+                                    Id = schemeKey,
+                                },
+                            },
+                            Array.Empty<string>()
+                        },
+                    }
+                );
+            }
         }
     }
 }
