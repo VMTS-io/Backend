@@ -13,7 +13,7 @@ public class BusinessUser : BaseEntity
 
     public string PhoneNumber { get; set; } = default!;
 
-    public string Role { get; set; } = default!;
+    public string? Role { get; set; } = default!;
 
     public ICollection<TripRequest> ManagerTripRequest { get; set; } = [];
 
