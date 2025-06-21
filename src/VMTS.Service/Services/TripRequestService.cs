@@ -1,13 +1,19 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using System.Runtime.InteropServices;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Identity.Client;
 using VMTS.Core.Entities.Identity;
 using VMTS.Core.Entities.Maintenace;
 using VMTS.Core.Entities.Report;
 using VMTS.Core.Entities.Trip;
+using VMTS.Core.Entities.User_Business;
 using VMTS.Core.Entities.Vehicle_Aggregate;
+using VMTS.Core.Helpers;
 using VMTS.Core.Interfaces.UnitOfWork;
 using VMTS.Core.ServicesContract;
+using VMTS.Core.Specifications;
+using VMTS.Core.Specifications.TripRequestSpecification;
 using VMTS.Core.Specifications.VehicleSpecification;
+using VMTS.Service.Exceptions;
 
 namespace VMTS.Service.Services;
 
@@ -16,32 +22,34 @@ public class TripRequestService : ITripRequestService
     private readonly UserManager<AppUser> _userManager;
     private readonly IUnitOfWork _unitOfWork;
 
-    public TripRequestService(UserManager<AppUser> userManager, IUnitOfWork unitOfWork)
+    public TripRequestService(IUnitOfWork unitOfWork)
     {
-        _userManager = userManager;
         _unitOfWork = unitOfWork;
     }
 
+    #region create
+
     public async Task<TripRequest> CreateTripRequestAsync(
-        string managerEmail,
-        string driverEmail,
+        string managerId,
+        string driverId,
         string vehicleId,
         TripType tripType,
+        DateTime date,
         string details,
         string destination
     )
     {
-        // Get manager
-        var manager = await _userManager.FindByEmailAsync(managerEmail);
+        /// Get manager
+        var manager = await _unitOfWork.GetRepo<BusinessUser>().GetByIdAsync(managerId);
         if (manager is null)
-            throw new UnauthorizedAccessException("Unauthorized: unable to find manager");
-        var managerId = manager.Id;
+            throw new NotFoundException("Unable to find manager");
 
         // Get driver
-        var driver = await _userManager.FindByEmailAsync(driverEmail);
+        var driver = await _unitOfWork.GetRepo<BusinessUser>().GetByIdAsync(driverId);
         if (driver is null)
-            throw new UnauthorizedAccessException("Unauthorized: unable to find driver");
-        var driverId = driver.Id;
+            throw new NotFoundException("Unable to find driver");
+        if (driver.Role != Roles.Driver)
+            throw new InvalidOperationException("You must pick a driver");
 
         // Get vehicle
         var vehicleSpec = new VehicleIncludesSpecification(vehicleId);
@@ -49,26 +57,156 @@ public class TripRequestService : ITripRequestService
             .GetRepo<Vehicle>()
             .GetByIdWithSpecificationAsync(vehicleSpec);
         if (vehicle is null)
-            throw new InvalidOperationException("Vehicle not found");
+            throw new NotFoundException("Vehicle not found");
 
-        // Create TripRequest
+        var vehicleUnderMaintenance = await _unitOfWork.GetRepo<Vehicle>().GetByIdAsync(vehicleId);
+
+        if (vehicleUnderMaintenance.Status == VehicleStatus.UnderMaintenance)
+            throw new InvalidOperationException("Vehicle is under maintenance");
+
+        // Check for past date
+        if (date.Date < DateTime.UtcNow.Date)
+            throw new ArgumentException("Trip date cannot be in the past.");
+
+        // Check driver availability
+        var driverAvailabilitySpec = new TripRequestIncludesSpecification(
+            new TripRequestSpecParams { DriverId = driverId, Status = TripStatus.Approved }
+        );
+        var driverTrips = await _unitOfWork
+            .GetRepo<TripRequest>()
+            .GetAllWithSpecificationAsync(driverAvailabilitySpec);
+        if (driverTrips.Any())
+            throw new InvalidOperationException("Driver already has a trip on this date.");
+
+        // Check vehicle availability
+        var vehicleAvailabilitySpec = new TripRequestIncludesSpecification(
+            new TripRequestSpecParams { VehicleId = vehicleId, Status = TripStatus.Approved }
+        );
+        var vehicleTrips = await _unitOfWork
+            .GetRepo<TripRequest>()
+            .GetAllWithSpecificationAsync(vehicleAvailabilitySpec);
+
+        if (vehicleTrips.Any())
+            throw new InvalidOperationException("Vehicle already on a trip right now");
+
         var tripRequest = new TripRequest
         {
             Id = Guid.NewGuid().ToString(),
             Type = tripType,
             Destination = destination,
             Details = details,
-            Date = DateTime.UtcNow,
+            Date = date,
             Status = TripStatus.Pending,
             DriverId = driverId,
             ManagerId = managerId,
             VehicleId = vehicleId,
         };
 
-        // Save to database
         await _unitOfWork.GetRepo<TripRequest>().CreateAsync(tripRequest);
-        var result = await _unitOfWork.SaveChanges();
 
-        return result > 0 ? tripRequest : null;
+        var result = await _unitOfWork.SaveChanges();
+        if (result <= 0)
+            throw new Exception("Failed to create trip request.");
+
+        // Load with includes
+        var specs = new TripRequestIncludesSpecification(
+            new TripRequestSpecParams { TripId = tripRequest.Id }
+        );
+        var fullTrip = await _unitOfWork
+            .GetRepo<TripRequest>()
+            .GetByIdWithSpecificationAsync(specs);
+
+        return fullTrip!;
     }
+
+    #endregion
+
+    #region Update
+
+    public async Task UpdateTripRequestAsync(
+        string tripId,
+        string managerId,
+        string driverId,
+        string vehicleId,
+        string destination,
+        string details,
+        DateTime date,
+        TripType tripType,
+        TripStatus status
+    )
+    {
+        var trip = await _unitOfWork.GetRepo<TripRequest>().GetByIdAsync(tripId);
+        if (trip is null)
+            throw new NotFoundException("Trip Request Not Found");
+
+        if (trip.ManagerId != managerId)
+            throw new ForbbidenException("you are not authorized to update this trip request.");
+
+        trip.Date = date;
+        trip.Destination = destination;
+        trip.Details = details;
+        trip.DriverId = driverId;
+        trip.VehicleId = vehicleId;
+        trip.Type = tripType;
+        trip.Status = status;
+
+        _unitOfWork.GetRepo<TripRequest>().Update(trip);
+        await _unitOfWork.SaveChanges();
+    }
+
+    #endregion
+
+    #region Delete
+    public async Task DeleteTripRequestAsync(string tripId, string managerId)
+    {
+        var trip = await _unitOfWork.GetRepo<TripRequest>().GetByIdAsync(tripId);
+        if (trip is null)
+            throw new NotFoundException("Trip request not found.");
+
+        if (trip.ManagerId != managerId)
+            throw new ForbbidenException("You are not authorized to delete this trip request.");
+
+        _unitOfWork.GetRepo<TripRequest>().Delete(trip);
+        await _unitOfWork.SaveChanges();
+    }
+
+    #endregion
+
+    #region Get By Id
+    public async Task<TripRequest> GetTripRequestByIdAsync(string id)
+    {
+        var spec = new TripRequestIncludesSpecification(id);
+        return await _unitOfWork.GetRepo<TripRequest>().GetByIdWithSpecificationAsync(spec)
+            ?? throw new NotFoundException("Trip Request Not Found");
+    }
+
+    #endregion
+
+    #region Get All
+
+    public async Task<IReadOnlyList<TripRequest>> GetAllTripRequestsAsync(
+        TripRequestSpecParams specParams
+    )
+    {
+        var spec = new TripRequestIncludesSpecification(specParams);
+        return await _unitOfWork.GetRepo<TripRequest>().GetAllWithSpecificationAsync(spec);
+    }
+
+    #endregion
+
+    #region Get All Trip Requests For User
+    public async Task<IReadOnlyList<TripRequest>> GetAllTripsForUserAsync(
+        TripRequestSpecParams specParams
+    )
+    {
+        var user = await _unitOfWork.GetRepo<BusinessUser>().GetByIdAsync(specParams.DriverId);
+        if (user == null)
+            throw new NotFoundException("Driver not found.");
+
+        var spec = new TripRequestIncludesSpecification(specParams);
+        var trips = await _unitOfWork.GetRepo<TripRequest>().GetAllWithSpecificationAsync(spec);
+        return trips;
+    }
+
+    #endregion
 }
