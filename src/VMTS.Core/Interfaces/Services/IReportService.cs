@@ -8,22 +8,34 @@ namespace VMTS.Core.ServicesContract;
 public interface IReportService
 {
     Task<FaultReport> CreateFaultReportAsync(
-        string userEmail,
+        string userId,
         string details,
         MaintenanceType faultType,
         decimal cost,
         int fuelRefile,
-        string address);
+        string address
+    );
 
     Task<IReadOnlyList<FaultReport>> GetAllFaultReportsAsync(FaultReportSpecParams specParams);
-    
-    Task<IReadOnlyList<FaultReport>>GetAllFaultReportsForUserAsync(string UserId, FaultReportSpecParams specParams);
+
+    Task<IReadOnlyList<FaultReport>> GetAllFaultReportsForUserAsync(
+        FaultReportSpecParams specParams
+    );
 
     Task<FaultReport> GetFaultReportByIdAsync(string id);
-    
-    Task<IReadOnlyList<FaultReport>> GetAllFaultReportsForVehicleAsync(string vehicleId , FaultReportSpecParams specParams);
 
-    Task UpdateFaultReportAsync (string reportId,string driverId,string details,string faultAddress,decimal cost,int fuelRefile);
-    Task DeleteFaultReportAsync(string reportId ,string managerId);
-    
+    // Task<IReadOnlyList<FaultReport>> GetAllFaultReportsForVehicleAsync(
+    //     string vehicleId,
+    //     FaultReportSpecParams specParams
+    // );
+
+    Task UpdateFaultReportAsync(
+        string reportId,
+        string driverId,
+        string details,
+        string faultAddress,
+        decimal cost,
+        int fuelRefile
+    );
+    Task DeleteFaultReportAsync(string reportId, string managerId);
 }

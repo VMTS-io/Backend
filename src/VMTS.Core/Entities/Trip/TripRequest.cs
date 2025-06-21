@@ -7,8 +7,15 @@ public class TripRequest : BaseEntity
 {
     public TripRequest() { }
 
-    public TripRequest(TripType type, string details, string destination, 
-        TripStatus status, string driverId, string managerId, string vehicleId)
+    public TripRequest(
+        TripType type,
+        string details,
+        string destination,
+        TripStatus status,
+        string driverId,
+        string managerId,
+        string vehicleId
+    )
     {
         Type = type;
         Details = details;
@@ -25,17 +32,17 @@ public class TripRequest : BaseEntity
     public DateTime Date { get; set; }
     public TripStatus Status { get; set; }
 
-    public ICollection<FaultReport> FaultReports { get; set; } = new HashSet<FaultReport>();
+    public FaultReport FaultReports { get; set; }
 
-    // Foreign Key for Vehicle 
+    // Foreign Key for Vehicle
     public string VehicleId { get; set; }
-    
-    // Navigation Property 
-    public Vehicle? Vehicle { get; set; } 
 
-    public string DriverId { get; set; } 
+    // Navigation Property
+    public Vehicle? Vehicle { get; set; }
+
+    public string DriverId { get; set; }
     public BusinessUser? Driver { get; set; }
 
-    public string ManagerId { get; set; } 
+    public string ManagerId { get; set; }
     public BusinessUser? Manager { get; set; }
 }

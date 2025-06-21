@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using VMTS.API.Dtos;
+using VMTS.API.Dtos.Maintenance;
 using VMTS.API.Dtos.Maintenance.Category;
 using VMTS.API.Dtos.Maintenance.Report.Initial;
 using VMTS.API.Dtos.Maintenance.Request;
@@ -29,6 +30,10 @@ public class MappingProfile : Profile
         CreateMap<FaultReport, FaultReportResponse>()
             .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(src => src.ReportedAt));
 
+        CreateMap<TripRequest, TripRequestResponse>()
+            .ForMember(dest => dest.Driver, opt => opt.MapFrom(src => src.Driver))
+            .ForMember(dest => dest.Vehicle, opt => opt.MapFrom(src => src.Vehicle));;
+        
         CreateMap<AddressDto, Address>()
             .ForMember(dest => dest.AppUserId, opt => opt.Ignore()) // Explicitly ignore this
             .ForAllMembers(opts => opts.Condition((src, dest, srcMember) => srcMember != null)); // Apply null-check to all others
@@ -51,7 +56,8 @@ public class MappingProfile : Profile
 
         CreateMap<AppUser, DriverDto>();
         CreateMap<BusinessUser, DriverDto>();
-        CreateMap<Vehicle, VehicleDto>();
+        CreateMap<Vehicle, VehicleDto>()
+            .ForMember(dest => dest.VehicleModelDto, opt => opt.MapFrom(src => src.VehicleModel));
         CreateMap<TripRequest, TripDto>();
 
         CreateMap<Vehicle, AdminVehicleListDto>()
@@ -69,10 +75,12 @@ public class MappingProfile : Profile
 
         CreateMap<Vehicle, VehicleListDto>()
             .ForMember(dest => dest.ModelYear, opt => opt.MapFrom(src => src.ModelYear.Year));
-
+        CreateMap<VehicleDto, VehicleCategoryDto>();
         CreateMap<VehicleCategory, VehicleCategoryDto>();
         CreateMap<VehicleCategoryUpsertDto, VehicleCategory>();
-        CreateMap<VehicleModel, VehicleModelDto>();
+        CreateMap<VehicleModel, VehicleModelDto>()
+            .ForMember(dest => dest.Brand, opt => opt.MapFrom(src => src.Brand))
+            .ForMember(dest => dest.Category, opt => opt.MapFrom(src => src.Category));;
         CreateMap<VehicleModelUpsertDto, VehicleModel>();
         CreateMap<TripRequest, TripRequestDto>();
         CreateMap<TripReport, TripReportDto>();
@@ -110,5 +118,7 @@ public class MappingProfile : Profile
         CreateMap<CreateOrUpdateBrandDto, Brand>();
         CreateMap<CreateOrUpdatePartDto, Part>();
         // .ForMember(dest => dest.Category, opt => opt.MapFrom(src => src.VehicleCategory.Name));
+        
+
     }
 }

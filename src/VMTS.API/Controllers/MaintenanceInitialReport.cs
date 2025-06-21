@@ -1,8 +1,10 @@
 using System.Security.Claims;
 using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using VMTS.API.Dtos.Maintenance.Report.Initial;
 using VMTS.Core.Entities.Maintenace;
+using VMTS.Core.Helpers;
 using VMTS.Core.Interfaces.Services;
 using VMTS.Core.Specifications.Maintenance.Report.Initial;
 
@@ -25,6 +27,7 @@ public class MaintenanceInitialReportController : BaseApiController
     }
 
     #region Create
+    [Authorize(Roles = Roles.Mechanic)]
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] MaintenanceInitialReportRequestDto dto)
     {
@@ -41,6 +44,7 @@ public class MaintenanceInitialReportController : BaseApiController
     #endregion
 
     #region Update
+    [Authorize(Roles = Roles.Mechanic)]
     [HttpPut("{id}")]
     public async Task<IActionResult> Update(
         [FromRoute] string id,
@@ -59,6 +63,7 @@ public class MaintenanceInitialReportController : BaseApiController
     #endregion
 
     #region Delete
+    [Authorize(Roles = $"{Roles.Mechanic},{Roles.Manager}")]
     [HttpDelete("{id}")]
     public async Task<IActionResult> Delete([FromRoute] string id)
     {
@@ -68,6 +73,7 @@ public class MaintenanceInitialReportController : BaseApiController
     #endregion
 
     #region Get by id
+    [Authorize(Roles = $"{Roles.Mechanic},{Roles.Manager}")]
     [HttpGet("{id}")]
     public async Task<ActionResult<MaintenanceInitialReportResponseDto>> GetById(string id)
     {
@@ -78,6 +84,7 @@ public class MaintenanceInitialReportController : BaseApiController
     #endregion
 
     #region Get All
+    [Authorize(Roles = $"{Roles.Mechanic},{Roles.Manager}")]
     [HttpGet]
     public async Task<ActionResult<IReadOnlyList<MaintenanceInitialReportResponseDto>>> GetAll(
         [FromQuery] MaintenanceIntialReportSpecParams specParams

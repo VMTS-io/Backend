@@ -10,10 +10,9 @@ public class FaultReportConfig : IEntityTypeConfiguration<FaultReport>
     {
         builder
             .HasOne(f => f.Trip)
-            .WithMany(t => t.FaultReports)
-            .HasForeignKey(f => f.TripId)
+            .WithOne(t => t.FaultReports)
+            .HasForeignKey<FaultReport>(f => f.TripId)
             .OnDelete(DeleteBehavior.Restrict);
         builder.Property(f => f.Cost).HasColumnType("decimal(18,2)");
     }
 }
-

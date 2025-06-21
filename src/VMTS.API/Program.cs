@@ -21,18 +21,34 @@ namespace VMTS.API
             await app.ApplySeedAsync();
 
             app.MapOpenApi();
+
             app.MapScalarApiReference(options =>
             {
                 options
-                    .AddPreferredSecuritySchemes(JwtBearerDefaults.AuthenticationScheme)
+                    .AddPreferredSecuritySchemes("Admin")
                     .AddHttpAuthentication(
-                        JwtBearerDefaults.AuthenticationScheme,
+                        "Admin",
                         auth =>
                         {
                             auth.Token = app.Configuration["Token:Admin"];
                         }
+                    )
+                    .AddHttpAuthentication(
+                        "Manager",
+                        auth =>
+                        {
+                            auth.Token = app.Configuration["Token:Manager"];
+                        }
+                    )
+                    .AddHttpAuthentication(
+                        "Driver",
+                        auth =>
+                        {
+                            auth.Token = app.Configuration["Token:Driver"];
+                        }
                     );
             });
+
             app.UseHttpsRedirection();
             app.UseMiddleware<ExceptionMiddleware>();
             // app.UseExceptionHandler();

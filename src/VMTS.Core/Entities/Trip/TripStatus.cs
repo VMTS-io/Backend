@@ -6,6 +6,10 @@ public enum TripStatus
 {
     [EnumMember(Value = "Pending")]
     Pending,
+
     [EnumMember(Value = "Approved")]
-    Approved
+    Approved,
+
+    [EnumMember(Value = "Completed")]
+    Completed,
 }

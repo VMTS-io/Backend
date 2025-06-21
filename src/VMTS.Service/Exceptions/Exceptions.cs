@@ -6,6 +6,12 @@ public class BadRequestException : Exception
         : base(message) { }
 }
 
+public class ForbbidenException : Exception
+{
+    public ForbbidenException(string message)
+        : base(message) { }
+}
+
 public class NotFoundException : Exception
 {
     public NotFoundException(string message)

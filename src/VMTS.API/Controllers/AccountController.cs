@@ -47,7 +47,7 @@ public class AccountController : BaseApiController
 
     [HttpPost("login")]
     [ProducesResponseType(typeof(UserDto), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(MustChangePasswordDto), StatusCodes.Status200OK)] 
+    [ProducesResponseType(typeof(MustChangePasswordDto), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status401Unauthorized)]
     public async Task<ActionResult> Login(LoginRequest request)
     {
@@ -75,8 +75,17 @@ public class AccountController : BaseApiController
         var businessUser = await _unitOfWork.GetRepo<BusinessUser>().GetByIdAsync(user.Id);
         var businessUserDto = _mapper.Map<BussinessUserDto>(businessUser);
         var tokenString = await _authService.CreateTokenAsync(user, _userManager);
+        var status = HttpContext.Response.StatusCode;
 
-        return Ok(new UserDto { Email = user.Email, Token = tokenString , BussinessUserDto = businessUserDto });
+        return Ok(
+            new UserDto
+            {
+                Email = user.Email,
+                Token = tokenString,
+                BussinessUserDto = businessUserDto,
+                StatusCode = status,
+            }
+        );
     }
 
     #endregion
