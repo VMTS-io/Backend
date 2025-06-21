@@ -5,8 +5,8 @@ namespace VMTS.Core.Interfaces.Services;
 
 public interface IMaintenanceInitialReportServices
 {
-    Task CreateInitialReportAsync(MaintenanceInitialReport report, List<string> partIds);
-    Task UpdateInitialReportAsync(MaintenanceInitialReport report, List<string> partIds);
+    Task CreateInitialReportAsync(MaintenanceInitialReport report);
+    Task UpdateInitialReportAsync(MaintenanceInitialReport report);
     Task<IReadOnlyList<MaintenanceInitialReport>> GetAllInitialReportsAsync(
         MaintenanceIntialReportSpecParams specParams
     );

@@ -32,12 +32,9 @@ public class MaintenanceInitialReportServices : IMaintenanceInitialReportService
     }
 
     #region Create
-    public async Task CreateInitialReportAsync(
-        MaintenanceInitialReport report,
-        List<string> partIds
-    )
+    public async Task CreateInitialReportAsync(MaintenanceInitialReport report)
     {
-        var validatedReport = await ValidateAndResolveAsync(report, partIds);
+        var validatedReport = await ValidateAndResolveAsync(report);
 
         if (validatedReport.MissingParts is null || validatedReport.MissingParts.Count == 0)
         {
@@ -50,15 +47,12 @@ public class MaintenanceInitialReportServices : IMaintenanceInitialReportService
     #endregion
 
     #region Update
-    public async Task UpdateInitialReportAsync(
-        MaintenanceInitialReport updatedReport,
-        List<string> partIds
-    )
+    public async Task UpdateInitialReportAsync(MaintenanceInitialReport updatedReport)
     {
         var report = await GetReportOrThrowAsync(updatedReport.Id);
         // updatedReport.ManagerId = report.ManagerId;
         updatedReport.MechanicId = report.MechanicId;
-        var validatedReport = await ValidateAndResolveAsync(updatedReport, partIds);
+        var validatedReport = await ValidateAndResolveAsync(updatedReport);
         _reportRepo.Update(validatedReport);
         await _unitOfWork.SaveChanges();
     }
@@ -109,8 +103,7 @@ public class MaintenanceInitialReportServices : IMaintenanceInitialReportService
 
     #region Velidate And Resolve
     private async Task<MaintenanceInitialReport> ValidateAndResolveAsync(
-        MaintenanceInitialReport report,
-        List<string> partIds
+        MaintenanceInitialReport report
     )
     {
         report.MaintenanceRequest =
@@ -136,6 +129,7 @@ public class MaintenanceInitialReportServices : IMaintenanceInitialReportService
             await _categoryRepo.GetByIdAsync(report.MaintenanceRequest.MaintenanceCategoryId)
             ?? throw new NotFoundException($"Vehicle with ID {report.VehicleId} not found");
 
+        var partIds = report.ExpectedChangedParts.Select(ecp => ecp.PartId).ToList();
         var foundParts = await _partRepo.GetByIdsAsync(partIds);
         if (foundParts.Count != partIds.Count)
         {
@@ -144,27 +138,10 @@ public class MaintenanceInitialReportServices : IMaintenanceInitialReportService
                 $"The following part IDs do not exist: {string.Join(", ", missingFromDb)}"
             );
         }
-
-        var outOfStockParts = foundParts.Where(p => p.Quantity <= 0).ToList();
-        // report.ExpectedChangedParts
-        // report.ExpectedChangedParts = [.. foundParts];
-        report.MissingParts = [.. outOfStockParts];
-
-        var partIdsV2 = report.ExpectedChangedParts.Select(ecp => ecp.PartId).ToList();
-        var foundPartsV2 = await _partRepo.GetByIdsAsync(partIdsV2);
-        if (foundPartsV2.Count != partIdsV2.Count)
-        {
-            var missingFromDb = partIds.Except(foundParts.Select(p => p.Id));
-            throw new NotFoundException(
-                $"The following part IDs do not exist: {string.Join(", ", missingFromDb)}"
-            );
-        }
-        var outOfStockPartsV2 = foundPartsV2.Where(p =>
+        var outOfStockParts = foundParts.Where(p =>
             p.Quantity < report.ExpectedChangedParts.First(ecp => ecp.PartId == p.Id).Quantity
         );
-        // report.ExpectedChangedParts
-        // report.ExpectedChangedParts = [.. foundParts];
-        report.MissingParts = [.. outOfStockPartsV2];
+        report.MissingParts = [.. outOfStockParts];
         return report;
     }
     #endregion

@@ -124,6 +124,7 @@ public class MappingProfile : Profile
         CreateMap<Brand, BrandDto>();
         CreateMap<CreateOrUpdateBrandDto, Brand>();
         CreateMap<CreateOrUpdatePartDto, Part>();
+        CreateMap<MaintenanceInitialReprotPartDto, MaintnenanceInitialReportParts>().ReverseMap();
         // .ForMember(dest => dest.Category, opt => opt.MapFrom(src => src.VehicleCategory.Name));
     }
 }
