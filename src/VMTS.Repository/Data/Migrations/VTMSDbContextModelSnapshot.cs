@@ -574,9 +574,6 @@ namespace VMTS.Repository.Data.Migrations
                     b.Property<string>("Id")
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<DateTime>("Date")
-                        .HasColumnType("datetime2");
-
                     b.Property<string>("Details")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -592,6 +589,19 @@ namespace VMTS.Repository.Data.Migrations
                     b.Property<decimal>("FuelCost")
                         .HasColumnType("decimal(18,2)");
 
+                    b.Property<int>("FuelRefile")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("ReportedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<string>("TripId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
                     b.Property<string>("VehicleId")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
@@ -599,6 +609,8 @@ namespace VMTS.Repository.Data.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("DriverId");
+
+                    b.HasIndex("TripId");
 
                     b.HasIndex("VehicleId");
 
@@ -999,6 +1011,12 @@ namespace VMTS.Repository.Data.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
+                    b.HasOne("TripRequest", "Trip")
+                        .WithMany()
+                        .HasForeignKey("TripId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("VMTS.Core.Entities.Vehicle_Aggregate.Vehicle", "Vehicle")
                         .WithMany("TripReports")
                         .HasForeignKey("VehicleId")
@@ -1006,6 +1024,8 @@ namespace VMTS.Repository.Data.Migrations
                         .IsRequired();
 
                     b.Navigation("Driver");
+
+                    b.Navigation("Trip");
 
                     b.Navigation("Vehicle");
                 });

@@ -9,16 +9,20 @@ public class TripReport : BaseEntity
 
     public string Details { get; set; }
 
-    public DateTime Date { get; set; }
-
+    public DateTime ReportedAt { get; set; }
     public decimal FuelCost { get; set; }
 
-    // public bool IsFault {get; set; } = false;
-    //
-    // public FaultTypes FaultType { get; set; }
-    
-    public BusinessUser Driver { get; set; }
-    
-    public Vehicle Vehicle { get; set; }
+    public int FuelRefile { get; set; }
 
+    public TripReportStatus Status { get; set; } = TripReportStatus.Reported;
+
+    // FKs
+    public string TripId { get; set; }
+    public string VehicleId { get; set; }
+    public string DriverId { get; set; }
+
+    // Navigational Properties
+    public TripRequest Trip { get; set; }
+    public Vehicle Vehicle { get; set; }
+    public BusinessUser? Driver { get; set; }
 }
