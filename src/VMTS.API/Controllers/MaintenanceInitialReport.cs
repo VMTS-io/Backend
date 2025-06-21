@@ -34,11 +34,7 @@ public class MaintenanceInitialReportController : BaseApiController
         var mechanicId = User.FindFirstValue(ClaimTypes.NameIdentifier);
         var report = _mapper.Map<MaintenanceInitialReport>(dto);
         report.MechanicId = mechanicId!;
-        await _service.CreateInitialReportAsync(
-            report,
-            dto.MaintenanceCategoryIds,
-            dto.MissingPartIds
-        );
+        await _service.CreateInitialReportAsync(report, dto.ExpectedChangedParts);
         return Ok();
     }
     #endregion
@@ -53,11 +49,7 @@ public class MaintenanceInitialReportController : BaseApiController
     {
         var report = _mapper.Map<MaintenanceInitialReport>(dto);
         report.Id = id;
-        await _service.UpdateInitialReportAsync(
-            report,
-            dto.MaintenanceCategoryIds,
-            dto.MissingPartIds
-        );
+        await _service.UpdateInitialReportAsync(report, dto.ExpectedChangedParts);
         return NoContent();
     }
     #endregion

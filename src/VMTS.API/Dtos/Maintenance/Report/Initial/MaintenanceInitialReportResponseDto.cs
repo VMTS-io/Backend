@@ -15,6 +15,7 @@ public class MaintenanceInitialReportResponseDto
     public string VehicleName { get; set; } = default!;
     public string RequestTitle { get; set; } = default!;
 
-    public List<string> CategoryNames { get; set; } = [];
+    public string CategoryNames { get; set; } = default!;
     public List<string> MissingPartNames { get; set; } = [];
+    public List<string> ExpectedChangedParts { get; set; } = [];
 }
