@@ -28,6 +28,18 @@ public class ExceptionMiddleware : IMiddleware
         {
             await WriteErrorResponseAsync(context, 400, ex.Message);
         }
+        catch (InvalidOperationException ex)
+        {
+            await WriteErrorResponseAsync(context, 400, ex.Message);
+        }
+        catch (ForbbidenException ex)
+        {
+            await WriteErrorResponseAsync(context, 403, ex.Message);
+        }
+        catch (ArgumentException ex)
+        {
+            await WriteErrorResponseAsync(context, 400, ex.Message);
+        }
         catch (DbUpdateConcurrencyException ex)
         {
             _logger.LogWarning(ex, "A concurrency conflict occurred.");
@@ -40,11 +52,7 @@ public class ExceptionMiddleware : IMiddleware
         catch (DbUpdateException ex)
         {
             _logger.LogError(ex, "A database update error occurred.");
-            await WriteErrorResponseAsync(
-                context,
-                500,
-                "A database update error occurred. Please try again later."
-            );
+            await WriteErrorResponseAsync(context, 500, ex.Message);
         }
         catch (OperationCanceledException ex)
         {
@@ -63,9 +71,8 @@ public class ExceptionMiddleware : IMiddleware
             {
                 PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
             };
-            var options = jsonSerializerOptions;
 
-            var json = JsonSerializer.Serialize(responseBody, options);
+            var json = JsonSerializer.Serialize(responseBody, jsonSerializerOptions);
             await context.Response.WriteAsync(json);
         }
     }
@@ -86,9 +93,7 @@ public class ExceptionMiddleware : IMiddleware
             PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
         };
 
-        var options = jsonSerializerOptions;
-
-        var json = JsonSerializer.Serialize(responseBody, options);
+        var json = JsonSerializer.Serialize(responseBody, jsonSerializerOptions);
         await context.Response.WriteAsync(json);
     }
 }
