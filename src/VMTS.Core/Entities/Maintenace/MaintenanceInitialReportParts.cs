@@ -2,7 +2,7 @@ using VMTS.Core.Entities.Parts;
 
 namespace VMTS.Core.Entities.Maintenace;
 
-public class MaintnenanceInitialReportParts : BaseEntity
+public class MaintenanceInitialReportParts : BaseEntity
 {
     public string MaintnenanceInitialReportId { get; set; } = default!;
     public MaintenanceInitialReport InitialReport { get; set; } = default!;

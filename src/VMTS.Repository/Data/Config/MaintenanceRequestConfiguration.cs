@@ -18,5 +18,13 @@ public class MaintenanceRequestConfiguration : IEntityTypeConfiguration<Maintena
             .WithMany()
             .HasForeignKey(m => m.MaintenanceCategoryId)
             .IsRequired(false);
+        builder
+            .HasOne(m => m.InitialReport)
+            .WithOne(mfr => mfr.MaintenanceRequest)
+            .HasForeignKey<MaintenanceInitialReport>(m => m.MaintenanceRequestId);
+        builder
+            .HasOne(m => m.FinalReport)
+            .WithOne(mfr => mfr.MaintenaceRequest)
+            .HasForeignKey<MaintenanceFinalReport>(m => m.MaintenaceRequestId);
     }
 }
