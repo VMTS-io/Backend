@@ -15,10 +15,10 @@ namespace VMTS.API.Controllers;
 
 public class FaultReportController : BaseApiController
 {
-    private readonly IReportService _ireportService;
+    private readonly IFaultReportService _ireportService;
     private readonly IMapper _mapper;
 
-    public FaultReportController(IReportService ireportService, IMapper mapper)
+    public FaultReportController(IFaultReportService ireportService, IMapper mapper)
     {
         _ireportService = ireportService;
         _mapper = mapper;
@@ -144,7 +144,9 @@ public class FaultReportController : BaseApiController
     [ProducesResponseType(typeof(IReadOnlyList<FaultReportResponse>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<IReadOnlyList<FaultReportResponse>>> GetAllForCurrentDriver()
+    public async Task<ActionResult<IReadOnlyList<FaultReportResponse>>> GetAllForCurrentDriver(
+        [FromQuery] FaultReportSpecParams specParams
+    )
     {
         var driverId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
@@ -157,7 +159,7 @@ public class FaultReportController : BaseApiController
             );
         }
 
-        var specParams = new FaultReportSpecParams { DriverId = driverId };
+        specParams.DriverId = driverId; // Override to ensure driver only sees their own reports
 
         var faultReports = await _ireportService.GetAllFaultReportsForUserAsync(specParams);
         var mappedReports = _mapper.Map<IReadOnlyList<FaultReportResponse>>(faultReports);
