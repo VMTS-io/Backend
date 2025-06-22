@@ -2,6 +2,7 @@
 using VMTS.API.Dtos;
 using VMTS.API.Dtos.Maintenance;
 using VMTS.API.Dtos.Maintenance.Category;
+using VMTS.API.Dtos.Maintenance.Report;
 using VMTS.API.Dtos.Maintenance.Report.Initial;
 using VMTS.API.Dtos.Maintenance.Request;
 using VMTS.API.Dtos.Part;
@@ -110,11 +111,15 @@ public class MappingProfile : Profile
             )
             .ForMember(
                 dest => dest.CategoryNames,
-                opt => opt.MapFrom(src => src.MaintenanceCategory.Description)
+                opt => opt.MapFrom(src => src.MaintenanceCategory.Categorty.ToString())
             )
             .ForMember(
                 dest => dest.MissingPartNames,
                 opt => opt.MapFrom(src => src.MissingParts!.Select(p => p.Name))
+            )
+            .ForMember(
+                dest => dest.ExpectedChangedParts,
+                opt => opt.MapFrom(src => src.ExpectedChangedParts.Select(p => p.Part.Name))
             );
         // .ForMember
         //     dest => dest.ExpectedChangedParts,
@@ -127,7 +132,8 @@ public class MappingProfile : Profile
         CreateMap<Brand, BrandDto>();
         CreateMap<CreateOrUpdateBrandDto, Brand>();
         CreateMap<CreateOrUpdatePartDto, Part>();
-        CreateMap<MaintenanceInitialReprotPartDto, MaintnenanceInitialReportParts>().ReverseMap();
+        CreateMap<MaintenanceReportPartDto, MaintenanceInitialReportParts>().ReverseMap();
+        CreateMap<MaintenanceReportPartDto, MaintenanceFinalReportParts>().ReverseMap();
         // .ForMember(dest => dest.Category, opt => opt.MapFrom(src => src.VehicleCategory.Name));
     }
 }

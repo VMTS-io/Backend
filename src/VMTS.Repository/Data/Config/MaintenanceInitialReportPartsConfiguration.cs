@@ -5,14 +5,15 @@ using VMTS.Core.Entities.Maintenace;
 namespace VMTS.Repository.Data.Config;
 
 public class MaintenanceInitialReportPartsConfiguration
-    : IEntityTypeConfiguration<MaintnenanceInitialReportParts>
+    : IEntityTypeConfiguration<MaintenanceInitialReportParts>
 {
-    public void Configure(EntityTypeBuilder<MaintnenanceInitialReportParts> builder)
+    public void Configure(EntityTypeBuilder<MaintenanceInitialReportParts> builder)
     {
         builder
             .HasOne(mirp => mirp.InitialReport)
-            .WithMany()
+            .WithMany(mir => mir.ExpectedChangedParts)
             .HasForeignKey(mirp => mirp.MaintnenanceInitialReportId);
+
         builder.HasOne(mirp => mirp.Part).WithMany().HasForeignKey(mirp => mirp.PartId);
     }
 }

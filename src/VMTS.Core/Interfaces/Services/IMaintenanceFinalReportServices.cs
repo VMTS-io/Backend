@@ -5,16 +5,8 @@ namespace VMTS.Core.Interfaces.Services;
 
 public interface IMaintenanceFinalReportServices
 {
-    Task CreateFinalReportAsync(
-        MaintenanceFinalReport report,
-        List<string> categoryIds,
-        List<string> partIds
-    );
-    Task UpdateFinalReportAsync(
-        MaintenanceFinalReport report,
-        List<string> categoryIds,
-        List<string> partIds
-    );
+    Task CreateFinalReportAsync(MaintenanceFinalReport report);
+    Task UpdateFinalReportAsync(MaintenanceFinalReport report);
     Task<IReadOnlyList<MaintenanceFinalReport>> GetAllFinalReportsAsync(
         MaintenanceFinalReportSpecParams specParams
     );

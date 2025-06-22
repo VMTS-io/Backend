@@ -38,8 +38,8 @@ public class MaintenanceFinalReportConfigruation : IEntityTypeConfiguration<Main
             .HasForeignKey(mir => mir.MaintenaceRequestId)
             .OnDelete(DeleteBehavior.Cascade);
 
-        builder.HasMany(mfr => mfr.MaintenanceCategories).WithMany();
-        builder.HasMany(mfr => mfr.ChangedParts).WithMany();
+        builder.HasOne(mfr => mfr.MaintenanceCategories).WithMany();
+        // builder.HasMany(mfr => mfr.ChangedPartss).WithMany();
         builder.Property(mfr => mfr.TotalCost).HasColumnType("decimal(18,2)");
     }
 }

@@ -43,11 +43,7 @@ public class ExceptionMiddleware : IMiddleware
         catch (DbUpdateConcurrencyException ex)
         {
             _logger.LogWarning(ex, "A concurrency conflict occurred.");
-            await WriteErrorResponseAsync(
-                context,
-                409,
-                "A concurrency conflict occurred while updating the resource."
-            );
+            await WriteErrorResponseAsync(context, 409, ex.Message);
         }
         catch (DbUpdateException ex)
         {
@@ -57,7 +53,7 @@ public class ExceptionMiddleware : IMiddleware
         catch (OperationCanceledException ex)
         {
             _logger.LogWarning(ex, "The operation was canceled.");
-            await WriteErrorResponseAsync(context, 499, "The operation was canceled.");
+            await WriteErrorResponseAsync(context, 499, ex.Message);
         }
         catch (Exception ex)
         {

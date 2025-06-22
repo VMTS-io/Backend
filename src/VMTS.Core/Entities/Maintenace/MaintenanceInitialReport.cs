@@ -19,7 +19,7 @@ public class MaintenanceInitialReport : BaseEntity
     public string MaintenanceCategoryId { get; set; } = default!;
 
     public ICollection<Part> MissingParts { get; set; } = [];
-    public ICollection<MaintnenanceInitialReportParts> ExpectedChangedParts { get; set; } = [];
+    public ICollection<MaintenanceInitialReportParts> ExpectedChangedParts { get; set; } = [];
 
     public BusinessUser Mechanic { get; set; } = default!;
     public string MechanicId { get; set; } = default!;

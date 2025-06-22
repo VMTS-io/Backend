@@ -5,11 +5,12 @@ namespace VMTS.API.Dtos.Maintenance.Report.Final;
 public class MaintenanceFinalReportRequestDto
 {
     public string Notes { get; set; } = default!;
-    public decimal TotalCost { get; set; }
     public string InitialReportId { get; set; } = default!;
-    public List<string> CategoryIds { get; set; } = [];
-    public List<string> PartIds { get; set; } = [];
+    public List<MaintenanceReportPartDto> ChangedParts { get; set; } = [];
 
+    // public bool IsPartsChanged { get; set; }
+    // public string CategoryIds { get; set; } = default!;
+    // public decimal TotalCost { get; set; }
     // public DateTime FinishedDate { get; set; } = DateTime.UtcNow;
     // public Status Status { get; set; } = Status.Completed;
     // public string MechanicId { get; set; } = default!;

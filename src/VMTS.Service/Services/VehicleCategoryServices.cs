@@ -35,7 +35,7 @@ public class VehicleCategoryServices : IVehicleCategoryServices
 
     public async Task<VehicleCategory> UpdateVehicleCategory(VehicleCategory model)
     {
-        if (!_repo.Exist(model.Id))
+        if (!await _repo.ExistAsync(model.Id))
             throw new NotFoundException("Vehicle Category Not Found");
 
         _repo.Update(model);

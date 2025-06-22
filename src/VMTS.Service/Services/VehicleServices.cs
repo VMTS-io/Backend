@@ -23,7 +23,7 @@ public class VehicleServices : IVehicleSerivces
     #region Create
     public async Task<Vehicle> CreateVehicleAsync(Vehicle vehicle)
     {
-        if (!_vehicleModelRepo.Exist(vehicle.ModelId))
+        if (!await _vehicleModelRepo.ExistAsync(vehicle.ModelId))
             throw new NotFoundException("Model Not Found");
 
         await _vehicleRepo.CreateAsync(vehicle);
@@ -71,9 +71,9 @@ public class VehicleServices : IVehicleSerivces
     #region Update
     public async Task<Vehicle> UpdateVehicleAsync(Vehicle vehicle)
     {
-        if (!_vehicleRepo.Exist(vehicle.Id))
+        if (!await _vehicleRepo.ExistAsync(vehicle.Id))
             throw new NotFoundException("Vehicle Not Found");
-        if (!_vehicleModelRepo.Exist(vehicle.ModelId))
+        if (!await _vehicleModelRepo.ExistAsync(vehicle.ModelId))
             throw new NotFoundException("Model Not Found");
 
         _vehicleRepo.Update(vehicle);
