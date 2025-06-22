@@ -5,7 +5,29 @@ namespace VMTS.Core.Entities.Trip;
 
 public class TripReport : BaseEntity
 {
-    public string Duration { get; set; }
+    public TripReport(
+        string driverId,
+        string vehicleId,
+        string tripId,
+        int fuelRefile,
+        decimal cost,
+        string destination,
+        string details
+    )
+    {
+        DriverId = driverId;
+        VehicleId = vehicleId;
+        TripId = tripId;
+        FuelRefile = fuelRefile;
+        FuelCost = cost;
+        Destination = destination;
+        Details = details;
+        ReportedAt = DateTime.UtcNow;
+    }
+
+    public TripReport() { }
+
+    public string Destination { get; set; }
 
     public string Details { get; set; }
 
