@@ -10,7 +10,7 @@ public class MaintenanceInitialReportResponseDto
 
     // public Status Status { get; set; }
 
-    public string ManagerName { get; set; } = default!;
+    // public string ManagerName { get; set; } = default!;
     public string MechanicName { get; set; } = default!;
     public string VehicleName { get; set; } = default!;
     public string RequestTitle { get; set; } = default!;

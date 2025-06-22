@@ -31,7 +31,7 @@ public class MaintenanceFinalReportController : BaseApiController
         var mechanicId = User.FindFirstValue(ClaimTypes.NameIdentifier);
         var report = _mapper.Map<MaintenanceFinalReport>(dto);
         report.MechanicId = mechanicId!;
-        await _service.CreateFinalReportAsync(report, dto.CategoryIds, dto.PartIds);
+        await _service.CreateFinalReportAsync(report);
         return Ok();
     }
     #endregion
@@ -46,7 +46,7 @@ public class MaintenanceFinalReportController : BaseApiController
     {
         var report = _mapper.Map<MaintenanceFinalReport>(dto);
         report.Id = id;
-        await _service.UpdateFinalReportAsync(report, dto.CategoryIds, dto.PartIds);
+        await _service.UpdateFinalReportAsync(report);
         return NoContent();
     }
     #endregion
