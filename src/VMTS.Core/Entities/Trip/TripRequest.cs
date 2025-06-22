@@ -34,6 +34,8 @@ public class TripRequest : BaseEntity
 
     public FaultReport FaultReports { get; set; }
 
+    public TripReport TripReports { get; set; }
+
     // Foreign Key for Vehicle
     public string VehicleId { get; set; }
 
