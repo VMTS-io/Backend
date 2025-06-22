@@ -6,7 +6,7 @@ public class MaintenanceFinalReportRequestDto
 {
     public string Notes { get; set; } = default!;
     public string InitialReportId { get; set; } = default!;
-    public List<MaintenanceInitialReportParts> ChangedParts { get; set; } = [];
+    public List<MaintenanceReportPartDto> ChangedParts { get; set; } = [];
 
     // public bool IsPartsChanged { get; set; }
     // public string CategoryIds { get; set; } = default!;
