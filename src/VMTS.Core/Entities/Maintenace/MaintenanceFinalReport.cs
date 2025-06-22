@@ -14,9 +14,9 @@ public class MaintenanceFinalReport : BaseEntity
 
     // public Status Status { get; set; } = Status.Completed;
 
-    public ICollection<MaintenaceCategory> MaintenanceCategories { get; set; } = [];
+    public MaintenaceCategory MaintenanceCategories { get; set; } = default!;
 
-    public ICollection<Part> ChangedParts { get; set; } = [];
+    public ICollection<MaintenanceFinalReportParts> ChangedParts { get; set; } = [];
 
     public BusinessUser Mechanic { get; set; } = default!;
     public string MechanicId { get; set; } = default!;
