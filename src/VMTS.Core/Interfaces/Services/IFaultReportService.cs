@@ -5,7 +5,7 @@ using VMTS.Core.Specifications.FaultReportSepcification;
 
 namespace VMTS.Core.ServicesContract;
 
-public interface IReportService
+public interface IFaultReportService
 {
     Task<FaultReport> CreateFaultReportAsync(
         string userId,

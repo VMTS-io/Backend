@@ -7,6 +7,7 @@ using VMTS.API.Dtos.Maintenance.Report.Initial;
 using VMTS.API.Dtos.Maintenance.Request;
 using VMTS.API.Dtos.Part;
 using VMTS.API.Dtos.Trip;
+using VMTS.API.Dtos.TripReport;
 using VMTS.API.Dtos.Vehicles;
 using VMTS.API.Dtos.Vehicles.Brand;
 using VMTS.API.Dtos.Vehicles.Category;
@@ -24,6 +25,8 @@ public class MappingProfile : Profile
 {
     public MappingProfile()
     {
+        CreateMap<TripReport, TripReportResponse>();
+
         CreateMap<BusinessUser, BussinessUserDto>();
 
         CreateMap<AddressDto, Address>().ReverseMap();
