@@ -1,3 +1,4 @@
+using System.Linq.Expressions;
 using VMTS.Core.Entities.Maintenace;
 
 namespace VMTS.Core.Specifications.Maintenance.Report.Final;
@@ -18,6 +19,11 @@ public class MaintenanceFinalReportSpecification : BaseSpecification<Maintenance
     {
         ApplyIncludes();
     }
+
+    public MaintenanceFinalReportSpecification(
+        Expression<Func<MaintenanceFinalReport, bool>> criteria
+    )
+        : base(criteria) { }
 
     public MaintenanceFinalReportSpecification(MaintenanceFinalReportSpecParams specParams)
         : base(r =>

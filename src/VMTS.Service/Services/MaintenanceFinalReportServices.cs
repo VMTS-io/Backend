@@ -34,13 +34,9 @@ public class MaintenanceFinalReportServices : IMaintenanceFinalReportServices
     }
 
     #region Create
-    public async Task CreateFinalReportAsync(
-        MaintenanceFinalReport report,
-        List<string> categoryIds,
-        List<string> partIds
-    )
+    public async Task CreateFinalReportAsync(MaintenanceFinalReport report)
     {
-        var validatedReport = await ValidateAndResolveAsync(report, categoryIds, partIds);
+        var validatedReport = await ValidateAndResolveAsync(report);
 
         validatedReport.MaintenaceRequest.Status = Status.Completed;
         _requestRepo.Update(validatedReport.MaintenaceRequest);
@@ -52,14 +48,10 @@ public class MaintenanceFinalReportServices : IMaintenanceFinalReportServices
     #endregion
 
     #region Update
-    public async Task UpdateFinalReportAsync(
-        MaintenanceFinalReport updatedReport,
-        List<string> categoryIds,
-        List<string> partIds
-    )
+    public async Task UpdateFinalReportAsync(MaintenanceFinalReport updatedReport)
     {
         await GetReportOrThrowAsync(updatedReport.Id);
-        var validatedReport = await ValidateAndResolveAsync(updatedReport, categoryIds, partIds);
+        var validatedReport = await ValidateAndResolveAsync(updatedReport);
         _finalReportRepo.Update(validatedReport);
         await _unitOfWork.SaveChanges();
     }
@@ -110,53 +102,110 @@ public class MaintenanceFinalReportServices : IMaintenanceFinalReportServices
 
     #region Validate And Resolve
     private async Task<MaintenanceFinalReport> ValidateAndResolveAsync(
-        MaintenanceFinalReport report,
-        List<string> categoryIds,
-        List<string> partIds
+        MaintenanceFinalReport report
     )
     {
         // Validate foreign keys
         // report.Manager =
         //     await _userRepo.GetByIdAsync(report.ManagerId)
         //     ?? throw new NotFoundException($"Manager with ID {report.ManagerId} not found");
-
-        report.InitialReport =
+        var InitialReport =
             await _initialReportRepo.GetByIdAsync(report.InitialReportId)
             ?? throw new NotFoundException(
                 $"Initial Report with ID {report.InitialReportId} not found"
             );
 
-        report.MaintenaceRequest =
-            await _requestRepo.GetByIdAsync(report.InitialReport.MaintenanceRequestId)
+        var maintenanceRequest =
+            await _requestRepo.GetByIdAsync(InitialReport.MaintenanceRequestId)
             ?? throw new NotFoundException(
                 $"Request with ID {report.MaintenaceRequestId} not found"
             );
+        report.MaintenaceRequestId = maintenanceRequest.Id;
 
-        report.Mechanic =
-            await _userRepo.GetByIdAsync(report.MaintenaceRequest.MechanicId)
-            ?? throw new NotFoundException($"Mechanic with ID {report.MechanicId} not found");
+        var finalReportSepc = new MaintenanceFinalReportSpecification(mfr =>
+            mfr.MaintenaceRequestId == report.MaintenaceRequestId
+        );
+        var finalReport = _finalReportRepo.GetAllWithSpecificationAsync(finalReportSepc);
+        if (finalReport is not null)
+            throw new ConflictException(
+                "There is already Finial report for this maintenance Request"
+            );
 
-        report.Vehicle =
-            await _vehicleRepo.GetByIdAsync(report.MaintenaceRequest.VehicleId)
-            ?? throw new NotFoundException($"Vehicle with ID {report.VehicleId} not found");
+        if (maintenanceRequest.MechanicId != report.MechanicId)
+            throw new BadRequestException(
+                $"This Is Not {report.MechanicId}'s task, it is {maintenanceRequest.MechanicId}"
+            );
 
-        // Validate and attach categories
-        var foundCategories = await _categoryRepo.GetByIdsAsync(categoryIds);
-        if (foundCategories.Count != categoryIds.Count)
+        if (await _userRepo.ExistAsync(InitialReport.MechanicId))
+            throw new NotFoundException($"Mechanic with ID {report.MechanicId} not found");
+        report.MechanicId = InitialReport.MechanicId;
+
+        if (await _vehicleRepo.ExistAsync(maintenanceRequest.VehicleId))
+            throw new NotFoundException($"Vehicle with ID {report.VehicleId} not found");
+        report.VehicleId = maintenanceRequest.VehicleId;
+        var partIds = report.ChangedParts.Select(cp => cp.PartId).ToList();
+        var foundParts = await _partRepo.GetByIdsAsync(partIds);
+
+        // Use dictionary for O(1) lookup
+        var foundPartsDict = foundParts.ToDictionary(p => p.Id);
+
+        // Validation: check for missing part IDs
+        var missingIds = partIds.Except(foundPartsDict.Keys).ToList();
+        if (missingIds.Count != 0)
         {
-            var missing = categoryIds.Except(foundCategories.Select(c => c.Id));
-            throw new NotFoundException($"Missing categories: {string.Join(", ", missing)}");
+            throw new NotFoundException(
+                $"The following part IDs do not exist: {string.Join(", ", missingIds)}"
+            );
         }
-        report.MaintenanceCategories = [.. foundCategories];
+
+        // Compute total cost and set report ID
+        foreach (var reportPart in report.ChangedParts)
+        {
+            reportPart.MaintnenanceFinalReportId = report.Id;
+
+            var part = foundPartsDict[reportPart.PartId];
+            report.TotalCost += reportPart.Quantity * part.Cost;
+            part.Quantity -= reportPart.Quantity;
+        }
+
+        // var partIds = report.ChangedParts.Select(ecp => ecp.PartId).ToList();
+        // var foundParts = await _partRepo.GetByIdsAsync(partIds);
+        // if (foundParts.Count != partIds.Count)
+        // {
+        //     var missingFromDb = partIds.Except(foundParts.Select(p => p.Id));
+        //     throw new NotFoundException(
+        //         $"The following part IDs do not exist: {string.Join(", ", missingFromDb)}"
+        //     );
+        // }
+        // foreach (var reportPart in report.ChangedParts)
+        // {
+        //     reportPart.MaintnenanceFinalReportId = report.Id;
+        //     report.TotalCost +=
+        //         reportPart.Quantity
+        //         * foundParts.FirstOrDefault(p => p.Id == reportPart.PartId)!.Cost;
+        // }
+        // foreach (var part in foundParts)
+        // {
+        //     part.Quantity -= report
+        //         .ChangedParts.FirstOrDefault(cp => cp.PartId == part.Id)!
+        //         .Quantity;
+        // }
+        // Validate and attach categories
+        // var foundCategories = await _categoryRepo.GetByIdsAsync(categoryIds);
+        // if (foundCategories.Count != categoryIds.Count)
+        // {
+        //     var missing = categoryIds.Except(foundCategories.Select(c => c.Id));
+        //     throw new NotFoundException($"Missing categories: {string.Join(", ", missing)}");
+        // }
+        // report.MaintenanceCategories = [.. foundCategories];
 
         // Validate and attach parts (optional)
-        var foundParts = await _partRepo.GetByIdsAsync(partIds);
-        if (foundParts.Count != partIds.Count)
-        {
-            var missing = partIds.Except(foundParts.Select(p => p.Id));
-            throw new NotFoundException($"Missing parts: {string.Join(", ", missing)}");
-        }
-        report.ChangedParts = [.. foundParts];
+        // var foundParts = await _partRepo.GetByIdsAsync(partIds);
+        // if (foundParts.Count != partIds.Count)
+        // {
+        //     var missing = partIds.Except(foundParts.Select(p => p.Id));
+        //     throw new NotFoundException($"Missing parts: {string.Join(", ", missing)}");
+        // }
 
         return report;
     }

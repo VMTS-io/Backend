@@ -106,42 +106,97 @@ public class MaintenanceInitialReportServices : IMaintenanceInitialReportService
         MaintenanceInitialReport report
     )
     {
-        report.MaintenanceRequest =
+        var maintenanceRequest =
             await _requestRepo.GetByIdAsync(report.MaintenanceRequestId)
             ?? throw new NotFoundException(
                 $"Request with ID {report.MaintenanceRequestId} not found"
             );
-
-        if (report.MaintenanceRequest.MechanicId != report.MechanicId)
-            throw new BadRequestException(
-                $"This Is Not {report.MechanicId}'s task, it is {report.MaintenanceRequest.ManagerId}"
+        var initialReportSepc = new MaintenanceIntialReportSpecification(mir =>
+            mir.MaintenanceRequestId == report.MaintenanceRequestId
+        );
+        var initialReport = _reportRepo.GetAllWithSpecificationAsync(initialReportSepc);
+        if (initialReport is not null)
+            throw new ConflictException(
+                "There is already Finial report for this maintenance Request"
             );
 
-        report.Mechanic =
-            await _userRepo.GetByIdAsync(report.MechanicId)
-            ?? throw new NotFoundException($"Mechanic with ID {report.MechanicId} not found");
+        if (maintenanceRequest.InitialReport is not null)
+            throw new ConflictException(
+                "There is already Initial report for this maintenance Request"
+            );
 
-        report.Vehicle =
-            await _vehicleRepo.GetByIdAsync(report.MaintenanceRequest.VehicleId)
-            ?? throw new NotFoundException($"Vehicle with ID {report.VehicleId} not found");
+        if (maintenanceRequest.MechanicId != report.MechanicId)
+            throw new BadRequestException(
+                $"This Is Not {report.MechanicId}'s task, it is {report.MaintenanceRequest.MechanicId}"
+            );
 
-        report.MaintenanceCategory =
-            await _categoryRepo.GetByIdAsync(report.MaintenanceRequest.MaintenanceCategoryId)
-            ?? throw new NotFoundException($"Vehicle with ID {report.VehicleId} not found");
+        if (!await _userRepo.ExistAsync(report.MechanicId))
+            throw new NotFoundException($"Mechanic with ID {report.MechanicId} not found");
 
-        var partIds = report.ExpectedChangedParts.Select(ecp => ecp.PartId).ToList();
+        if (!await _vehicleRepo.ExistAsync(maintenanceRequest.VehicleId))
+            throw new NotFoundException($"Vehicle with ID {report.VehicleId} not found");
+        report.VehicleId = maintenanceRequest.VehicleId;
+
+        if (!await _categoryRepo.ExistAsync(maintenanceRequest.MaintenanceCategoryId))
+            throw new NotFoundException($"Vehicle with ID {report.VehicleId} not found");
+        report.MaintenanceCategoryId = maintenanceRequest.MaintenanceCategoryId;
+
+        if (report.ExpectedChangedParts is null || !report.ExpectedChangedParts.Any())
+            throw new BadRequestException("ExpectedChangedParts cannot be null or empty.");
+
+        var partIds = report.ExpectedChangedParts.Select(cp => cp.PartId).ToHashSet();
         var foundParts = await _partRepo.GetByIdsAsync(partIds);
-        if (foundParts.Count != partIds.Count)
+        var foundPartsDict = foundParts.ToDictionary(p => p.Id);
+
+        // Validate missing parts
+        var missingIds = partIds.Except(foundPartsDict.Keys).ToList();
+        if (missingIds.Count != 0)
         {
-            var missingFromDb = partIds.Except(foundParts.Select(p => p.Id));
             throw new NotFoundException(
-                $"The following part IDs do not exist: {string.Join(", ", missingFromDb)}"
+                $"The following part IDs do not exist: {string.Join(", ", missingIds)}"
             );
         }
-        var outOfStockParts = foundParts.Where(p =>
-            p.Quantity < report.ExpectedChangedParts.First(ecp => ecp.PartId == p.Id).Quantity
-        );
-        report.MissingParts = [.. outOfStockParts];
+
+        // Check stock availability
+        var outOfStockParts = new List<Part>();
+        decimal totalExpectedCost = 0;
+
+        foreach (var reportPart in report.ExpectedChangedParts)
+        {
+            var part = foundPartsDict[reportPart.PartId];
+
+            if (part.Quantity < reportPart.Quantity)
+                outOfStockParts.Add(part);
+
+            reportPart.MaintnenanceInitialReportId = report.Id;
+            totalExpectedCost += part.Cost * reportPart.Quantity;
+        }
+
+        report.MissingParts = outOfStockParts;
+        report.ExpectedCost = totalExpectedCost;
+
+        // var partIds = report.ExpectedChangedParts.Select(ecp => ecp.PartId).ToList();
+        // var foundParts = await _partRepo.GetByIdsAsync(partIds);
+        // if (foundParts.Count != partIds.Count)
+        // {
+        //     var missingFromDb = partIds.Except(foundParts.Select(p => p.Id));
+        //     throw new NotFoundException(
+        //         $"The following part IDs do not exist: {string.Join(", ", missingFromDb)}"
+        //     );
+        // }
+        // var outOfStockParts = foundParts
+        //     .Where(p =>
+        //         p.Quantity < report.ExpectedChangedParts.First(ecp => ecp.PartId == p.Id).Quantity
+        //     )
+        //     .ToHashSet();
+        // report.MissingParts = outOfStockParts;
+        // foreach (var reportPart in report.ExpectedChangedParts)
+        // {
+        //     reportPart.MaintnenanceInitialReportId = report.Id;
+        //     report.ExpectedCost +=
+        //         reportPart.Quantity
+        //         * foundParts.FirstOrDefault(p => p.Id == reportPart.PartId)!.Cost;
+        // }
         return report;
     }
     #endregion
