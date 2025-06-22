@@ -75,7 +75,7 @@ public static class VTMSServicesExtension
         services.AddAutoMapper(typeof(MappingProfile));
         services.AddScoped<IUnitOfWork, UnitOfWork>();
         services.AddScoped<IAuthService, AuthService>();
-        services.AddScoped<IFaultReportService, FaultFaultReportService>();
+        services.AddScoped<IFaultReportService, FaultReportService>();
         services.AddScoped<ITripRequestService, TripRequestService>();
         services.AddScoped<IMaintenanceRequestServices, MaintenanceRequestServices>();
         services.AddScoped<IVehicleSerivces, VehicleServices>();

@@ -15,12 +15,12 @@ using VMTS.Service.Exceptions;
 
 namespace VMTS.Service.Services;
 
-public class FaultFaultReportService : IFaultReportService
+public class FaultReportService : IFaultReportService
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly UserManager<AppUser> _userManager;
 
-    public FaultFaultReportService(IUnitOfWork unitOfWork, UserManager<AppUser> userManager)
+    public FaultReportService(IUnitOfWork unitOfWork, UserManager<AppUser> userManager)
     {
         _unitOfWork = unitOfWork;
         _userManager = userManager;
@@ -44,15 +44,15 @@ public class FaultFaultReportService : IFaultReportService
         var tripRequest = await _unitOfWork
             .GetRepo<TripRequest>()
             .GetByIdWithSpecificationAsync(tripSpec);
-        
+
         if (tripRequest == null)
             throw new InvalidOperationException("No active trip found for this driver.");
-        
+
         if (tripRequest.DriverId != userId)
             throw new ForbbidenException(
                 "you are not allowed to create fault report for this trip"
             );
-        
+
         // Fetch business user
         var businessUserSpec = new BusinessUserSpecification(userId);
         var businessUser = await _unitOfWork
@@ -66,7 +66,6 @@ public class FaultFaultReportService : IFaultReportService
                 "User is not authorized to create fault reports. Must be a registered driver."
             );
 
-        
         if (tripRequest.FaultReports is not null)
             throw new InvalidOperationException(
                 "A fault report has already been submitted for this trip."
