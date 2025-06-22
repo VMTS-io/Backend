@@ -22,7 +22,7 @@ public class VehicleModelServices : IVehicleModelServices
 
     public async Task<VehicleModel> CreateVehicleModelAsync(VehicleModel entity)
     {
-        if (!_categoryrepo.Exist(entity.CategoryId))
+        if (!await _categoryrepo.ExistAsync(entity.CategoryId))
             throw new NotFoundException("Category Not Found");
         await _modelrepo.CreateAsync(entity);
         await _unitOfWork.SaveChanges();
@@ -35,10 +35,10 @@ public class VehicleModelServices : IVehicleModelServices
 
     public async Task<VehicleModel> UpdateVehicleModelAsync(VehicleModel entity)
     {
-        if (!_categoryrepo.Exist(entity.CategoryId))
+        if (!await _categoryrepo.ExistAsync(entity.CategoryId))
             throw new NotFoundException("Category Not Found");
 
-        if (!_modelrepo.Exist(entity.Id))
+        if (!await _modelrepo.ExistAsync(entity.Id))
             throw new NotFoundException("Model Not Found");
         _modelrepo.Update(entity);
         await _unitOfWork.SaveChanges();

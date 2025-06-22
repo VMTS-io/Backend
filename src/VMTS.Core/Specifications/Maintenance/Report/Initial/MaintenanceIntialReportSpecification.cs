@@ -1,3 +1,4 @@
+using System.Linq.Expressions;
 using VMTS.Core.Entities.Maintenace;
 
 namespace VMTS.Core.Specifications.Maintenance.Report.Initial;
@@ -7,9 +8,12 @@ public class MaintenanceIntialReportSpecification : BaseSpecification<Maintenanc
     private void ApplyIncludes()
     {
         Includes.Add(mir => mir.Vehicle);
+        Includes.Add(mir => mir.Mechanic);
         Includes.Add(mir => mir.MaintenanceCategory);
         Includes.Add(mir => mir.MaintenanceRequest);
         Includes.Add(mir => mir.MissingParts);
+        // Includes.Add(mir => mir.ExpectedChangedParts.Single().Part);
+        IncludeStrings.Add("ExpectedChangedParts.Part");
     }
 
     public MaintenanceIntialReportSpecification(string id)
@@ -17,6 +21,11 @@ public class MaintenanceIntialReportSpecification : BaseSpecification<Maintenanc
     {
         ApplyIncludes();
     }
+
+    public MaintenanceIntialReportSpecification(
+        Expression<Func<MaintenanceInitialReport, bool>> criteria
+    )
+        : base(criteria) { }
 
     public MaintenanceIntialReportSpecification(MaintenanceIntialReportSpecParams specParams)
         : base(mir =>
