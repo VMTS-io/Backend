@@ -24,7 +24,7 @@ public class VehicleSpecParams
         set { search = value?.ToLower() ?? ""; }
     }
 
-    public int PageIndex { get; set; }
+    public int PageIndex { get; set; } = 1;
     private int pagesize = 5;
     private const int maxsize = 10;
 

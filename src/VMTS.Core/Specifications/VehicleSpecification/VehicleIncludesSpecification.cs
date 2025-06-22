@@ -7,19 +7,23 @@ public class VehicleIncludesSpecification : BaseSpecification<Vehicle>
     private void ApplyIncludes()
     {
         // Includes.Add(v => v.VehicleModel);
-        IncludeStrings.Add($"{nameof(VehicleModel)}.{nameof(VehicleModel.Category)}");
-        IncludeStrings.Add($"{nameof(VehicleModel)}.{nameof(VehicleModel.Brand)}");
+        // IncludeStrings.Add($"{nameof(VehicleModel)}.{nameof(VehicleModel.Category)}");
+        // IncludeStrings.Add($"{nameof(VehicleModel)}.{nameof(VehicleModel.Brand)}");
+        Includes.Add(v => v.VehicleModel.Category);
+        Includes.Add(v => v.VehicleModel.Brand);
     }
 
     private void ApplyAllIncludes()
     {
-        IncludeStrings.Add($"{nameof(VehicleModel)}.{nameof(VehicleModel.Category)}");
-        IncludeStrings.Add($"{nameof(VehicleModel)}.{nameof(VehicleModel.Brand)}");
+        // IncludeStrings.Add($"{nameof(VehicleModel)}.{nameof(VehicleModel.Category)}");
+        // IncludeStrings.Add($"{nameof(VehicleModel)}.{nameof(VehicleModel.Brand)}");
         // Includes.Add(v => v.VehicleModel);
         Includes.Add(v => v.TripRequests);
         Includes.Add(v => v.TripReports);
         Includes.Add(v => v.MaintenaceReports);
         Includes.Add(v => v.MaintenaceRequests);
+        Includes.Add(v => v.VehicleModel.Category);
+        Includes.Add(v => v.VehicleModel.Brand);
     }
 
     public VehicleIncludesSpecification(string id)
