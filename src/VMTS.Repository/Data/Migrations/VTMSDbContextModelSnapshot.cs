@@ -395,7 +395,7 @@ namespace VMTS.Repository.Data.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("MaintenanceCategoriesId")
+                    b.Property<string>("MaintenanceCategoryId")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
@@ -421,7 +421,7 @@ namespace VMTS.Repository.Data.Migrations
                     b.HasIndex("MaintenaceRequestId")
                         .IsUnique();
 
-                    b.HasIndex("MaintenanceCategoriesId");
+                    b.HasIndex("MaintenanceCategoryId");
 
                     b.HasIndex("MechanicId");
 
@@ -891,9 +891,9 @@ namespace VMTS.Repository.Data.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("VMTS.Core.Entities.Maintenace.MaintenaceCategory", "MaintenanceCategories")
+                    b.HasOne("VMTS.Core.Entities.Maintenace.MaintenaceCategory", "MaintenanceCategory")
                         .WithMany()
-                        .HasForeignKey("MaintenanceCategoriesId")
+                        .HasForeignKey("MaintenanceCategoryId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -913,7 +913,7 @@ namespace VMTS.Repository.Data.Migrations
 
                     b.Navigation("MaintenaceRequest");
 
-                    b.Navigation("MaintenanceCategories");
+                    b.Navigation("MaintenanceCategory");
 
                     b.Navigation("Mechanic");
 
@@ -1065,9 +1065,11 @@ namespace VMTS.Repository.Data.Migrations
 
             modelBuilder.Entity("VMTS.Core.Entities.Maintenace.MaintenaceRequest", b =>
                 {
-                    b.Navigation("FinalReport");
+                    b.Navigation("FinalReport")
+                        .IsRequired();
 
-                    b.Navigation("InitialReport");
+                    b.Navigation("InitialReport")
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("VMTS.Core.Entities.Maintenace.MaintenanceFinalReport", b =>

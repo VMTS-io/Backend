@@ -14,9 +14,6 @@ public static class SpecificationElvaluator<T>
         if (specs.Criteria is not null)
             query = query.Where(specs.Criteria);
 
-        if (specs.IsPaginaitonEnabled)
-            query = query.Skip(specs.Skip).Take(specs.Take);
-
         if (specs.OrderBy is not null)
             query = query.OrderBy(specs.OrderBy);
 
@@ -32,6 +29,10 @@ public static class SpecificationElvaluator<T>
             query,
             (currentQuery, Expression) => currentQuery.Include(Expression)
         );
+        query.AsSplitQuery();
+
+        if (specs.IsPaginaitonEnabled)
+            query = query.Skip(specs.Skip).Take(specs.Take);
         return query;
     }
 }

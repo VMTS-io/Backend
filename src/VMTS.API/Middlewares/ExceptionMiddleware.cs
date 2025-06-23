@@ -8,6 +8,10 @@ namespace VMTS.API.Middlewares;
 public class ExceptionMiddleware : IMiddleware
 {
     private readonly ILogger _logger;
+    private readonly JsonSerializerOptions _jsonSerializerOptions = new()
+    {
+        PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+    };
 
     public ExceptionMiddleware(ILogger<ExceptionMiddleware> logger)
     {
@@ -63,33 +67,19 @@ public class ExceptionMiddleware : IMiddleware
             context.Response.StatusCode = StatusCodes.Status500InternalServerError;
             context.Response.ContentType = "application/json";
 
-            JsonSerializerOptions jsonSerializerOptions = new()
-            {
-                PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-            };
-
-            var json = JsonSerializer.Serialize(responseBody, jsonSerializerOptions);
+            var json = JsonSerializer.Serialize(responseBody, _jsonSerializerOptions);
             await context.Response.WriteAsync(json);
         }
     }
 
-    private static async Task WriteErrorResponseAsync(
-        HttpContext context,
-        int statusCode,
-        string message
-    )
+    private async Task WriteErrorResponseAsync(HttpContext context, int statusCode, string message)
     {
         var responseBody = new ApiErrorResponse(statusCode, message);
 
         context.Response.StatusCode = statusCode;
         context.Response.ContentType = "application/json";
 
-        JsonSerializerOptions jsonSerializerOptions = new()
-        {
-            PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-        };
-
-        var json = JsonSerializer.Serialize(responseBody, jsonSerializerOptions);
+        var json = JsonSerializer.Serialize(responseBody, _jsonSerializerOptions);
         await context.Response.WriteAsync(json);
     }
 }

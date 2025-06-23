@@ -46,6 +46,13 @@ namespace VMTS.API
                         {
                             auth.Token = app.Configuration["Token:Driver"];
                         }
+                    )
+                    .AddHttpAuthentication(
+                        "Mechanic",
+                        auth =>
+                        {
+                            auth.Token = app.Configuration["Token:Mechanic"];
+                        }
                     );
             });
 
