@@ -34,7 +34,7 @@ public class MappingProfile : Profile
         CreateMap<FaultReport, FaultReportResponse>()
             .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(src => src.ReportedAt));
 
-        CreateMap<TripRequest, TripRequestObj>();
+        CreateMap<TripRequest, TripRequestResponse>();
 
         CreateMap<AddressDto, Address>()
             .ForMember(dest => dest.AppUserId, opt => opt.Ignore()) // Explicitly ignore this
