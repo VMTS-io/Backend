@@ -34,10 +34,7 @@ public class MappingProfile : Profile
         CreateMap<FaultReport, FaultReportResponse>()
             .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(src => src.ReportedAt));
 
-        CreateMap<TripRequest, TripRequestResponse>()
-            .ForMember(dest => dest.Driver, opt => opt.MapFrom(src => src.Driver))
-            .ForMember(dest => dest.Vehicle, opt => opt.MapFrom(src => src.Vehicle));
-        ;
+        CreateMap<TripRequest, TripRequestObj>();
 
         CreateMap<AddressDto, Address>()
             .ForMember(dest => dest.AppUserId, opt => opt.Ignore()) // Explicitly ignore this
