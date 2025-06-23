@@ -6,6 +6,7 @@ using VMTS.Core.Interfaces.Repositories;
 using VMTS.Core.Interfaces.Services;
 using VMTS.Core.Interfaces.UnitOfWork;
 using VMTS.Core.Specifications;
+using VMTS.Core.Specifications.Maintenance.Report;
 using VMTS.Core.Specifications.Maintenance.Report.Initial;
 using VMTS.Service.Exceptions;
 
@@ -87,6 +88,17 @@ public class MaintenanceInitialReportServices : IMaintenanceInitialReportService
         var specs = new MaintenanceIntialReportSpecification(specParams);
         return await _reportRepo.GetAllWithSpecificationAsync(specs);
     }
+    #endregion
+
+    #region Get All For Joint EndPoint
+    public async Task<IReadOnlyList<MaintenanceInitialReport>> GetAllInitialReportsAsync(
+        MaintenanceReportSpecParams specParams
+    )
+    {
+        var spec = new MaintenanceIntialReportSpecification(specParams);
+        return await _reportRepo.GetAllWithSpecificationAsync(spec);
+    }
+
     #endregion
 
     #region Get By Id
