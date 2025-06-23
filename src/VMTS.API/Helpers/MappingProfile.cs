@@ -1,6 +1,5 @@
 ﻿using AutoMapper;
 using VMTS.API.Dtos;
-using VMTS.API.Dtos.Maintenance;
 using VMTS.API.Dtos.Maintenance.Category;
 using VMTS.API.Dtos.Maintenance.Report;
 using VMTS.API.Dtos.Maintenance.Report.Final;
@@ -101,23 +100,30 @@ public class MappingProfile : Profile
             )
             .ForMember(
                 dest => dest.VehicleName,
-                opt => opt.MapFrom(src => src.Vehicle.PalletNumber)
+                opt =>
+                    opt.MapFrom(src =>
+                        $"{src.Vehicle.VehicleModel.Brand.Name} {src.Vehicle.VehicleModel.Name} {src.Vehicle.PalletNumber}"
+                    )
             )
             .ForMember(
                 dest => dest.RequestTitle,
                 opt => opt.MapFrom(src => src.MaintenanceRequest.Description)
             )
             .ForMember(
-                dest => dest.CategoryNames,
+                dest => dest.MaintenanceCategory,
                 opt => opt.MapFrom(src => src.MaintenanceCategory.Categorty.ToString())
             )
             .ForMember(
-                dest => dest.MissingPartNames,
+                dest => dest.MissingParts,
                 opt => opt.MapFrom(src => src.MissingParts!.Select(p => p.Name))
             )
             .ForMember(
                 dest => dest.ExpectedChangedParts,
                 opt => opt.MapFrom(src => src.ExpectedChangedParts.Select(p => p.Part.Name))
+            )
+            .ForMember(
+                dest => dest.RequestStatus,
+                opt => opt.MapFrom(src => src.MaintenanceRequest.Status.ToString())
             );
         CreateMap<MaintenanceFinalReportRequestDto, MaintenanceFinalReport>();
         CreateMap<MaintenanceFinalReport, MaintenanceFinalReportResponseDto>()
@@ -127,7 +133,10 @@ public class MappingProfile : Profile
             )
             .ForMember(
                 dest => dest.VehicleName,
-                opt => opt.MapFrom(src => src.Vehicle.PalletNumber)
+                opt =>
+                    opt.MapFrom(src =>
+                        $"{src.Vehicle.VehicleModel.Brand.Name} {src.Vehicle.VehicleModel.Name} {src.Vehicle.PalletNumber}"
+                    )
             )
             .ForMember(
                 dest => dest.RequestTitle,
@@ -138,15 +147,15 @@ public class MappingProfile : Profile
                 opt => opt.MapFrom(src => src.InitialReport.Notes)
             )
             .ForMember(
-                dest => dest.CategoryNames,
+                dest => dest.MaintenanceCategory,
                 opt => opt.MapFrom(src => src.MaintenanceCategory.Categorty.ToString())
             )
             .ForMember(
-                dest => dest.ChangedPartNames,
+                dest => dest.ChangedParts,
                 opt => opt.MapFrom(src => src.ChangedParts.Select(p => p.Part.Name))
             )
             .ForMember(
-                dest => dest.Status,
+                dest => dest.RequestStatus,
                 opt => opt.MapFrom(src => src.MaintenaceRequest.Status.ToString())
             );
         // .ForMember
