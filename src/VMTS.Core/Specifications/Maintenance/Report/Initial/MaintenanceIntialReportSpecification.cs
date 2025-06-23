@@ -7,7 +7,8 @@ public class MaintenanceIntialReportSpecification : BaseSpecification<Maintenanc
 {
     private void ApplyIncludes()
     {
-        Includes.Add(mir => mir.Vehicle);
+        Includes.Add(mir => mir.Vehicle.VehicleModel.Brand);
+        Includes.Add(mir => mir.Vehicle.VehicleModel.Category);
         Includes.Add(mir => mir.Mechanic);
         Includes.Add(mir => mir.MaintenanceCategory);
         Includes.Add(mir => mir.MaintenanceRequest);
@@ -67,5 +68,51 @@ public class MaintenanceIntialReportSpecification : BaseSpecification<Maintenanc
         }
         else
             AddOrderBy(mir => mir.Date);
+        AddPaginaiton((specParams.PageIndex - 1) * specParams.PageSize, specParams.PageSize);
+    }
+
+    public MaintenanceIntialReportSpecification(MaintenanceReportSpecParams specParams)
+        : base(mir =>
+            (
+                string.IsNullOrWhiteSpace(specParams.MechanicId)
+                || mir.MechanicId == specParams.MechanicId
+            )
+            && (
+                string.IsNullOrWhiteSpace(specParams.VehicleId)
+                || mir.VehicleId == specParams.VehicleId
+            )
+            && (
+                string.IsNullOrWhiteSpace(specParams.MaintenanceRequestId)
+                || mir.MaintenanceRequestId == specParams.MaintenanceRequestId
+            )
+            && (
+                !specParams.ReportDate.HasValue || mir.Date.Date == specParams.ReportDate.Value.Date
+            )
+            && (
+                string.IsNullOrWhiteSpace(specParams.Search)
+                || mir.Vehicle.PalletNumber.Contains(specParams.Search)
+            )
+        )
+    {
+        ApplyIncludes();
+
+        if (!string.IsNullOrWhiteSpace(specParams.Sort))
+        {
+            switch (specParams.Sort)
+            {
+                case "DateAsc":
+                    AddOrderBy(mir => mir.Date);
+                    break;
+                case "DateDesc":
+                    AddOrderByDesc(mir => mir.Date);
+                    break;
+            }
+        }
+        else
+        {
+            AddOrderByDesc(mir => mir.Date);
+        }
+
+        AddPaginaiton((specParams.PageIndex - 1) * specParams.PageSize, specParams.PageSize);
     }
 }
