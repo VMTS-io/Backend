@@ -1,12 +1,10 @@
 ﻿using System.Security.Claims;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using VMTS.API.ActionFilters;
 using VMTS.API.Dtos;
 using VMTS.API.Errors;
-using VMTS.Core.Entities.Identity;
 using VMTS.Core.Helpers;
 using VMTS.Core.ServicesContract;
 using VMTS.Core.Specifications.FaultReportSepcification;
@@ -29,12 +27,12 @@ public class FaultReportController : BaseApiController
     [Authorize(Roles = Roles.Driver)]
     [HttpPost]
     [ServiceFilter(typeof(ValidateModelActionFilter<FaultReportRequest>))]
-    [ProducesResponseType(typeof(FaultReportResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(FaultReportSingleResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<FaultReportResponse>> Create(FaultReportRequest request)
+    public async Task<ActionResult<FaultReportSingleResponse>> Create(FaultReportRequest request)
     {
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
         if (string.IsNullOrEmpty(userId))
@@ -55,25 +53,32 @@ public class FaultReportController : BaseApiController
             request.Address
         );
 
+        var status = HttpContext.Response.StatusCode;
         var mappedReport = _mapper.Map<FaultReportResponse>(faultReport);
-        return Ok(mappedReport);
+        return Ok(
+            new FaultReportSingleResponse { StatusCode = status, FaultReport = mappedReport }
+        );
     }
 
     #endregion
 
-    #region Get All Reports
+    #region Get All Reports (Manager)
 
     [Authorize(Roles = Roles.Manager)]
     [HttpGet]
-    [ProducesResponseType(typeof(IReadOnlyList<FaultReportResponse>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(FaultReportListResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
-    public async Task<ActionResult<IReadOnlyList<FaultReportResponse>>> GetAll(
+    public async Task<ActionResult<FaultReportListResponse>> GetAll(
         [FromQuery] FaultReportSpecParams specParams
     )
     {
         var faultReports = await _ireportService.GetAllFaultReportsAsync(specParams);
-        var mappedReports = _mapper.Map<IReadOnlyList<FaultReportResponse>>(faultReports);
-        return Ok(mappedReports);
+        var status = HttpContext.Response.StatusCode;
+        var mappedReports = _mapper.Map<List<FaultReportResponse>>(faultReports);
+
+        return Ok(
+            new FaultReportListResponse { StatusCode = status, FaultReports = mappedReports }
+        );
     }
 
     #endregion
@@ -82,14 +87,18 @@ public class FaultReportController : BaseApiController
 
     [Authorize(Roles = $"{Roles.Driver},{Roles.Manager}")]
     [HttpGet("{id}")]
-    [ProducesResponseType(typeof(FaultReportResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(FaultReportSingleResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<FaultReportResponse>> GetFaultReportById(string id)
+    public async Task<ActionResult<FaultReportSingleResponse>> GetFaultReportById(string id)
     {
         var faultReport = await _ireportService.GetFaultReportByIdAsync(id);
+        var status = HttpContext.Response.StatusCode;
         var mappedReport = _mapper.Map<FaultReportResponse>(faultReport);
-        return Ok(mappedReport);
+
+        return Ok(
+            new FaultReportSingleResponse { StatusCode = status, FaultReport = mappedReport }
+        );
     }
 
     #endregion
@@ -106,6 +115,7 @@ public class FaultReportController : BaseApiController
     public async Task<ActionResult> Update([FromRoute] string id, UpdateFaultReportRequest request)
     {
         var driverId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
         await _ireportService.UpdateFaultReportAsync(
             id,
             driverId,
@@ -137,14 +147,14 @@ public class FaultReportController : BaseApiController
 
     #endregion
 
-    #region Get All Reports For User
+    #region Get All Reports For Current Driver
 
     [Authorize(Roles = Roles.Driver)]
     [HttpGet("/me/reports/faults")]
-    [ProducesResponseType(typeof(IReadOnlyList<FaultReportResponse>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(FaultReportListResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<IReadOnlyList<FaultReportResponse>>> GetAllForCurrentDriver(
+    public async Task<ActionResult<FaultReportListResponse>> GetAllForCurrentDriver(
         [FromQuery] FaultReportSpecParams specParams
     )
     {
@@ -159,11 +169,15 @@ public class FaultReportController : BaseApiController
             );
         }
 
-        specParams.DriverId = driverId; // Override to ensure driver only sees their own reports
+        specParams.DriverId = driverId;
 
         var faultReports = await _ireportService.GetAllFaultReportsForUserAsync(specParams);
-        var mappedReports = _mapper.Map<IReadOnlyList<FaultReportResponse>>(faultReports);
-        return Ok(mappedReports);
+        var status = HttpContext.Response.StatusCode;
+        var mappedReports = _mapper.Map<List<FaultReportResponse>>(faultReports);
+
+        return Ok(
+            new FaultReportListResponse { StatusCode = status, FaultReports = mappedReports }
+        );
     }
 
     #endregion

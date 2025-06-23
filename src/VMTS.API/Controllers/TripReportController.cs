@@ -20,25 +20,24 @@ public class TripReportController : BaseApiController
         _mapper = mapper;
     }
 
-    #region create
+    #region Create
 
     [Authorize(Roles = Roles.Driver)]
     [HttpPost]
-    [ProducesResponseType(typeof(TripReportResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(TripReportSingleResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
-    public async Task<ActionResult<TripReportResponse>> Create(TripReportRequest request)
+    public async Task<ActionResult<TripReportSingleResponse>> Create(TripReportRequest request)
     {
         var driverId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-
         if (string.IsNullOrEmpty(driverId))
         {
             return Problem(
-                statusCode: StatusCodes.Status401Unauthorized,
-                title: "Unauthorized",
-                detail: "User ID not found in token claims. Please login again."
+                "User ID not found in token claims. Please login again.",
+                "Unauthorized",
+                401
             );
         }
 
@@ -49,13 +48,14 @@ public class TripReportController : BaseApiController
             request.Details
         );
 
-        var mappedReport = _mapper.Map<TripReportResponse>(tripReport);
-        return Ok(mappedReport);
+        var mapped = _mapper.Map<TripReportResponse>(tripReport);
+        var status = HttpContext.Response.StatusCode;
+        return Ok(new TripReportSingleResponse { StatusCode = status, TripReport = mapped });
     }
 
     #endregion
 
-    #region update
+    #region Update
 
     [Authorize(Roles = Roles.Driver)]
     [HttpPut("{id}")]
@@ -68,6 +68,7 @@ public class TripReportController : BaseApiController
     )
     {
         var driverId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
         await _tripReportService.UpdateTripReportAsync(
             id,
             driverId,
@@ -75,12 +76,13 @@ public class TripReportController : BaseApiController
             updateRequest.FuelRefile,
             updateRequest.Cost
         );
+
         return NoContent();
     }
 
     #endregion
 
-    #region delete
+    #region Delete
 
     [Authorize(Roles = Roles.Manager)]
     [HttpDelete("{id}")]
@@ -96,46 +98,50 @@ public class TripReportController : BaseApiController
 
     #endregion
 
-    #region get all
+    #region Get All (Manager)
 
     [Authorize(Roles = Roles.Manager)]
     [HttpGet]
-    [ProducesResponseType(typeof(IReadOnlyList<TripReportResponse>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(TripReportListResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<IReadOnlyList<TripReportResponse>>> GetAll(
+    public async Task<ActionResult<TripReportListResponse>> GetAll(
         [FromQuery] TripReportSpecParams specParams
     )
     {
         var tripReports = await _tripReportService.GetAllTripReportsAsync(specParams);
-        var mappedReports = _mapper.Map<IReadOnlyList<TripReportResponse>>(tripReports);
-        return Ok(mappedReports);
+        var mapped = _mapper.Map<List<TripReportResponse>>(tripReports);
+        var status = HttpContext.Response.StatusCode;
+
+        return Ok(new TripReportListResponse { StatusCode = status, TripReports = mapped });
     }
 
     #endregion
 
-    #region get by id
+    #region Get By Id
 
     [Authorize(Roles = $"{Roles.Driver},{Roles.Manager}")]
     [HttpGet("{id}")]
-    [ProducesResponseType(typeof(TripReportResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(TripReportSingleResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<TripReportResponse>> GetById(string id)
+    public async Task<ActionResult<TripReportSingleResponse>> GetById(string id)
     {
         var tripReport = await _tripReportService.GetTripReportByIdAsync(id);
-        var mappedReport = _mapper.Map<TripReportResponse>(tripReport);
-        return Ok(mappedReport);
+        var mapped = _mapper.Map<TripReportResponse>(tripReport);
+        var status = HttpContext.Response.StatusCode;
+
+        return Ok(new TripReportSingleResponse { StatusCode = status, TripReport = mapped });
     }
 
     #endregion
 
-    #region Get All Reports For User
+    #region Get All for Current Driver
 
     [Authorize(Roles = Roles.Driver)]
     [HttpGet("/me/reports/regular")]
-    [ProducesResponseType(typeof(IReadOnlyList<TripReportResponse>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(TripReportListResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<IReadOnlyList<TripReportResponse>>> GetAllForCurrentDriver(
+    public async Task<ActionResult<TripReportListResponse>> GetAllForCurrentDriver(
         [FromQuery] TripReportSpecParams specParams
     )
     {
@@ -143,17 +149,19 @@ public class TripReportController : BaseApiController
         if (string.IsNullOrWhiteSpace(driverId))
         {
             return Problem(
-                statusCode: StatusCodes.Status401Unauthorized,
-                title: "Unauthorized",
-                detail: "User ID not found in token claims. Please login again."
+                "User ID not found in token claims. Please login again.",
+                "Unauthorized",
+                401
             );
         }
 
-        specParams.DriverId = driverId; // Force driver's own data only
+        specParams.DriverId = driverId;
 
         var tripReports = await _tripReportService.GetAllTripReportsForUserAsync(specParams);
-        var mappedReports = _mapper.Map<IReadOnlyList<TripReportResponse>>(tripReports);
-        return Ok(mappedReports);
+        var mapped = _mapper.Map<List<TripReportResponse>>(tripReports);
+        var status = HttpContext.Response.StatusCode;
+
+        return Ok(new TripReportListResponse { StatusCode = status, TripReports = mapped });
     }
 
     #endregion
