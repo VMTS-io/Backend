@@ -26,11 +26,11 @@ public class TripRequestController : BaseApiController
 
     [Authorize(Roles = "Manager")]
     [HttpPost]
-    [ProducesResponseType(typeof(TripRequestResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(TripRequestSingleResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<TripRequestResponse>> CreateTripRequestAsync(
+    public async Task<ActionResult<TripRequestSingleResponse>> CreateTripRequestAsync(
         TripRequestDto request
     )
     {
@@ -53,11 +53,11 @@ public class TripRequestController : BaseApiController
             request.Details,
             request.Destination
         );
-        var status = HttpContext.Response.StatusCode;
-        var mapped = _mapper.Map<TripRequestObj>(tripRequest);
-        var response = new TripRequestResponse { StatusCode = status, TripRequest = mapped };
 
-        return Ok(response);
+        var status = HttpContext.Response.StatusCode;
+        var mapped = _mapper.Map<TripRequestResponse>(tripRequest);
+
+        return Ok(new TripRequestSingleResponse { StatusCode = status, TripRequest = mapped });
     }
 
     #endregion
@@ -112,20 +112,16 @@ public class TripRequestController : BaseApiController
 
     [Authorize(Roles = $"{Roles.Manager},{Roles.Driver}")]
     [HttpGet("{id}")]
-    [ProducesResponseType(typeof(TripRequestResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(TripRequestSingleResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<TripRequestResponse>> GetById(string id)
+    public async Task<ActionResult<TripRequestSingleResponse>> GetById(string id)
     {
         var tripRequest = await _requestService.GetTripRequestByIdAsync(id);
 
         var status = HttpContext.Response.StatusCode;
-        var response = new TripRequestResponse
-        {
-            StatusCode = status,
-            TripRequest = _mapper.Map<TripRequestObj>(tripRequest),
-        };
+        var mapped = _mapper.Map<TripRequestResponse>(tripRequest);
 
-        return Ok(response);
+        return Ok(new TripRequestSingleResponse { StatusCode = status, TripRequest = mapped });
     }
 
     #endregion
@@ -142,7 +138,7 @@ public class TripRequestController : BaseApiController
         var tripRequests = await _requestService.GetAllTripRequestsAsync(specParams);
 
         var status = HttpContext.Response.StatusCode;
-        var mapped = _mapper.Map<List<TripRequestObj>>(tripRequests);
+        var mapped = _mapper.Map<List<TripRequestResponse>>(tripRequests);
 
         return Ok(new TripRequestListResponse { StatusCode = status, TripRequests = mapped });
     }
@@ -156,7 +152,7 @@ public class TripRequestController : BaseApiController
     [ProducesResponseType(typeof(TripRequestListResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<TripRequestResponse>> GetAllForCurrentDriver()
+    public async Task<ActionResult<TripRequestListResponse>> GetAllForCurrentDriver()
     {
         var driverId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
@@ -170,13 +166,12 @@ public class TripRequestController : BaseApiController
         }
 
         var specParams = new TripRequestSpecParams { DriverId = driverId };
-
         var trips = await _requestService.GetAllTripsForUserAsync(specParams);
 
         var status = HttpContext.Response.StatusCode;
-        var mapped = _mapper.Map<List<TripRequestObj>>(trips);
+        var mapped = _mapper.Map<List<TripRequestResponse>>(trips);
 
-        return Ok(new TripRequestListResponse() { StatusCode = status, TripRequests = mapped });
+        return Ok(new TripRequestListResponse { StatusCode = status, TripRequests = mapped });
     }
 
     #endregion
