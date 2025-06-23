@@ -26,8 +26,8 @@ public class MaintenaceRequest : BaseEntity
     public MaintenaceCategory MaintenanceCategory { get; set; } = default!;
 
     public string MaintenanceCategoryId { get; set; } = default!;
-    public MaintenanceInitialReport? InitialReport { get; set; } = default!;
-    public MaintenanceFinalReport? FinalReport { get; set; } = default!;
+    public MaintenanceInitialReport InitialReport { get; set; } = default!;
+    public MaintenanceFinalReport FinalReport { get; set; } = default!;
 
     // public FaultReport FaultReport { get; set; } = default!;
     //

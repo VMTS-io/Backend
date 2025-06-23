@@ -20,6 +20,12 @@ public class MaintenanceFinalReportConfigruation : IEntityTypeConfiguration<Main
         //     .HasForeignKey(mir => mir.Manager)
         //     .OnDelete(DeleteBehavior.Cascade);
 
+
+        builder
+            .HasOne(mfr => mfr.MaintenanceCategory)
+            .WithMany()
+            .HasForeignKey(mfr => mfr.MaintenanceCategoryId);
+
         builder
             .HasOne(mfr => mfr.Vehicle)
             .WithMany()
@@ -38,7 +44,7 @@ public class MaintenanceFinalReportConfigruation : IEntityTypeConfiguration<Main
             .HasForeignKey(mir => mir.MaintenaceRequestId)
             .OnDelete(DeleteBehavior.Cascade);
 
-        builder.HasOne(mfr => mfr.MaintenanceCategories).WithMany();
+        builder.HasOne(mfr => mfr.MaintenanceCategory).WithMany();
         // builder.HasMany(mfr => mfr.ChangedPartss).WithMany();
         builder.Property(mfr => mfr.TotalCost).HasColumnType("decimal(18,2)");
     }

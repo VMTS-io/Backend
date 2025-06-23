@@ -8,10 +8,12 @@ public class MaintenanceFinalReportSpecification : BaseSpecification<Maintenance
     private void ApplyIncludes()
     {
         Includes.Add(r => r.Vehicle);
+        Includes.Add(r => r.Mechanic);
         Includes.Add(r => r.InitialReport);
         Includes.Add(r => r.MaintenaceRequest);
-        Includes.Add(r => r.ChangedParts);
-        Includes.Add(r => r.MaintenanceCategories);
+        // Includes.Add(r => r.ChangedParts);
+        Includes.Add(r => r.MaintenanceCategory);
+        IncludeStrings.Add("ChangedParts.Part");
     }
 
     public MaintenanceFinalReportSpecification(string id)

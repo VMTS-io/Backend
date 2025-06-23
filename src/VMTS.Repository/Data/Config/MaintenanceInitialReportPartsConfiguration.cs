@@ -12,7 +12,8 @@ public class MaintenanceInitialReportPartsConfiguration
         builder
             .HasOne(mirp => mirp.InitialReport)
             .WithMany(mir => mir.ExpectedChangedParts)
-            .HasForeignKey(mirp => mirp.MaintnenanceInitialReportId);
+            .HasForeignKey(mirp => mirp.MaintnenanceInitialReportId)
+            .OnDelete(DeleteBehavior.Cascade);
 
         builder.HasOne(mirp => mirp.Part).WithMany().HasForeignKey(mirp => mirp.PartId);
     }
