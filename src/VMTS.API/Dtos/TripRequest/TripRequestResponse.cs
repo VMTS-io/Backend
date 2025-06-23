@@ -4,8 +4,6 @@ namespace VMTS.API.Dtos;
 
 public class TripRequestResponse
 {
-    public int StatusCode { get; set; }
-
     public string Id { get; set; }
     public string ManagerId { get; set; }
 
