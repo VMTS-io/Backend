@@ -36,11 +36,36 @@ public class DriverReportController : BaseApiController
 
         var result = await _driverReportsService.GetDriverReportsAsync(managerId, spec);
 
-        var response = new DriverReportsResponse
+        var mappedtrips = result.TripReports.Select(tr => new DriverReportItemDto
         {
-            TripReports = _mapper.Map<IReadOnlyList<TripReportResponse>>(result.TripReports),
-            FaultReports = _mapper.Map<IReadOnlyList<FaultReportResponse>>(result.FaultReports),
-        };
+            Id = tr.Id,
+            ReportType = "Trip",
+            Driver = _mapper.Map<DriverDto>(tr.Driver),
+            Vehicle = _mapper.Map<VehicleDto>(tr.Vehicle),
+            ReportedAt = tr.ReportedAt,
+            Destination = tr.Destination,
+            FuelCost = tr.FuelCost,
+            Status = tr.Trip.Status,
+        });
+        var mappedfaults = result.FaultReports.Select(fr => new DriverReportItemDto
+        {
+            Id = fr.Id,
+            ReportType = "Fault",
+            Driver = _mapper.Map<DriverDto>(fr.Driver),
+            Vehicle = _mapper.Map<VehicleDto>(fr.Vehicle),
+            ReportedAt = fr.ReportedAt,
+            Destination = fr.Trip.Destination,
+            FaultAddress = fr.FaultAddress,
+            FaultDetails = fr.Details,
+            FaultType = fr.FaultType,
+            Cost = fr.Cost,
+            Status = fr.Trip.Status,
+        });
+
+        var response = mappedtrips
+            .Concat(mappedfaults)
+            .OrderByDescending(r => r.ReportedAt)
+            .ToList();
 
         return Ok(response);
     }
