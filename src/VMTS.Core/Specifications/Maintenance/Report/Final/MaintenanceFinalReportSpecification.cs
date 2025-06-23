@@ -7,7 +7,8 @@ public class MaintenanceFinalReportSpecification : BaseSpecification<Maintenance
 {
     private void ApplyIncludes()
     {
-        Includes.Add(r => r.Vehicle);
+        Includes.Add(r => r.Vehicle.VehicleModel.Brand);
+        Includes.Add(r => r.Vehicle.VehicleModel.Category);
         Includes.Add(r => r.Mechanic);
         Includes.Add(r => r.InitialReport);
         Includes.Add(r => r.MaintenaceRequest);
@@ -89,6 +90,55 @@ public class MaintenanceFinalReportSpecification : BaseSpecification<Maintenance
         }
 
         // Pagination
-        // ApplyPaging((specParams.PageIndex - 1) * specParams.PageSize, specParams.PageSize);
+        AddPaginaiton((specParams.PageIndex - 1) * specParams.PageSize, specParams.PageSize);
+    }
+
+    public MaintenanceFinalReportSpecification(MaintenanceReportSpecParams specParams)
+        : base(r =>
+            (
+                string.IsNullOrWhiteSpace(specParams.MechanicId)
+                || r.MechanicId == specParams.MechanicId
+            )
+            && (
+                string.IsNullOrWhiteSpace(specParams.VehicleId)
+                || r.VehicleId == specParams.VehicleId
+            )
+            && (
+                string.IsNullOrWhiteSpace(specParams.MaintenanceRequestId)
+                || r.MaintenaceRequestId == specParams.MaintenanceRequestId
+            )
+            && (
+                !specParams.ReportDate.HasValue
+                || r.FinishedDate.Date == specParams.ReportDate.Value.Date
+            )
+            && (
+                string.IsNullOrWhiteSpace(specParams.Search)
+                || r.Notes.Contains(specParams.Search)
+                || r.Vehicle.PalletNumber.Contains(specParams.Search)
+            )
+        )
+    {
+        ApplyIncludes();
+
+        switch (specParams.Sort)
+        {
+            case "DateAsc":
+                AddOrderBy(r => r.FinishedDate);
+                break;
+            case "DateDesc":
+                AddOrderByDesc(r => r.FinishedDate);
+                break;
+            case "CostAsc":
+                AddOrderBy(r => r.TotalCost);
+                break;
+            case "CostDesc":
+                AddOrderByDesc(r => r.TotalCost);
+                break;
+            default:
+                AddOrderByDesc(r => r.FinishedDate);
+                break;
+        }
+
+        AddPaginaiton((specParams.PageIndex - 1) * specParams.PageSize, specParams.PageSize);
     }
 }

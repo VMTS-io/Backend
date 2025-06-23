@@ -6,6 +6,7 @@ using VMTS.Core.Interfaces.Repositories;
 using VMTS.Core.Interfaces.Services;
 using VMTS.Core.Interfaces.UnitOfWork;
 using VMTS.Core.Specifications;
+using VMTS.Core.Specifications.Maintenance.Report;
 using VMTS.Core.Specifications.Maintenance.Report.Final;
 using VMTS.Service.Exceptions;
 
@@ -78,6 +79,17 @@ public class MaintenanceFinalReportServices : IMaintenanceFinalReportServices
     }
     #endregion
 
+    #region Get All For Joint Endpoint
+
+    public async Task<IReadOnlyList<MaintenanceFinalReport>> GetAllFinalReportsAsync(
+        MaintenanceReportSpecParams specParams
+    )
+    {
+        var spec = new MaintenanceFinalReportSpecification(specParams);
+        return await _finalReportRepo.GetAllWithSpecificationAsync(spec);
+    }
+
+    #endregion
     #region Get By Id
     public async Task<MaintenanceFinalReport> GetFinalReportByIdAsync(string id)
     {

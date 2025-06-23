@@ -8,13 +8,13 @@ public class MaintenanceFinalReportResponseDto
     public string Notes { get; set; } = default!;
     public decimal TotalCost { get; set; }
     public DateTime FinishedDate { get; set; }
-    public Status Status { get; set; }
+    public Status RequestStatus { get; set; }
 
     public string MechanicName { get; set; } = default!;
     public string VehicleName { get; set; } = default!;
     public string InitialReportSummary { get; set; } = default!;
     public string RequestTitle { get; set; } = default!;
 
-    public string CategoryNames { get; set; } = default!;
-    public List<string> ChangedPartNames { get; set; } = [];
+    public string MaintenanceCategory { get; set; } = default!;
+    public List<string> ChangedParts { get; set; } = [];
 }
