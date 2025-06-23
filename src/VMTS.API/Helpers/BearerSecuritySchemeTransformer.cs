@@ -28,7 +28,7 @@ internal sealed class BearerSecuritySchemeTransformer(
                     Scheme = "bearer",
                     In = ParameterLocation.Header,
                     BearerFormat = "JWT",
-                    Description = "JWT for regular users",
+                    Description = "JWT for Admin",
                 },
                 ["Manager"] = new OpenApiSecurityScheme
                 {
@@ -36,7 +36,7 @@ internal sealed class BearerSecuritySchemeTransformer(
                     Scheme = "bearer",
                     In = ParameterLocation.Header,
                     BearerFormat = "JWT",
-                    Description = "JWT for Manager users",
+                    Description = "JWT for Manager",
                 },
                 ["Driver"] = new OpenApiSecurityScheme
                 {
@@ -44,7 +44,15 @@ internal sealed class BearerSecuritySchemeTransformer(
                     Scheme = "bearer",
                     In = ParameterLocation.Header,
                     BearerFormat = "JWT",
-                    Description = "JWT for Driver users",
+                    Description = "JWT for Driver",
+                },
+                ["Mechanic"] = new OpenApiSecurityScheme
+                {
+                    Type = SecuritySchemeType.Http,
+                    Scheme = "bearer",
+                    In = ParameterLocation.Header,
+                    BearerFormat = "JWT",
+                    Description = "JWT for Mechanic",
                 },
             };
 
@@ -57,7 +65,7 @@ internal sealed class BearerSecuritySchemeTransformer(
             }
 
             // Add security requirements (both will show in Scalar)
-            document.SecurityRequirements ??= new List<OpenApiSecurityRequirement>();
+            document.SecurityRequirements ??= [];
 
             foreach (var schemeKey in securitySchemes.Keys)
             {
