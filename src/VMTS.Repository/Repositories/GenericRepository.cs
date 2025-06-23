@@ -64,6 +64,8 @@ public class GenericRepository<T> : IGenericRepository<T>
         return SpecificationElvaluator<T>.BuildQuery(_dbContext.Set<T>(), specs);
     }
 
+    public IQueryable<T> AsQueryable() => _dbContext.Set<T>().AsQueryable();
+
     public async Task<bool> ExistAsync(string id)
     {
         return await _dbContext.Set<T>().AnyAsync(entity => entity.Id == id);
