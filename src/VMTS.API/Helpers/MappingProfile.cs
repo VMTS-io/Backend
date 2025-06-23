@@ -3,6 +3,7 @@ using VMTS.API.Dtos;
 using VMTS.API.Dtos.Maintenance;
 using VMTS.API.Dtos.Maintenance.Category;
 using VMTS.API.Dtos.Maintenance.Report;
+using VMTS.API.Dtos.Maintenance.Report.Final;
 using VMTS.API.Dtos.Maintenance.Report.Initial;
 using VMTS.API.Dtos.Maintenance.Request;
 using VMTS.API.Dtos.Part;
@@ -117,6 +118,36 @@ public class MappingProfile : Profile
             .ForMember(
                 dest => dest.ExpectedChangedParts,
                 opt => opt.MapFrom(src => src.ExpectedChangedParts.Select(p => p.Part.Name))
+            );
+        CreateMap<MaintenanceFinalReportRequestDto, MaintenanceFinalReport>();
+        CreateMap<MaintenanceFinalReport, MaintenanceFinalReportResponseDto>()
+            .ForMember(
+                dest => dest.MechanicName,
+                opt => opt.MapFrom(src => src.Mechanic.DisplayName)
+            )
+            .ForMember(
+                dest => dest.VehicleName,
+                opt => opt.MapFrom(src => src.Vehicle.PalletNumber)
+            )
+            .ForMember(
+                dest => dest.RequestTitle,
+                opt => opt.MapFrom(src => src.MaintenaceRequest.Description)
+            )
+            .ForMember(
+                dest => dest.InitialReportSummary,
+                opt => opt.MapFrom(src => src.InitialReport.Notes)
+            )
+            .ForMember(
+                dest => dest.CategoryNames,
+                opt => opt.MapFrom(src => src.MaintenanceCategory.Categorty.ToString())
+            )
+            .ForMember(
+                dest => dest.ChangedPartNames,
+                opt => opt.MapFrom(src => src.ChangedParts.Select(p => p.Part.Name))
+            )
+            .ForMember(
+                dest => dest.Status,
+                opt => opt.MapFrom(src => src.MaintenaceRequest.Status.ToString())
             );
         // .ForMember
         //     dest => dest.ExpectedChangedParts,
