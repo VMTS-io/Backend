@@ -15,12 +15,12 @@ using VMTS.Service.Exceptions;
 
 namespace VMTS.Service.Services;
 
-public class ReportService : IReportService
+public class FaultReportService : IFaultReportService
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly UserManager<AppUser> _userManager;
 
-    public ReportService(IUnitOfWork unitOfWork, UserManager<AppUser> userManager)
+    public FaultReportService(IUnitOfWork unitOfWork, UserManager<AppUser> userManager)
     {
         _unitOfWork = unitOfWork;
         _userManager = userManager;
@@ -45,6 +45,9 @@ public class ReportService : IReportService
             .GetRepo<TripRequest>()
             .GetByIdWithSpecificationAsync(tripSpec);
 
+        if (tripRequest == null)
+            throw new InvalidOperationException("No active trip found for this driver.");
+
         if (tripRequest.DriverId != userId)
             throw new ForbbidenException(
                 "you are not allowed to create fault report for this trip"
@@ -67,16 +70,9 @@ public class ReportService : IReportService
             throw new InvalidOperationException(
                 "A fault report has already been submitted for this trip."
             );
-        if (tripRequest == null)
-            throw new InvalidOperationException("No active trip found for this driver.");
 
         if (tripRequest.Vehicle == null || string.IsNullOrEmpty(tripRequest.Vehicle.Id))
             throw new InvalidOperationException("Trip does not have an assigned vehicle.");
-
-        if (tripRequest.DriverId != userId)
-            throw new UnauthorizedAccessException(
-                "You can only create fault reports for trips assigned to you."
-            );
 
         // Create the fault report
         var faultReport = new FaultReport
@@ -94,8 +90,10 @@ public class ReportService : IReportService
         };
 
         // Save fault report
+        businessUser.DriverFaultReport ??= new List<FaultReport>();
         businessUser.DriverFaultReport.Add(faultReport);
-        faultReport.Trip.Status = TripStatus.Completed;
+
+        tripRequest.Status = TripStatus.Completed;
         await _unitOfWork.GetRepo<FaultReport>().CreateAsync(faultReport);
         var result = await _unitOfWork.SaveChanges();
 

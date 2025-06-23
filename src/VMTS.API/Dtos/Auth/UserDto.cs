@@ -8,5 +8,5 @@ public class UserDto
 
     public int StatusCode { get; set; }
 
-    public BussinessUserDto BussinessUserDto { get; set; }
+    public BussinessUserDto BussinessUser { get; set; }
 }

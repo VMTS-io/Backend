@@ -1,0 +1,40 @@
+using VMTS.Core.Entities.Reports;
+using VMTS.Core.Entities.Trip;
+using VMTS.Core.Interfaces.Repositories;
+using VMTS.Core.Interfaces.Services;
+using VMTS.Core.Specifications;
+using VMTS.Core.Specifications.DriverReports;
+
+namespace VMTS.Service.Services;
+
+public class DriverReportsService : IDriverReportsService
+{
+    private readonly IGenericRepository<TripReport> _tripReportRepo;
+    private readonly IGenericRepository<FaultReport> _faultReportRepo;
+
+    public DriverReportsService(
+        IGenericRepository<TripReport> tripReportRepo,
+        IGenericRepository<FaultReport> faultReportRepo
+    )
+    {
+        _tripReportRepo = tripReportRepo;
+        _faultReportRepo = faultReportRepo;
+    }
+
+    public async Task<DriverReportsResult> GetDriverReportsAsync(
+        string managerId,
+        DriverReportsSpecParams specParams
+    )
+    {
+        if (string.IsNullOrWhiteSpace(managerId))
+            throw new UnauthorizedAccessException("You are not authorized.");
+
+        var tripSpec = new DriverTripReportsIncludeSpecifications(specParams);
+        var faultSpec = new DriverFaultReportsIncludeSpecifications(specParams);
+
+        var tripReports = await _tripReportRepo.GetAllWithSpecificationAsync(tripSpec);
+        var faultReports = await _faultReportRepo.GetAllWithSpecificationAsync(faultSpec);
+
+        return new DriverReportsResult { TripReports = tripReports, FaultReports = faultReports };
+    }
+}

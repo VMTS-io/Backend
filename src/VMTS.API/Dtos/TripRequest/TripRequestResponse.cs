@@ -19,5 +19,5 @@ public class TripRequestResponse
 
     public VehicleDto Vehicle { get; set; }
 
-    public TripStatus TripStatus { get; set; }
+    public TripStatus Status { get; set; }
 }

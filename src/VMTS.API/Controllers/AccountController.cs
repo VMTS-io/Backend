@@ -82,7 +82,7 @@ public class AccountController : BaseApiController
             {
                 Email = user.Email,
                 Token = tokenString,
-                BussinessUserDto = businessUserDto,
+                BussinessUser = businessUserDto,
                 StatusCode = status,
             }
         );

@@ -8,6 +8,12 @@ public class TripReportConfig : IEntityTypeConfiguration<TripReport>
 {
     public void Configure(EntityTypeBuilder<TripReport> builder)
     {
-        builder.Property(TR => TR.FuelCost).HasColumnType("decimal(18,2)");
+        builder
+            .HasOne(f => f.Trip)
+            .WithOne(t => t.TripReports)
+            .HasForeignKey<TripReport>(f => f.TripId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        builder.Property(f => f.FuelCost).HasColumnType("decimal(18,2)");
     }
 }

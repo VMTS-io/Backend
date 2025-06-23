@@ -8,6 +8,7 @@ using VMTS.API.Dtos.Maintenance.Report.Initial;
 using VMTS.API.Dtos.Maintenance.Request;
 using VMTS.API.Dtos.Part;
 using VMTS.API.Dtos.Trip;
+using VMTS.API.Dtos.TripReport;
 using VMTS.API.Dtos.Vehicles;
 using VMTS.API.Dtos.Vehicles.Brand;
 using VMTS.API.Dtos.Vehicles.Category;
@@ -25,6 +26,8 @@ public class MappingProfile : Profile
 {
     public MappingProfile()
     {
+        CreateMap<TripReport, TripReportResponse>();
+
         CreateMap<BusinessUser, BussinessUserDto>();
 
         CreateMap<AddressDto, Address>().ReverseMap();
@@ -32,10 +35,7 @@ public class MappingProfile : Profile
         CreateMap<FaultReport, FaultReportResponse>()
             .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(src => src.ReportedAt));
 
-        CreateMap<TripRequest, TripRequestResponse>()
-            .ForMember(dest => dest.Driver, opt => opt.MapFrom(src => src.Driver))
-            .ForMember(dest => dest.Vehicle, opt => opt.MapFrom(src => src.Vehicle));
-        ;
+        CreateMap<TripRequest, TripRequestResponse>();
 
         CreateMap<AddressDto, Address>()
             .ForMember(dest => dest.AppUserId, opt => opt.Ignore()) // Explicitly ignore this

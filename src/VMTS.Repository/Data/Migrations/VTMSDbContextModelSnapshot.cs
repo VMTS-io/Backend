@@ -571,6 +571,10 @@ namespace VMTS.Repository.Data.Migrations
                     b.Property<string>("Id")
                         .HasColumnType("nvarchar(450)");
 
+                    b.Property<string>("Destination")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Details")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -578,10 +582,6 @@ namespace VMTS.Repository.Data.Migrations
                     b.Property<string>("DriverId")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("Duration")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<decimal>("FuelCost")
                         .HasColumnType("decimal(18,2)");
@@ -607,7 +607,8 @@ namespace VMTS.Repository.Data.Migrations
 
                     b.HasIndex("DriverId");
 
-                    b.HasIndex("TripId");
+                    b.HasIndex("TripId")
+                        .IsUnique();
 
                     b.HasIndex("VehicleId");
 
@@ -1001,9 +1002,9 @@ namespace VMTS.Repository.Data.Migrations
                         .IsRequired();
 
                     b.HasOne("TripRequest", "Trip")
-                        .WithMany()
-                        .HasForeignKey("TripId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .WithOne("TripReports")
+                        .HasForeignKey("VMTS.Core.Entities.Trip.TripReport", "TripId")
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("VMTS.Core.Entities.Vehicle_Aggregate.Vehicle", "Vehicle")
@@ -1050,6 +1051,9 @@ namespace VMTS.Repository.Data.Migrations
             modelBuilder.Entity("TripRequest", b =>
                 {
                     b.Navigation("FaultReports")
+                        .IsRequired();
+
+                    b.Navigation("TripReports")
                         .IsRequired();
                 });
 

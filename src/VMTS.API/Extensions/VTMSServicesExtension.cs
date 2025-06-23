@@ -71,11 +71,13 @@ public static class VTMSServicesExtension
             );
         });
 
+        services.AddScoped<ITripReportService, TripReportService>();
         services.AddAutoMapper(typeof(MappingProfile));
         services.AddScoped<IUnitOfWork, UnitOfWork>();
         services.AddScoped<IAuthService, AuthService>();
-        services.AddScoped<IReportService, ReportService>();
+        services.AddScoped<IFaultReportService, FaultReportService>();
         services.AddScoped<ITripRequestService, TripRequestService>();
+        services.AddScoped<IDriverReportsService, DriverReportsService>();
         services.AddScoped<IMaintenanceRequestServices, MaintenanceRequestServices>();
         services.AddScoped<IVehicleSerivces, VehicleServices>();
         services.AddScoped<IUserService, UserService>();
