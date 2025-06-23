@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using VMTS.API.Dtos;
+using VMTS.API.Dtos.DriverReportsResponse;
 using VMTS.API.Dtos.Maintenance;
 using VMTS.API.Dtos.Maintenance.Category;
 using VMTS.API.Dtos.Maintenance.Report;
@@ -25,6 +26,31 @@ public class MappingProfile : Profile
 {
     public MappingProfile()
     {
+        CreateMap<TripReport, DriverReportItemDto>()
+            .ForMember(dest => dest.ReportType, opt => opt.MapFrom(_ => "Trip"))
+            .ForMember(dest => dest.Driver, opt => opt.MapFrom(src => src.Driver))
+            .ForMember(dest => dest.Vehicle, opt => opt.MapFrom(src => src.Vehicle))
+            .ForMember(dest => dest.ReportedAt, opt => opt.MapFrom(src => src.ReportedAt))
+            .ForMember(dest => dest.Destination, opt => opt.MapFrom(src => src.Destination))
+            .ForMember(dest => dest.FuelCost, opt => opt.MapFrom(src => src.FuelCost));
+
+        // Map FaultReport -> DriverReportItemDto
+        CreateMap<FaultReport, DriverReportItemDto>()
+            .ForMember(dest => dest.ReportType, opt => opt.MapFrom(_ => "Fault"))
+            .ForMember(dest => dest.Driver, opt => opt.MapFrom(src => src.Driver))
+            .ForMember(dest => dest.Vehicle, opt => opt.MapFrom(src => src.Vehicle))
+            .ForMember(dest => dest.ReportedAt, opt => opt.MapFrom(src => src.ReportedAt))
+            .ForMember(dest => dest.FaultDetails, opt => opt.MapFrom(src => src.Details))
+            .ForMember(dest => dest.FaultType, opt => opt.MapFrom(src => src.FaultType))
+            .ForMember(dest => dest.Cost, opt => opt.MapFrom(src => src.Cost));
+
+        // Map nested objects
+
+        // CreateMap<Vehicle, VehicleDto>()
+        //     .ForMember(dest => dest.Model, opt => opt.MapFrom(src => src.VehicleModel.Name))
+        //     .ForMember(dest => dest.Category, opt => opt.MapFrom(src => src.VehicleModel.Category.Name))
+        //     .ForMember(dest => dest.Brand, opt => opt.MapFrom(src => src.VehicleModel.Brand.Name));
+
         CreateMap<TripReport, TripReportResponse>();
 
         CreateMap<BusinessUser, BussinessUserDto>();
