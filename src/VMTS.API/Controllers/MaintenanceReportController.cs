@@ -1,9 +1,13 @@
+using System.Security.Claims;
 using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using VMTS.API.Dtos.Maintenance.Report;
 using VMTS.API.Dtos.Maintenance.Report.Final;
 using VMTS.API.Dtos.Maintenance.Report.Initial;
+using VMTS.API.Dtos.MaintenanceReportResponseDto;
 using VMTS.Core.Entities.Maintenace;
+using VMTS.Core.Helpers;
 using VMTS.Core.Interfaces.Services;
 using VMTS.Core.Specifications.Maintenance.Report;
 
@@ -13,40 +17,79 @@ namespace VMTS.API.Controllers;
 [Tags("Maintenance/Report/")]
 public class MaintenanceReportController : BaseApiController
 {
-    private readonly IMaintenanceInitialReportServices _initialService;
-    private readonly IMaintenanceFinalReportServices _finalService;
-    private readonly IMapper _mapper;
+    private readonly IMechanicReportsServices _mechanicReportsServices;
 
-    public MaintenanceReportController(
-        IMapper mapper,
-        IMaintenanceInitialReportServices initialService,
-        IMaintenanceFinalReportServices finalService
-    )
+    public MaintenanceReportController(IMechanicReportsServices mechanicReportsServices)
     {
-        _mapper = mapper;
-        _initialService = initialService;
-        _finalService = finalService;
+        _mechanicReportsServices = mechanicReportsServices;
     }
 
     [ProducesResponseType(typeof(MaintenanceReportsDto), StatusCodes.Status200OK)]
-    [HttpGet]
+    [Authorize(Roles = Roles.Manager)]
+    [HttpGet("reports")]
     public async Task<ActionResult<MaintenanceReportsDto>> GetAllReports(
         [FromQuery] MaintenanceReportSpecParams specParams
     )
     {
-        var initialReports = await _initialService.GetAllInitialReportsAsync(specParams);
-        var mappedInitialReprots = _mapper.Map<IReadOnlyList<MaintenanceInitialReportResponseDto>>(
-            initialReports
+        var managerId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+        var result = await _mechanicReportsServices.GetMechanicReportsAsync(managerId, specParams);
+
+        var initialReports = await _mechanicReportsServices.GetMechanicReportsAsync(
+            managerId,
+            specParams
         );
-        var finalReports = await _finalService.GetAllFinalReportsAsync(specParams);
-        var mappedFinalReprots = _mapper.Map<IReadOnlyList<MaintenanceFinalReportResponseDto>>(
-            finalReports
+
+        var mappedInitialReports = result
+            .InitialReports.Select(ir => new MaintenanceReportResponseDto
+            {
+                Id = ir.Id,
+                ReportType = "Initial",
+                Notes = ir.Notes,
+                ReportDate = ir.Date,
+                ExpectedFinishDate = ir.ExpectedFinishDate,
+                ExpectedCost = ir.ExpectedCost,
+                RequestStatus = ir.MaintenanceRequest.Status,
+                MechanicName = ir.Mechanic.DisplayName,
+                VehicleName = ir.Vehicle.VehicleModel.Name,
+                RequestTitle = ir.MaintenanceRequest.Description,
+                MaintenanceCategory = ir.MaintenanceCategory.Categorty.ToString(),
+                MissingParts = ir.MissingParts.Select(p => p.Name).ToList(),
+                ExpectedChangedParts = ir
+                    .ExpectedChangedParts.Select(ecp => ecp.Part.Name)
+                    .ToList(),
+            })
+            .ToList();
+
+        var finalReports = await _mechanicReportsServices.GetMechanicReportsAsync(
+            managerId,
+            specParams
         );
-        var respons = new MaintenanceReportsDto()
-        {
-            InitialReports = mappedInitialReprots,
-            FinalReports = mappedFinalReprots,
-        };
+        var mappedFinalReports = result
+            .FinalReports.Select(fr => new MaintenanceReportResponseDto
+            {
+                Id = fr.Id,
+                ReportType = "Final",
+                Notes = fr.Notes,
+                ReportDate = fr.FinishedDate,
+                TotalCost = fr.TotalCost,
+                RequestStatus = fr.MaintenaceRequest.Status,
+                MechanicName = fr.Mechanic.DisplayName,
+                VehicleName = fr.Vehicle.VehicleModel.Name,
+                RequestTitle = fr.MaintenaceRequest.Description,
+                MaintenanceCategory = fr.MaintenanceCategory.Categorty.ToString(),
+
+                ChangedParts = fr.ChangedParts.Select(cp => cp.Part.Name).ToList(),
+
+                // Optional: include summary from Initial Report if available
+                InitialReportSummary = fr.InitialReport?.Notes,
+            })
+            .ToList();
+
+        var respons = mappedInitialReports
+            .Concat(mappedFinalReports)
+            .OrderByDescending(r => r.ReportDate)
+            .ToList();
         return Ok(respons);
     }
 }
