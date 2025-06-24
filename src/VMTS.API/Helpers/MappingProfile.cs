@@ -1,7 +1,6 @@
 using AutoMapper;
 using VMTS.API.Dtos;
 using VMTS.API.Dtos.DriverReportsResponse;
-using VMTS.API.Dtos.Maintenance;
 using VMTS.API.Dtos.Maintenance.Category;
 using VMTS.API.Dtos.Maintenance.Report;
 using VMTS.API.Dtos.Maintenance.Report.Final;
@@ -143,7 +142,7 @@ public class MappingProfile : Profile
             )
             .ForMember(
                 dest => dest.MaintenanceCategory,
-                opt => opt.MapFrom(src => src.MaintenanceCategory.Categorty.ToString())
+                opt => opt.MapFrom(src => $"{src.MaintenanceCategory.Categorty} Maintenance")
             )
             .ForMember(
                 dest => dest.MissingParts,
@@ -180,7 +179,7 @@ public class MappingProfile : Profile
             )
             .ForMember(
                 dest => dest.MaintenanceCategory,
-                opt => opt.MapFrom(src => src.MaintenanceCategory.Categorty.ToString())
+                opt => opt.MapFrom(src => $"{src.MaintenanceCategory.Categorty} Maintenance")
             )
             .ForMember(
                 dest => dest.ChangedParts,
@@ -214,17 +213,17 @@ public class MappingProfile : Profile
         CreateMap<MaintenanceInitialReport, MaintenanceInitialReportDetailsDto>()
             .ForMember(
                 dest => dest.MaintenanceCategory,
-                opts => opts.MapFrom(src => src.MaintenanceCategory.Categorty.ToString())
+                opts => opts.MapFrom(src => $"{src.MaintenanceCategory.Categorty} Maintenance")
             );
         CreateMap<MaintenanceFinalReport, MaintenanceFinalReportDetailsDto>()
             .ForMember(
                 dest => dest.MaintenanceCategory,
-                opts => opts.MapFrom(src => src.MaintenanceCategory.Categorty.ToString())
+                opts => opts.MapFrom(src => $"{src.MaintenanceCategory.Categorty} Maintenance")
             );
         CreateMap<MaintenanceInitialReport, MaintenanceInitialReportSummaryDto>()
             .ForMember(
                 dest => dest.MaintenanceCategory,
-                opt => opt.MapFrom(src => src.MaintenanceCategory.Categorty.ToString())
+                opt => opt.MapFrom(src => $"{src.MaintenanceCategory.Categorty} Mantenance")
             );
         CreateMap<Brand, BrandDto>();
     }
