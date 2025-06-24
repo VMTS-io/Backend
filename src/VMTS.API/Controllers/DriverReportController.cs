@@ -27,6 +27,7 @@ public class DriverReportController : BaseApiController
 
     #region GetAll
     [Authorize(Roles = Roles.Manager)]
+    [ProducesResponseType(typeof(DriverReportsResponse), StatusCodes.Status200OK)]
     [HttpGet("reports")]
     public async Task<ActionResult<DriverReportsResponse>> GetAll(
         [FromQuery] DriverReportsSpecParams spec
