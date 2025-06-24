@@ -21,7 +21,6 @@ public class MaintenanceFinalReportServices : IMaintenanceFinalReportServices
     private readonly IGenericRepository<Vehicle> _vehicleRepo;
     private readonly IGenericRepository<MaintenaceRequest> _requestRepo;
     private readonly IGenericRepository<Part> _partRepo;
-    private readonly IGenericRepository<MaintenaceCategory> _categoryRepo;
 
     public MaintenanceFinalReportServices(IUnitOfWork unitOfWork)
     {
@@ -31,7 +30,6 @@ public class MaintenanceFinalReportServices : IMaintenanceFinalReportServices
         _vehicleRepo = _unitOfWork.GetRepo<Vehicle>();
         _requestRepo = _unitOfWork.GetRepo<MaintenaceRequest>();
         _partRepo = _unitOfWork.GetRepo<Part>();
-        _categoryRepo = _unitOfWork.GetRepo<MaintenaceCategory>();
         _finalReportRepo = _unitOfWork.GetRepo<MaintenanceFinalReport>();
     }
 
@@ -61,8 +59,12 @@ public class MaintenanceFinalReportServices : IMaintenanceFinalReportServices
         var existingReport =
             await _finalReportRepo.GetByIdWithSpecificationAsync(spec)
             ?? throw new NotFoundException("Final report not found");
+        updatedReport.InitialReportId = existingReport.InitialReportId;
+        updatedReport.MaintenaceRequestId = existingReport.MaintenaceRequestId;
+        updatedReport.MechanicId = existingReport.MechanicId;
+        updatedReport.MaintenanceCategoryId = existingReport.MaintenanceCategoryId;
 
-        await ValidateAndApplyFinalUpdateAsync(existingReport, updatedReport);
+        await ValidateAndApplyUpdateAsync(existingReport, updatedReport);
 
         _finalReportRepo.Update(existingReport);
         await _unitOfWork.SaveChanges();
@@ -146,19 +148,12 @@ public class MaintenanceFinalReportServices : IMaintenanceFinalReportServices
         if (maintenanceRequest.FinalReport is not null)
             throw new ConflictException("There is already a final report for this request.");
 
-        report.MaintenaceRequestId = maintenanceRequest.Id;
-        report.MaintenaceRequest = maintenanceRequest;
-        report.MaintenanceCategoryId = initialReport.MaintenanceCategoryId;
-
         if (maintenanceRequest.MechanicId != report.MechanicId)
             throw new ConflictException("Mechanic mismatch");
 
-        if (!await _userRepo.ExistAsync(report.MechanicId))
-            throw new NotFoundException($"Mechanic {report.MechanicId} not found");
-
-        if (!await _vehicleRepo.ExistAsync(maintenanceRequest.VehicleId))
-            throw new NotFoundException($"Vehicle {maintenanceRequest.VehicleId} not found");
-
+        report.MaintenaceRequestId = maintenanceRequest.Id;
+        report.MaintenaceRequest = maintenanceRequest;
+        report.MaintenanceCategoryId = initialReport.MaintenanceCategoryId;
         report.VehicleId = maintenanceRequest.VehicleId;
 
         var partIds = report.ChangedParts.Select(p => p.PartId).ToHashSet();
@@ -192,20 +187,11 @@ public class MaintenanceFinalReportServices : IMaintenanceFinalReportServices
     #endregion
 
     #region Validate and Update
-    private async Task ValidateAndApplyFinalUpdateAsync(
+    private async Task ValidateAndApplyUpdateAsync(
         MaintenanceFinalReport existing,
         MaintenanceFinalReport updated
     )
     {
-        var maintenanceRequest =
-            await _requestRepo.GetByIdAsync(existing.MaintenaceRequestId)
-            ?? throw new NotFoundException($"Request {existing.MaintenaceRequestId} not found");
-
-        if (maintenanceRequest.MechanicId != existing.MechanicId)
-            throw new BadRequestException("Mechanic mismatch.");
-
-        updated.VehicleId = maintenanceRequest.VehicleId;
-
         var newParts = updated.ChangedParts;
         var partIds = newParts.Select(p => p.PartId).ToHashSet();
 
@@ -222,7 +208,7 @@ public class MaintenanceFinalReportServices : IMaintenanceFinalReportServices
         foreach (var old in existing.ChangedParts)
         {
             var part = partDict[old.PartId];
-            part.Quantity += old.Quantity; // ✅ Restore stock
+            part.Quantity += old.Quantity;
             _partRepo.Update(part);
         }
 
@@ -258,7 +244,7 @@ public class MaintenanceFinalReportServices : IMaintenanceFinalReportServices
                 );
             }
 
-            part.Quantity -= qty; // ✅ Subtract again
+            part.Quantity -= qty;
             _partRepo.Update(part);
 
             totalCost += qty * part.Cost;

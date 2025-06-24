@@ -16,21 +16,15 @@ public class MaintenanceInitialReportServices : IMaintenanceInitialReportService
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly IGenericRepository<MaintenanceInitialReport> _reportRepo;
-    private readonly IGenericRepository<BusinessUser> _userRepo;
-    private readonly IGenericRepository<Vehicle> _vehicleRepo;
     private readonly IGenericRepository<MaintenaceRequest> _requestRepo;
     private readonly IGenericRepository<Part> _partRepo;
-    private readonly IGenericRepository<MaintenaceCategory> _categoryRepo;
 
     public MaintenanceInitialReportServices(IUnitOfWork unitOfWork)
     {
         _unitOfWork = unitOfWork;
         _reportRepo = _unitOfWork.GetRepo<MaintenanceInitialReport>();
-        _userRepo = _unitOfWork.GetRepo<BusinessUser>();
-        _vehicleRepo = _unitOfWork.GetRepo<Vehicle>();
         _requestRepo = _unitOfWork.GetRepo<MaintenaceRequest>();
         _partRepo = _unitOfWork.GetRepo<Part>();
-        _categoryRepo = _unitOfWork.GetRepo<MaintenaceCategory>();
     }
 
     #region Create
@@ -72,8 +66,10 @@ public class MaintenanceInitialReportServices : IMaintenanceInitialReportService
         var existingReport =
             await _reportRepo.GetByIdWithSpecificationAsync(spec)
             ?? throw new NotFoundException($"No Report With ID {updatedReport.Id}");
-        // var report = await GetReportOrThrowAsync(updatedReport.Id);
+
         updatedReport.MechanicId = existingReport.MechanicId;
+        updatedReport.MaintenanceRequestId = existingReport.MaintenanceRequestId;
+        updatedReport.MaintenanceCategoryId = existingReport.MaintenanceCategoryId;
         await ValidateAndApplyUpdateAsync(existingReport, updatedReport);
         _reportRepo.Update(existingReport);
         await _unitOfWork.SaveChanges();
@@ -153,26 +149,15 @@ public class MaintenanceInitialReportServices : IMaintenanceInitialReportService
             throw new ConflictException(
                 "There is already Initial report for this maintenance Request"
             );
-        report.MaintenanceRequest = maintenanceRequest;
 
         if (maintenanceRequest.MechanicId != report.MechanicId)
             throw new BadRequestException(
                 $"This Is Not {report.MechanicId}'s task, it is {report.MaintenanceRequest.MechanicId}"
             );
 
-        if (!await _userRepo.ExistAsync(report.MechanicId))
-            throw new NotFoundException($"Mechanic with ID {report.MechanicId} not found");
-
-        if (!await _vehicleRepo.ExistAsync(maintenanceRequest.VehicleId))
-            throw new NotFoundException($"Vehicle with ID {report.VehicleId} not found");
+        report.MaintenanceRequest = maintenanceRequest;
         report.VehicleId = maintenanceRequest.VehicleId;
-
-        if (!await _categoryRepo.ExistAsync(maintenanceRequest.MaintenanceCategoryId))
-            throw new NotFoundException($"Vehicle with ID {report.VehicleId} not found");
         report.MaintenanceCategoryId = maintenanceRequest.MaintenanceCategoryId;
-
-        // if (report.ExpectedChangedParts is null || report.ExpectedChangedParts.Count != 0)
-        //     throw new BadRequestException("ExpectedChangedParts cannot be null or empty.");
 
         var partIds = report.ExpectedChangedParts.Select(cp => cp.PartId).ToHashSet();
         var foundParts = await _partRepo.GetByIdsAsync(partIds);
@@ -215,21 +200,13 @@ public class MaintenanceInitialReportServices : IMaintenanceInitialReportService
         MaintenanceInitialReport updated
     )
     {
-        // Validate foreign keys
-        var maintenanceRequest =
-            await _requestRepo.GetByIdAsync(updated.MaintenanceRequestId)
-            ?? throw new NotFoundException(
-                $"Request with ID {updated.MaintenanceRequestId} not found"
-            );
-
-        if (maintenanceRequest.MechanicId != updated.MechanicId)
-            throw new BadRequestException("Mechanic mismatch.");
-
-        updated.VehicleId = maintenanceRequest.VehicleId;
-        updated.MaintenanceCategoryId = maintenanceRequest.MaintenanceCategoryId;
+        // if (maintenanceRequest.MechanicId != updated.MechanicId)
+        //     throw new BadRequestException("Mechanic mismatch.");
+        //
 
         // Validate and synchronize parts
         var incomingParts = updated.ExpectedChangedParts;
+
         var partIds = incomingParts.Select(p => p.PartId).ToHashSet();
 
         var foundParts = await _partRepo.GetByIdsAsync(partIds);
