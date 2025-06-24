@@ -10,6 +10,10 @@ public class VehicleFilterationCount : BaseSpecification<Vehicle>
                 string.IsNullOrEmpty(specParams.PalletNumber)
                 || v.PalletNumber == specParams.PalletNumber
             )
+            && (
+                string.IsNullOrEmpty(specParams.CategoryId)
+                || v.VehicleModel.CategoryId == specParams.CategoryId
+            )
             && (!specParams.Status.HasValue || v.Status == specParams.Status)
             && (!specParams.MaxKMDriven.HasValue || v.KMDriven <= specParams.MaxKMDriven)
             && (specParams.MaxJoindYear.HasValue || v.JoinedYear <= specParams.MaxJoindYear)
