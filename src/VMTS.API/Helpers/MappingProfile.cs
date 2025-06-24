@@ -1,9 +1,7 @@
 using AutoMapper;
 using VMTS.API.Dtos;
-
 using VMTS.API.Dtos.DriverReportsResponse;
 using VMTS.API.Dtos.Maintenance;
-
 using VMTS.API.Dtos.Maintenance.Category;
 using VMTS.API.Dtos.Maintenance.Report;
 using VMTS.API.Dtos.Maintenance.Report.Final;
@@ -91,7 +89,7 @@ public class MappingProfile : Profile
             .ForMember(dest => dest.VehicleModelDto, opt => opt.MapFrom(src => src.VehicleModel));
         CreateMap<TripRequest, TripDto>();
 
-        CreateMap<Vehicle, AdminVehicleListDto>()
+        CreateMap<Vehicle, VehicleListDto>()
             .ForMember(
                 dest => dest.Name,
                 opt =>
@@ -99,20 +97,21 @@ public class MappingProfile : Profile
                         $"{src.VehicleModel.Brand.Name} {src.VehicleModel.Name} {src.ModelYear.Year}"
                     )
             )
-            .ForMember(dest => dest.ModelYear, opt => opt.MapFrom(src => src.ModelYear.Year));
+            .ForMember(dest => dest.ModelYear, opt => opt.MapFrom(src => src.ModelYear.Year))
+            .ForMember(
+                dest => dest.Category,
+                opt => opt.MapFrom(src => src.VehicleModel.Category.Name)
+            );
 
         CreateMap<Vehicle, VehicleDetailsDto>()
             .ForMember(dest => dest.ModelYear, opt => opt.MapFrom(src => src.ModelYear.Year));
 
-        CreateMap<Vehicle, VehicleListDto>()
+        CreateMap<Vehicle, VehicleListDetailsDto>()
             .ForMember(dest => dest.ModelYear, opt => opt.MapFrom(src => src.ModelYear.Year));
         CreateMap<VehicleDto, VehicleCategoryDto>();
         CreateMap<VehicleCategory, VehicleCategoryDto>();
         CreateMap<VehicleCategoryUpsertDto, VehicleCategory>();
-        CreateMap<VehicleModel, VehicleModelDto>()
-            .ForMember(dest => dest.Brand, opt => opt.MapFrom(src => src.Brand.Name))
-            .ForMember(dest => dest.Category, opt => opt.MapFrom(src => src.Category.Name));
-        ;
+        CreateMap<VehicleModel, VehicleModelDto>();
         CreateMap<VehicleModel, VehicelModelSummary>()
             .ForMember(dest => dest.Brand, opt => opt.MapFrom(src => src.Brand.Name))
             .ForMember(dest => dest.Category, opt => opt.MapFrom(src => src.Category.Name));
@@ -227,5 +226,6 @@ public class MappingProfile : Profile
                 dest => dest.MaintenanceCategory,
                 opt => opt.MapFrom(src => src.MaintenanceCategory.Categorty.ToString())
             );
+        CreateMap<Brand, BrandDto>();
     }
 }

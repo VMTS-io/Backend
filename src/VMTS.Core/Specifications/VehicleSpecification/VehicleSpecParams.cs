@@ -18,6 +18,8 @@ public class VehicleSpecParams
 
     public string? Sort { get; set; }
 
+    public DateTime? TripDate { get; set; }
+
     private string? search;
 
     public string? Search

@@ -28,8 +28,8 @@ public class VehicleController : BaseApiController
     }
 
     // [ProducesResponseType<IReadOnlyList<VehicleListDto>>(StatusCodes.Status200OK)]
-    // [HttpGet]
-    // public async Task<ActionResult<IReadOnlyList<VehicleListDto>>> GetAll(
+    // [HttpGet("Manager")]
+    // public async Task<ActionResult<IReadOnlyList<VehicleListDto>>> GetAllForManager(
     //     [FromQuery] VehicleSpecParams specParams
     // )
     // {
@@ -40,16 +40,15 @@ public class VehicleController : BaseApiController
     //     return Ok(returnVehicle);
     // }
 
-
     #region Get All
-    [ProducesResponseType<IReadOnlyList<AdminVehicleListDto>>(StatusCodes.Status200OK)]
+    [ProducesResponseType<IReadOnlyList<VehicleListDto>>(StatusCodes.Status200OK)]
     [HttpGet]
-    public async Task<ActionResult<IReadOnlyList<AdminVehicleListDto>>> GetAll(
+    public async Task<ActionResult<IReadOnlyList<VehicleListDto>>> GetAll(
         [FromQuery] VehicleSpecParams specParams
     )
     {
         var vehicles = await _services.GetAllVehiclesAsync(specParams);
-        var returnVehicle = _mapper.Map<IReadOnlyList<Vehicle>, IReadOnlyList<AdminVehicleListDto>>(
+        var returnVehicle = _mapper.Map<IReadOnlyList<Vehicle>, IReadOnlyList<VehicleListDto>>(
             vehicles
         );
         return Ok(returnVehicle);

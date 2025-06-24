@@ -31,9 +31,18 @@ public class VehicleIncludesSpecification : BaseSpecification<Vehicle>
                 )
             )
             && (string.IsNullOrEmpty(specParams.ModelId) || v.ModelId == specParams.ModelId)
+            && (
+                !specParams.TripDate.HasValue
+                || v.TripRequests.Where(tr => tr.Date.Date == specParams.TripDate.Value.Date)
+                    .FirstOrDefault() == null
+            )
         )
     {
         ApplyIncludes();
+
+        if (specParams.TripDate.HasValue)
+            Includes.Add(v => v.TripRequests);
+
         ApplaySort(specParams.Sort);
         AddPaginaiton(specParams.PageIndex - 1, specParams.PageSize);
     }
