@@ -3,7 +3,7 @@ using VMTS.Core.Entities.Maintenace;
 
 namespace VMTS.API.Dtos.Maintenance.Request;
 
-public class MaintenanceRequestEdit
+public class MaintenanceRequestUpdateDto
 {
     public string Id { get; set; }
 

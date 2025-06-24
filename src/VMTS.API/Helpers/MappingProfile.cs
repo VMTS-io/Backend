@@ -110,9 +110,12 @@ public class MappingProfile : Profile
         CreateMap<VehicleCategory, VehicleCategoryDto>();
         CreateMap<VehicleCategoryUpsertDto, VehicleCategory>();
         CreateMap<VehicleModel, VehicleModelDto>()
-            .ForMember(dest => dest.Brand, opt => opt.MapFrom(src => src.Brand))
-            .ForMember(dest => dest.Category, opt => opt.MapFrom(src => src.Category));
+            .ForMember(dest => dest.Brand, opt => opt.MapFrom(src => src.Brand.Name))
+            .ForMember(dest => dest.Category, opt => opt.MapFrom(src => src.Category.Name));
         ;
+        CreateMap<VehicleModel, VehicelModelSummary>()
+            .ForMember(dest => dest.Brand, opt => opt.MapFrom(src => src.Brand.Name))
+            .ForMember(dest => dest.Category, opt => opt.MapFrom(src => src.Category.Name));
         CreateMap<VehicleModelUpsertDto, VehicleModel>();
         CreateMap<TripRequest, TripRequestDto>();
         CreateMap<TripReport, TripReportDto>();
@@ -121,8 +124,9 @@ public class MappingProfile : Profile
 
         CreateMap<MaintenanceInitialReportRequestDto, MaintenanceInitialReport>();
 
+        CreateMap<MaintenanceInitialReportUpdateDto, MaintenanceInitialReport>();
+        CreateMap<MaintenanceFinalReportUpdateDto, MaintenanceFinalReport>();
         CreateMap<MaintenanceInitialReport, MaintenanceInitialReportResponseDto>()
-            // .ForMember(dest => dest.ManagerName, opt => opt.MapFrom(src => src.Manager.DisplayName))
             .ForMember(
                 dest => dest.MechanicName,
                 opt => opt.MapFrom(src => src.Mechanic.DisplayName)
@@ -200,6 +204,28 @@ public class MappingProfile : Profile
         CreateMap<CreateOrUpdatePartDto, Part>();
         CreateMap<MaintenanceReportPartDto, MaintenanceInitialReportParts>().ReverseMap();
         CreateMap<MaintenanceReportPartDto, MaintenanceFinalReportParts>().ReverseMap();
-        // .ForMember(dest => dest.Category, opt => opt.MapFrom(src => src.VehicleCategory.Name));
+        CreateMap<Part, PartForMaintenanceReportDto>();
+        CreateMap<VehicleModel, VehicleModelForMaintenanceReportDto>()
+            .ForMember(dest => dest.Brand, opt => opt.MapFrom(src => src.Brand.Name))
+            .ForMember(dest => dest.Category, opt => opt.MapFrom(src => src.Category.Name));
+        CreateMap<Vehicle, VehicleForMaintenanceReportDto>();
+        CreateMap<MaintenaceRequest, MaintenanceRequestForReportDto>();
+        CreateMap<MaintenanceInitialReportParts, MaintenanceReportPartResponseDto>();
+        CreateMap<MaintenanceFinalReportParts, MaintenanceReportPartResponseDto>();
+        CreateMap<MaintenanceInitialReport, MaintenanceInitialReportDetailsDto>()
+            .ForMember(
+                dest => dest.MaintenanceCategory,
+                opts => opts.MapFrom(src => src.MaintenanceCategory.Categorty.ToString())
+            );
+        CreateMap<MaintenanceFinalReport, MaintenanceFinalReportDetailsDto>()
+            .ForMember(
+                dest => dest.MaintenanceCategory,
+                opts => opts.MapFrom(src => src.MaintenanceCategory.Categorty.ToString())
+            );
+        CreateMap<MaintenanceInitialReport, MaintenanceInitialReportSummaryDto>()
+            .ForMember(
+                dest => dest.MaintenanceCategory,
+                opt => opt.MapFrom(src => src.MaintenanceCategory.Categorty.ToString())
+            );
     }
 }

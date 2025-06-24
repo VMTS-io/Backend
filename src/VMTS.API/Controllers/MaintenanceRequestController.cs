@@ -44,9 +44,9 @@ public class MaintenanceRequestController : BaseApiController
         AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme
     )]
     [HttpPut]
-    public async Task<ActionResult<MaintenanceRequestDto>> Edit(MaintenanceRequestEdit model)
+    public async Task<ActionResult<MaintenanceRequestDto>> Edit(MaintenanceRequestUpdateDto model)
     {
-        var mappedModel = _mapper.Map<MaintenanceRequestEdit, MaintenaceRequest>(model);
+        var mappedModel = _mapper.Map<MaintenanceRequestUpdateDto, MaintenaceRequest>(model);
         await _services.UpdateAsync(mappedModel, User);
         return Ok(model);
     }

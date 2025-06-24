@@ -9,7 +9,7 @@ public class MaintenanceInitialReportResponseDto
     public decimal ExpectedCost { get; set; }
     public DateTime Date { get; set; }
     public DateOnly ExpectedFinishDate { get; set; }
-    public Status RequestStatus { get; set; }
+    public string RequestStatus { get; set; } = default!;
     public string MechanicName { get; set; } = default!;
     public string VehicleName { get; set; } = default!;
     public string RequestTitle { get; set; } = default!;
