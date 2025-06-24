@@ -29,12 +29,20 @@ public class DriverReportsService : IDriverReportsService
         if (string.IsNullOrWhiteSpace(managerId))
             throw new UnauthorizedAccessException("You are not authorized.");
 
-        var tripSpec = new DriverTripReportsIncludeSpecifications(specParams);
-        var faultSpec = new DriverFaultReportsIncludeSpecifications(specParams);
+        var result = new DriverReportsResult();
 
-        var tripReports = await _tripReportRepo.GetAllWithSpecificationAsync(tripSpec);
-        var faultReports = await _faultReportRepo.GetAllWithSpecificationAsync(faultSpec);
+        if (string.IsNullOrEmpty(specParams.Filter) || specParams.Filter == "Trip")
+        {
+            var tripSpec = new DriverTripReportsIncludeSpecifications(specParams);
+            result.TripReports = await _tripReportRepo.GetAllWithSpecificationAsync(tripSpec);
+        }
 
-        return new DriverReportsResult { TripReports = tripReports, FaultReports = faultReports };
+        if (string.IsNullOrEmpty(specParams.Filter) || specParams.Filter == "Fault")
+        {
+            var faultSpec = new DriverFaultReportsIncludeSpecifications(specParams);
+            result.FaultReports = await _faultReportRepo.GetAllWithSpecificationAsync(faultSpec);
+        }
+
+        return result;
     }
 }
