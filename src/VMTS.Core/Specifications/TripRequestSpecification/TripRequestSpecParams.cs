@@ -9,5 +9,5 @@ public class TripRequestSpecParams
     public string? DriverId { get; set; }
     public string? VehicleId { get; set; }
     public DateTime? Date { get; set; }
-    public TripStatus? Status { get; set; }
+    public TripStatus[]? Status { get; set; }
 }
