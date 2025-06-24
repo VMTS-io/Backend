@@ -34,7 +34,11 @@ public class TripReportService : ITripReportService
     {
         // 1. Fetch active approved trip for the driver
         var tripSpec = new TripRequestIncludesSpecification(
-            new TripRequestSpecParams { DriverId = driverId, Status = TripStatus.Approved }
+            new TripRequestSpecParams
+            {
+                DriverId = driverId,
+                Status = new[] { TripStatus.Approved },
+            }
         );
         var tripRequest = await _unitOfWork
             .GetRepo<TripRequest>()
