@@ -1,5 +1,5 @@
+using System.Security.Claims;
 using AutoMapper;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using VMTS.API.Dtos.Maintenance.Request;
@@ -25,87 +25,91 @@ public class MaintenanceRequestController : BaseApiController
     }
 
     #region Create
-    [Authorize(
-        Roles = Roles.Manager,
-        AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme
-    )]
+    [Authorize(Roles = Roles.Manager)]
     [HttpPost]
-    public async Task<ActionResult<MaintenanceRequestDto>> Create(MaintenanceRequestDto model)
+    public async Task<ActionResult> Create(MaintenanceRequestUpsertDto model)
     {
-        var mappedModel = _mapper.Map<MaintenanceRequestDto, MaintenaceRequest>(model);
-        await _services.CreateAsync(mappedModel, User);
-        return Ok(model);
+        var managerId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        var mappedModel = _mapper.Map<MaintenanceRequestUpsertDto, MaintenaceRequest>(model);
+        mappedModel.ManagerId = managerId!;
+        await _services.CreateAsync(mappedModel);
+        return NoContent();
     }
     #endregion
 
     #region Edit
-    [Authorize(
-        Roles = Roles.Manager,
-        AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme
-    )]
-    [HttpPut]
-    public async Task<ActionResult<MaintenanceRequestDto>> Edit(MaintenanceRequestUpdateDto model)
+    [Authorize(Roles = Roles.Manager)]
+    [HttpPut("id")]
+    public async Task<ActionResult> Edit(
+        [FromBody] MaintenanceRequestUpsertDto model,
+        [FromRoute] string id
+    )
     {
-        var mappedModel = _mapper.Map<MaintenanceRequestUpdateDto, MaintenaceRequest>(model);
-        await _services.UpdateAsync(mappedModel, User);
-        return Ok(model);
+        var mappedModel = _mapper.Map<MaintenanceRequestUpsertDto, MaintenaceRequest>(model);
+        mappedModel.Id = id;
+        await _services.UpdateAsync(mappedModel);
+        return NoContent();
     }
     #endregion
 
-    #region Get By Id
-    [Authorize(
-        Roles = $"{Roles.Manager},{Roles.Mechanic}",
-        AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme
-    )]
-    [HttpGet("{id}")]
-    public async Task<ActionResult<MaintenanceRequestDto>> GetById([FromRoute] string id)
+    #region Delete
+    [Authorize(Roles = Roles.Manager)]
+    [HttpDelete("id")]
+    public async Task<ActionResult> Delete([FromRoute] string id)
     {
-        /*var role = User.FindFirstValue(ClaimTypes.Role);*/
-        /*var claimEmail = User.FindFirstValue(ClaimTypes.Email);*/
+        await _services.DeleteAsync(id);
+        return NoContent();
+    }
+
+    #endregion
+
+    #region Get By Id
+    [Authorize(Roles = $"{Roles.Manager},{Roles.Mechanic}")]
+    [HttpGet("{id}")]
+    public async Task<ActionResult<MaintenanceRequestUpsertDto>> GetById([FromRoute] string id)
+    {
+        var role = User.FindFirstValue(ClaimTypes.Role);
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
         var result = await _services.GetByIdAsync(id);
-        if (result is null)
-            return NotFound(new ApiErrorResponse(404));
-        /*if (role == "Mechanic" && claimEmail != result.MechanicEmail)*/
-        /*    return Unauthorized(new ApiResponse(401));*/
-        var mappedModel = _mapper.Map<MaintenaceRequest, MaintenanceRequestResponse>(result);
+        if (
+            role!.Equals(Roles.Mechanic, StringComparison.CurrentCultureIgnoreCase)
+            && userId != result.MechanicId
+        )
+            return Unauthorized(new ApiErrorResponse(401));
+        var mappedModel = _mapper.Map<MaintenaceRequest, MaintenanceRequestResponseDto>(result);
         return Ok(mappedModel);
     }
     #endregion
 
     #region Get All
-    [Authorize(
-        Roles = Roles.Manager,
-        AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme
-    )]
+    [Authorize(Roles = Roles.Manager)]
     [HttpGet]
-    public async Task<ActionResult<IReadOnlyList<MaintenanceRequestResponse>>> GetAll(
+    public async Task<ActionResult<IReadOnlyList<MaintenanceRequestResponseDto>>> GetAll(
         [FromQuery] MaintenanceRequestSpecParams specParams
     )
     {
         var result = await _services.GetAllAsync(specParams);
         var mappedModel = _mapper.Map<
             IReadOnlyList<MaintenaceRequest>,
-            IReadOnlyList<MaintenanceRequestResponse>
+            IReadOnlyList<MaintenanceRequestResponseDto>
         >(result);
         return Ok(mappedModel);
     }
     #endregion
 
     #region Get All For User
-    [Authorize(
-        Roles = Roles.Manager,
-        AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme
-    )]
-    [Route("mechanic")]
+    [Authorize(Roles = Roles.Mechanic)]
+    [Route("Me")]
     [HttpGet]
-    public async Task<ActionResult<IReadOnlyList<MaintenanceRequestResponse>>> GetAllForUser(
+    public async Task<ActionResult<IReadOnlyList<MaintenanceRequestResponseDto>>> GetAllForUser(
         [FromQuery] MaintenanceRequestSpecParamsForMechanic specParams
     )
     {
-        var result = await _services.GetAllForUserAsync(specParams, User);
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        var result = await _services.GetAllForUserAsync(specParams, userId!);
         var mappedResult = _mapper.Map<
             IReadOnlyList<MaintenaceRequest>,
-            IReadOnlyList<MaintenanceRequestResponse>
+            IReadOnlyList<MaintenanceRequestResponseDto>
         >(result);
         return Ok(mappedResult);
     }

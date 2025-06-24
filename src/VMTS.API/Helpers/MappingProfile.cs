@@ -70,8 +70,8 @@ public class MappingProfile : Profile
             .ForMember(dest => dest.DateOfBirth, opt => opt.MapFrom(src => src.DateOfBirth))
             .ForMember(dest => dest.NationalId, opt => opt.MapFrom(src => src.NationalId));
 
-        CreateMap<MaintenanceRequestDto, MaintenaceRequest>();
-        CreateMap<MaintenaceRequest, MaintenanceRequestResponse>();
+        CreateMap<MaintenanceRequestUpsertDto, MaintenaceRequest>();
+        CreateMap<MaintenaceRequest, MaintenanceRequestResponseDto>();
         CreateMap<VehicleUpsertDto, Vehicle>()
             .ForMember(
                 dest => dest.ModelYear,
@@ -226,5 +226,10 @@ public class MappingProfile : Profile
                 opt => opt.MapFrom(src => $"{src.MaintenanceCategory.Categorty} Mantenance")
             );
         CreateMap<Brand, BrandDto>();
+        CreateMap<MaintenaceRequest, MaintenanceRequestResponseDto>()
+            .ForMember(
+                dest => dest.MaintenaceCategory,
+                opts => opts.MapFrom(src => $"{src.MaintenanceCategory.Categorty} Maintenance")
+            );
     }
 }
