@@ -1,12 +1,11 @@
+using VMTS.API.Dtos.Vehicles.Model;
 using VMTS.Core.Entities.Vehicle_Aggregate;
 
 namespace VMTS.API.Dtos.Vehicles;
 
-public class VehicleListDto
+public class VehicleListDetailsDto
 {
     public string Id { get; set; } = default!;
-
-    public string Name { get; set; } = default!;
 
     public string PalletNumber { get; set; } = default!;
 
@@ -14,7 +13,12 @@ public class VehicleListDto
 
     public short ModelYear { get; set; }
 
+    public FuelType FuelType { get; set; }
+
+    public int KMDriven { get; set; }
+
     public VehicleStatus Status { get; set; }
-    public DateTime LastAssignedDate { get; set; }
-    public string Category { get; set; } = default!;
+
+    public VehicleModelDto VehicleModel { get; set; } = default!;
+    // public VehicleCategoryDto VehicleCategory { get; set; }
 }
