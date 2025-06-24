@@ -78,6 +78,7 @@ public static class VTMSServicesExtension
         services.AddScoped<IFaultReportService, FaultReportService>();
         services.AddScoped<ITripRequestService, TripRequestService>();
         services.AddScoped<IDriverReportsService, DriverReportsService>();
+        services.AddScoped<IMechanicReportsServices, MechaincReportsServices>();
         services.AddScoped<IMaintenanceRequestServices, MaintenanceRequestServices>();
         services.AddScoped<IVehicleSerivces, VehicleServices>();
         services.AddScoped<IUserService, UserService>();
