@@ -2,10 +2,12 @@ using System.Security.Claims;
 using VMTS.Core.Entities.Maintenace;
 using VMTS.Core.Entities.User_Business;
 using VMTS.Core.Entities.Vehicle_Aggregate;
+using VMTS.Core.Helpers;
 using VMTS.Core.Interfaces.Repositories;
 using VMTS.Core.Interfaces.Services;
 using VMTS.Core.Interfaces.UnitOfWork;
 using VMTS.Core.Specifications.Maintenance;
+using VMTS.Service.Exceptions;
 
 namespace VMTS.Service.Services;
 
@@ -14,58 +16,56 @@ public class MaintenanceRequestServices : IMaintenanceRequestServices
     private readonly IUnitOfWork _unitOfWork;
     private readonly IGenericRepository<MaintenaceRequest> _repo;
     private readonly IGenericRepository<BusinessUser> _userRepo;
+    private readonly IGenericRepository<Vehicle> _vehicleRepo;
 
     public MaintenanceRequestServices(IUnitOfWork unitOfWork)
     {
         _unitOfWork = unitOfWork;
         _repo = _unitOfWork.GetRepo<MaintenaceRequest>();
         _userRepo = _unitOfWork.GetRepo<BusinessUser>();
+        _vehicleRepo = _unitOfWork.GetRepo<Vehicle>();
     }
 
-    public async Task<MaintenaceRequest> CreateAsync(MaintenaceRequest model, ClaimsPrincipal user)
+    #region Create
+    public async Task CreateAsync(MaintenaceRequest model)
     {
-        var managerId = user.FindFirstValue(ClaimTypes.NameIdentifier);
-        _ = await _userRepo.GetByIdAsync(managerId!) ?? throw new Exception("Manager Not Found");
-        model.ManagerId = managerId!;
+        if (!await _userRepo.ExistAsync(model.ManagerId))
+            throw new Exception("Manager Not Found");
 
-        _ =
+        var mechanic =
             await _userRepo.GetByIdAsync(model.MechanicId)
-            ?? throw new Exception("Mechanic Not Found");
+            ?? throw new NotFoundException($"Mechanic Not Found With ID {model.Id}");
+        if (mechanic.Role != Roles.Mechanic)
+            throw new ConflictException("User With ID {mechanic.Id} is not a mechanic");
 
-        _ =
-            _unitOfWork.GetRepo<Vehicle>().GetByIdAsync(model.VehicleId)
-            ?? throw new Exception("Vechile Not Found");
+        if (!await _vehicleRepo.ExistAsync(model.VehicleId))
+            throw new Exception("Vechile Not Found");
 
         await _repo.CreateAsync(model);
         await _unitOfWork.SaveChanges();
-
-        var spec = new MaintenanceRequestSpecification(model.Id);
-        var maintenaceRequest = await _repo.GetByIdWithSpecificationAsync(spec);
-        return maintenaceRequest!;
     }
+    #endregion
 
-    public async Task<MaintenaceRequest> UpdateAsync(MaintenaceRequest model, ClaimsPrincipal user)
+    #region Update
+    public async Task UpdateAsync(MaintenaceRequest model)
     {
-        var managerId = user.FindFirstValue(ClaimTypes.NameIdentifier);
-        _ = await _userRepo.GetByIdAsync(managerId!) ?? throw new Exception("Manager Not Found");
-        model.ManagerId = managerId!;
+        var existingRequest =
+            await _repo.GetByIdAsync(model.Id)
+            ?? throw new NotFoundException($"No MaintenaceRequest With ID {model.Id}");
 
-        _ =
-            await _userRepo.GetByIdAsync(model.MechanicId)
-            ?? throw new Exception("Mechanic Not Found");
+        if (!await _vehicleRepo.ExistAsync(model.VehicleId))
+            throw new Exception("Vechile Not Found");
 
-        _ =
-            _unitOfWork.GetRepo<Vehicle>().GetByIdAsync(model.VehicleId)
-            ?? throw new Exception("Vechile Not Found");
+        model.ManagerId = existingRequest.ManagerId;
+        model.Status = existingRequest.Status;
+        model.Date = existingRequest.Date;
 
         _repo.Update(model);
         await _unitOfWork.SaveChanges();
-
-        var spec = new MaintenanceRequestSpecification(model.Id);
-        var maintenaceRequest = await _repo.GetByIdWithSpecificationAsync(spec);
-        return maintenaceRequest!;
     }
+    #endregion
 
+    #region Get All
     public async Task<IReadOnlyList<MaintenaceRequest>> GetAllAsync(
         MaintenanceRequestSpecParams specParams
     )
@@ -74,34 +74,44 @@ public class MaintenanceRequestServices : IMaintenanceRequestServices
         var result = await _repo.GetAllWithSpecificationAsync(spec);
         return result;
     }
+    #endregion
 
+    #region Get All For User
     public async Task<IReadOnlyList<MaintenaceRequest>> GetAllForUserAsync(
         MaintenanceRequestSpecParamsForMechanic mechanicSpecParams,
-        ClaimsPrincipal user
+        string mechanicId
     )
     {
-        var mechanicId = user.FindFirstValue(ClaimTypes.NameIdentifier);
-        _ = await _userRepo.GetByIdAsync(mechanicId!) ?? throw new Exception("Manager Not Found");
-        var specParam = new MaintenanceRequestSpecParams()
+        //if the user is deleted but still have a token
+        if (!await _userRepo.ExistAsync(mechanicId!))
+            throw new Exception("Mechanic Not Found");
+
+        var specParam = new MaintenanceRequestSpecParams(mechanicSpecParams)
         {
-            PageSize = mechanicSpecParams.PageSize,
-            Date = mechanicSpecParams.Date,
-            Status = mechanicSpecParams.Status,
-            OrderBy = mechanicSpecParams.OrderBy,
-            PageIndex = mechanicSpecParams.PageIndex,
-            VehicleId = mechanicSpecParams.VehicleId,
             MechanicId = mechanicId,
-            Id = mechanicSpecParams.Id,
         };
         var spec = new MaintenanceRequestSpecification(specParam);
-        var result = await _repo.GetAllWithSpecificationAsync(spec);
-        return result;
+        return await _repo.GetAllWithSpecificationAsync(spec);
     }
+    #endregion
 
-    public async Task<MaintenaceRequest?> GetByIdAsync(string id)
+    #region Get By Id
+    public async Task<MaintenaceRequest> GetByIdAsync(string id)
     {
         var spec = new MaintenanceRequestSpecification(id);
-        var result = await _repo.GetByIdWithSpecificationAsync(spec);
-        return result;
+        return await _repo.GetByIdWithSpecificationAsync(spec)
+            ?? throw new NotFoundException($"No Maintenace Request With Id {id}");
     }
+    #endregion
+
+    #region Delete
+    public async Task DeleteAsync(string id)
+    {
+        var request =
+            await _repo.GetByIdAsync(id)
+            ?? throw new NotFoundException($"No Maintenace Request With Id {id}");
+        _repo.Delete(request);
+        await _unitOfWork.SaveChanges();
+    }
+    #endregion
 }

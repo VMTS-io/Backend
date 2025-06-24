@@ -9,6 +9,7 @@ public class MaintenanceRequestSpecification : BaseSpecification<MaintenaceReque
         Includes.Add(MR => MR.Vehicle);
         Includes.Add(MR => MR.Manager);
         Includes.Add(MR => MR.Mechanic);
+        Includes.Add(MR => MR.MaintenanceCategory);
     }
 
     public MaintenanceRequestSpecification(string id)
@@ -32,10 +33,11 @@ public class MaintenanceRequestSpecification : BaseSpecification<MaintenaceReque
             )
         )
     {
-        Includes.Add(MR => MR.Vehicle.VehicleModel.Brand);
-        Includes.Add(MR => MR.Vehicle.VehicleModel.Category);
         Includes.Add(MR => MR.Manager);
         Includes.Add(MR => MR.Mechanic);
+        Includes.Add(MR => MR.MaintenanceCategory);
+        Includes.Add(MR => MR.Vehicle.VehicleModel.Category);
+        Includes.Add(MR => MR.Vehicle.VehicleModel.Brand);
         if (!string.IsNullOrEmpty(specParams.OrderBy))
         {
             switch (specParams.OrderBy)
@@ -68,6 +70,7 @@ public class MaintenanceRequestSpecification : BaseSpecification<MaintenaceReque
         Includes.Add(MR => MR.Vehicle);
         Includes.Add(MR => MR.Manager);
         Includes.Add(MR => MR.Mechanic);
+        Includes.Add(MR => MR.MaintenanceCategory);
         Includes.Add(MR => MR.Vehicle.VehicleModel.Brand);
         Includes.Add(MR => MR.Vehicle.VehicleModel.Category);
         if (!string.IsNullOrEmpty(specParams.OrderBy))
