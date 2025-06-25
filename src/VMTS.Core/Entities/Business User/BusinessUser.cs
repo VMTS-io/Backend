@@ -23,7 +23,11 @@ public class BusinessUser : BaseEntity
 
     public ICollection<FaultReport> DriverFaultReport { get; set; } = [];
 
-    public ICollection<MaintenaceReport> MechanicMaintenaceReports { get; set; } = [];
+    public ICollection<MaintenanceInitialReport> MechanicMaintenaceInitialReports { get; set; } =
+        [];
+    public ICollection<MaintenanceFinalReport> MechanicMaintenaceFinalReports { get; set; } = [];
+
+    // public ICollection<MaintenaceReport> MechanicMaintenaceReports { get; set; } = [];
 
     public ICollection<MaintenaceRequest> ManagerMaintenaceRequests { get; set; } = [];
     public ICollection<MaintenaceRequest> MechanicMaintenaceRequests { get; set; } = [];

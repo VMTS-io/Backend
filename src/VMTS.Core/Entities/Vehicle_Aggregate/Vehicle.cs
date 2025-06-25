@@ -24,6 +24,7 @@ public class Vehicle : BaseEntity
 
     public ICollection<TripRequest> TripRequests { get; set; } = [];
     public ICollection<TripReport> TripReports { get; set; } = [];
-    public ICollection<MaintenaceReport> MaintenaceReports { get; set; } = [];
+    public ICollection<MaintenanceInitialReport> MaintenaceInitialReports { get; set; } = [];
+    public ICollection<MaintenanceFinalReport> MaintenaceFinalReports { get; set; } = [];
     public ICollection<MaintenaceRequest> MaintenaceRequests { get; set; } = [];
 }

@@ -33,15 +33,19 @@ public class VehicleIncludesSpecification : BaseSpecification<Vehicle>
             && (string.IsNullOrEmpty(specParams.ModelId) || v.ModelId == specParams.ModelId)
             && (
                 !specParams.TripDate.HasValue
-                || v.TripRequests.Where(tr => tr.Date.Date == specParams.TripDate.Value.Date)
-                    .FirstOrDefault() == null
+                || !v.TripRequests.Any(tr =>
+                    tr.Date >= specParams.TripDate.Value.Date
+                    && tr.Date < specParams.TripDate.Value.Date.AddDays(1)
+                )
             )
         )
     {
         ApplyIncludes();
 
-        if (specParams.TripDate.HasValue)
-            Includes.Add(v => v.TripRequests);
+        // if (specParams.TripDate.HasValue)
+        //     Includes.Add(v =>
+        //         v.TripRequests.Where(tr => tr.Date.Date >= specParams.TripDate.Value.Date)
+        //     );
 
         ApplaySort(specParams.Sort);
         AddPaginaiton(specParams.PageIndex - 1, specParams.PageSize);
@@ -57,7 +61,8 @@ public class VehicleIncludesSpecification : BaseSpecification<Vehicle>
     {
         Includes.Add(v => v.TripRequests);
         Includes.Add(v => v.TripReports);
-        Includes.Add(v => v.MaintenaceReports);
+        Includes.Add(v => v.MaintenaceInitialReports);
+        Includes.Add(v => v.MaintenaceFinalReports);
         Includes.Add(v => v.MaintenaceRequests);
         Includes.Add(v => v.VehicleModel.Category);
         Includes.Add(v => v.VehicleModel.Brand);

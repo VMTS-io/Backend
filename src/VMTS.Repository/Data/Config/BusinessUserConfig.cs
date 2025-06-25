@@ -44,12 +44,18 @@ public class BusinessUserConfig : IEntityTypeConfiguration<BusinessUser>
         #endregion
 
         #region  MaintenaceReports
-        builder
-            .HasMany(b => b.MechanicMaintenaceReports)
-            .WithOne(m => m.Mechanic)
-            .HasForeignKey("MechanicId")
-            .IsRequired()
-            .OnDelete(DeleteBehavior.Restrict);
+        // builder
+        //     .HasMany(b => b.MechanicMaintenaceInitialReports)
+        //     .WithOne(mir => mir.Mechanic)
+        //     .HasForeignKey(mir => mir.MechanicId)
+        //     .IsRequired()
+        //     .OnDelete(DeleteBehavior.Restrict);
+        // builder
+        //     .HasMany(b => b.MechanicMaintenaceFinalReports)
+        //     .WithOne(m => m.Mechanic)
+        //     .HasForeignKey(mir => mir.MechanicId)
+        //     .IsRequired()
+        //     .OnDelete(DeleteBehavior.Restrict);
         #endregion
 
         #region MaintenanceRequest

@@ -2,6 +2,7 @@ using System.Security.Claims;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using VMTS.API.ActionFilters;
 using VMTS.API.Dtos.Maintenance.Report.Final;
 using VMTS.Core.Entities.Maintenace;
 using VMTS.Core.Helpers;
@@ -24,6 +25,7 @@ public class MaintenanceFinalReportController : BaseApiController
     }
 
     #region Create
+    [ServiceFilter<ValidateModelActionFilter<MaintenanceFinalReportRequestDto>>]
     [Authorize(Roles = Roles.Mechanic)]
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] MaintenanceFinalReportRequestDto dto)
@@ -37,6 +39,7 @@ public class MaintenanceFinalReportController : BaseApiController
     #endregion
 
     #region Update
+    [ServiceFilter<ValidateModelActionFilter<MaintenanceFinalReportUpdateDto>>]
     [Authorize(Roles = $"{Roles.Mechanic},{Roles.Manager}")]
     [HttpPut("{id}")]
     public async Task<IActionResult> Update(
@@ -59,6 +62,7 @@ public class MaintenanceFinalReportController : BaseApiController
         await _service.DeleteFinalReportAsync(id);
         return NoContent();
     }
+
     #endregion
 
     #region Get By Id

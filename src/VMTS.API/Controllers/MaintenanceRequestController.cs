@@ -2,6 +2,7 @@ using System.Security.Claims;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using VMTS.API.ActionFilters;
 using VMTS.API.Dtos.Maintenance.Request;
 using VMTS.API.Errors;
 using VMTS.Core.Entities.Maintenace;
@@ -25,6 +26,7 @@ public class MaintenanceRequestController : BaseApiController
     }
 
     #region Create
+    [ServiceFilter<ValidateModelActionFilter<MaintenanceRequestUpsertDto>>]
     [Authorize(Roles = Roles.Manager)]
     [HttpPost]
     public async Task<ActionResult> Create(MaintenanceRequestUpsertDto model)
@@ -38,6 +40,7 @@ public class MaintenanceRequestController : BaseApiController
     #endregion
 
     #region Edit
+    [ServiceFilter<ValidateModelActionFilter<MaintenanceRequestUpsertDto>>]
     [Authorize(Roles = Roles.Manager)]
     [HttpPut("id")]
     public async Task<ActionResult> Edit(

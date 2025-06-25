@@ -26,7 +26,8 @@ public class VTMSDbContext : DbContext
     #region Maintenance
 
     public DbSet<MaintenaceCategory> MaintenanceCategories { get; set; }
-    public DbSet<MaintenaceReport> MaintenanceReports { get; set; }
+
+    // public DbSet<MaintenaceReport> MaintenanceReports { get; set; }
     public DbSet<MaintenaceTracking> MaintenanceTrackings { get; set; }
     public DbSet<MaintenaceRequest> MaintenanceRequests { get; set; }
 

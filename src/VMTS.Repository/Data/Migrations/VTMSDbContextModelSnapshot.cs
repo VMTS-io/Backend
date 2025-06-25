@@ -276,41 +276,6 @@ namespace VMTS.Repository.Data.Migrations
                     b.ToTable("MaintenanceCategories");
                 });
 
-            modelBuilder.Entity("VMTS.Core.Entities.Maintenace.MaintenaceReport", b =>
-                {
-                    b.Property<string>("Id")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<decimal>("Cost")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<DateTime>("Date")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("MechanicId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<int>("Status")
-                        .HasColumnType("int");
-
-                    b.Property<string>("VehicleId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("MechanicId");
-
-                    b.HasIndex("VehicleId");
-
-                    b.ToTable("MaintenanceReports");
-                });
-
             modelBuilder.Entity("VMTS.Core.Entities.Maintenace.MaintenaceRequest", b =>
                 {
                     b.Property<string>("Id")
@@ -416,7 +381,8 @@ namespace VMTS.Repository.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("InitialReportId");
+                    b.HasIndex("InitialReportId")
+                        .IsUnique();
 
                     b.HasIndex("MaintenaceRequestId")
                         .IsUnique();
@@ -825,25 +791,6 @@ namespace VMTS.Repository.Data.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("VMTS.Core.Entities.Maintenace.MaintenaceReport", b =>
-                {
-                    b.HasOne("VMTS.Core.Entities.User_Business.BusinessUser", "Mechanic")
-                        .WithMany("MechanicMaintenaceReports")
-                        .HasForeignKey("MechanicId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("VMTS.Core.Entities.Vehicle_Aggregate.Vehicle", "Vehicle")
-                        .WithMany("MaintenaceReports")
-                        .HasForeignKey("VehicleId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("Mechanic");
-
-                    b.Navigation("Vehicle");
-                });
-
             modelBuilder.Entity("VMTS.Core.Entities.Maintenace.MaintenaceRequest", b =>
                 {
                     b.HasOne("VMTS.Core.Entities.Maintenace.MaintenaceCategory", "MaintenanceCategory")
@@ -880,8 +827,8 @@ namespace VMTS.Repository.Data.Migrations
             modelBuilder.Entity("VMTS.Core.Entities.Maintenace.MaintenanceFinalReport", b =>
                 {
                     b.HasOne("VMTS.Core.Entities.Maintenace.MaintenanceInitialReport", "InitialReport")
-                        .WithMany()
-                        .HasForeignKey("InitialReportId")
+                        .WithOne()
+                        .HasForeignKey("VMTS.Core.Entities.Maintenace.MaintenanceFinalReport", "InitialReportId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
@@ -898,13 +845,13 @@ namespace VMTS.Repository.Data.Migrations
                         .IsRequired();
 
                     b.HasOne("VMTS.Core.Entities.User_Business.BusinessUser", "Mechanic")
-                        .WithMany()
+                        .WithMany("MechanicMaintenaceFinalReports")
                         .HasForeignKey("MechanicId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("VMTS.Core.Entities.Vehicle_Aggregate.Vehicle", "Vehicle")
-                        .WithMany()
+                        .WithMany("MaintenaceFinalReports")
                         .HasForeignKey("VehicleId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
@@ -954,13 +901,13 @@ namespace VMTS.Repository.Data.Migrations
                         .IsRequired();
 
                     b.HasOne("VMTS.Core.Entities.User_Business.BusinessUser", "Mechanic")
-                        .WithMany()
+                        .WithMany("MechanicMaintenaceInitialReports")
                         .HasForeignKey("MechanicId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("VMTS.Core.Entities.Vehicle_Aggregate.Vehicle", "Vehicle")
-                        .WithMany()
+                        .WithMany("MaintenaceInitialReports")
                         .HasForeignKey("VehicleId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
@@ -1094,7 +1041,9 @@ namespace VMTS.Repository.Data.Migrations
 
                     b.Navigation("ManagerTripRequest");
 
-                    b.Navigation("MechanicMaintenaceReports");
+                    b.Navigation("MechanicMaintenaceFinalReports");
+
+                    b.Navigation("MechanicMaintenaceInitialReports");
 
                     b.Navigation("MechanicMaintenaceRequests");
                 });
@@ -1106,7 +1055,9 @@ namespace VMTS.Repository.Data.Migrations
 
             modelBuilder.Entity("VMTS.Core.Entities.Vehicle_Aggregate.Vehicle", b =>
                 {
-                    b.Navigation("MaintenaceReports");
+                    b.Navigation("MaintenaceFinalReports");
+
+                    b.Navigation("MaintenaceInitialReports");
 
                     b.Navigation("MaintenaceRequests");
 

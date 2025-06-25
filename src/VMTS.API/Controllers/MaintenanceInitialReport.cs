@@ -2,7 +2,9 @@ using System.Security.Claims;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using VMTS.API.ActionFilters;
 using VMTS.API.Dtos.Maintenance.Report.Initial;
+using VMTS.API.Validators;
 using VMTS.Core.Entities.Maintenace;
 using VMTS.Core.Helpers;
 using VMTS.Core.Interfaces.Services;
@@ -27,6 +29,7 @@ public class MaintenanceInitialReportController : BaseApiController
     }
 
     #region Create
+    [ServiceFilter<ValidateModelActionFilter<MaintenanceInitialReportRequestDto>>]
     [Authorize(Roles = Roles.Mechanic)]
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] MaintenanceInitialReportRequestDto dto)
@@ -40,6 +43,7 @@ public class MaintenanceInitialReportController : BaseApiController
     #endregion
 
     #region Update
+    [ServiceFilter<ValidateModelActionFilter<MaintenanceInitialReportRequestDto>>]
     [Authorize(Roles = Roles.Mechanic)]
     [HttpPut("{id}")]
     public async Task<IActionResult> Update(

@@ -29,13 +29,6 @@ public class VehicleConfig : IEntityTypeConfiguration<Vehicle>
             .OnDelete(DeleteBehavior.Restrict);
 
         builder
-            .HasMany(v => v.MaintenaceReports)
-            .WithOne(r => r.Vehicle)
-            .HasForeignKey("VehicleId")
-            .IsRequired()
-            .OnDelete(DeleteBehavior.Restrict);
-
-        builder
             .HasMany(v => v.MaintenaceRequests)
             .WithOne(r => r.Vehicle)
             .HasForeignKey(M => M.VehicleId)

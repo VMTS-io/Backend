@@ -1,3 +1,4 @@
+using VMTS.Core.Entities.Maintenace;
 using VMTS.Core.Entities.User_Business;
 
 namespace VMTS.Core.Specifications;
@@ -43,8 +44,11 @@ public class BusinessUserSpecification : BaseSpecification<BusinessUser>
 
     private void ApplyMechanicIncludes()
     {
-        Includes.Add(bs => bs.MechanicMaintenaceReports);
-        Includes.Add(bs => bs.MechanicMaintenaceRequests);
+        Includes.Add(bs => bs.MechanicMaintenaceInitialReports);
+        Includes.Add(bs => bs.MechanicMaintenaceFinalReports);
+        Includes.Add(bs =>
+            bs.MechanicMaintenaceRequests.Where(mr => mr.Status != Status.Completed)
+        );
     }
 
     private void ApplyDriverIncludes()

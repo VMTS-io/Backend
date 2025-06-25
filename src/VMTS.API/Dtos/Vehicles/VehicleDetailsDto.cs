@@ -1,3 +1,4 @@
+using VMTS.API.Dtos.Maintenance.Report.Final;
 using VMTS.API.Dtos.Maintenance.Request;
 using VMTS.API.Dtos.Trip;
 using VMTS.API.Dtos.Vehicles.Model;
@@ -27,7 +28,10 @@ public class VehicleDetailsDto
 
     public ICollection<TripReportDto> TripReports { get; set; } = [];
 
-    public ICollection<MaintenanceReportDto> MaintenaceReports { get; set; } = [];
+    // public ICollection<MaintenanceReportDto> MaintenaceReports { get; set; } = [];
+    public ICollection<MaintenanceFinalReportSummaryDto> MaintenaceFinalReport { get; set; } = [];
+    public ICollection<MaintenanceInitialReportSummaryDto> MaintenaceInitialReports { get; set; } =
+        [];
 
     public ICollection<VehicleMaintenanceRequestDto> MaintenaceRequests { get; set; } = [];
 }

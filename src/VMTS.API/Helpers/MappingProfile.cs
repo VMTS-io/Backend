@@ -119,7 +119,7 @@ public class MappingProfile : Profile
         CreateMap<VehicleModelUpsertDto, VehicleModel>();
         CreateMap<TripRequest, TripRequestDto>();
         CreateMap<TripReport, TripReportDto>();
-        CreateMap<MaintenaceReport, MaintenanceReportDto>();
+        // CreateMap<MaintenaceReport, MaintenanceReportDto>();
         CreateMap<MaintenaceRequest, VehicleMaintenanceRequestDto>();
 
         CreateMap<MaintenanceInitialReportRequestDto, MaintenanceInitialReport>();
@@ -223,6 +223,11 @@ public class MappingProfile : Profile
                 opts => opts.MapFrom(src => $"{src.MaintenanceCategory.Categorty} Maintenance")
             );
         CreateMap<MaintenanceInitialReport, MaintenanceInitialReportSummaryDto>()
+            .ForMember(
+                dest => dest.MaintenanceCategory,
+                opt => opt.MapFrom(src => $"{src.MaintenanceCategory.Categorty} Mantenance")
+            );
+        CreateMap<MaintenanceFinalReport, MaintenanceFinalReportSummaryDto>()
             .ForMember(
                 dest => dest.MaintenanceCategory,
                 opt => opt.MapFrom(src => $"{src.MaintenanceCategory.Categorty} Mantenance")
