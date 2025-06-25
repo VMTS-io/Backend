@@ -27,19 +27,41 @@ public static class VTMSServicesExtension
         IConfiguration configuration
     )
     {
-        services.Configure<ApiBehaviorOptions>(options =>
-            options.InvalidModelStateResponseFactory = (actionContext) =>
-            {
-                var errors = actionContext
-                    .ModelState.Where(M => M.Value?.Errors.Count > 0)
-                    .ToDictionary(
-                        m => m.Key,
-                        m => m.Value!.Errors.Select(e => e.ErrorMessage).ToList()
-                    );
-                var response = new ApiErrorValidationResponse() { Errors = errors };
-                return new BadRequestObjectResult(response);
-            }
-        );
+        // services.Configure<ApiBehaviorOptions>(options =>
+        //     options.InvalidModelStateResponseFactory = (actionContext) =>
+        //     {
+        //         var errors = actionContext
+        //             .ModelState.Where(M => M.Value?.Errors.Count > 0)
+        //             .ToDictionary(
+        //                 m => m.Key ?? "_glabal",
+        //                 m => m.Value!.Errors.Select(e => e.ErrorMessage).ToList()
+        //             );
+        //         var response = new ApiErrorValidationResponse() { Errors = errors };
+        //         return new BadRequestObjectResult(response);
+        //     }
+        // );
+
+        // services.Configure<ApiBehaviorOptions>(options =>
+        // {
+        //     options.InvalidModelStateResponseFactory = context =>
+        //     {
+        //         var modelState = context.ModelState;
+        //
+        //         var problemDetails = new ValidationProblemDetails(modelState)
+        //         {
+        //             Type = "https://tools.ietf.org/html/rfc7231#section-6.5.1",
+        //             Title = "Validation failed",
+        //             Status = StatusCodes.Status400BadRequest,
+        //             Instance = context.HttpContext.Request.Path,
+        //         };
+        //
+        //         return new BadRequestObjectResult(problemDetails)
+        //         {
+        //             ContentTypes = { "application/problem+json" },
+        //         };
+        //     };
+        // });
+
         services.AddProblemDetails();
         services.AddExceptionHandler<GlobalEaxceptionHandler>();
         services
