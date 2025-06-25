@@ -11,7 +11,7 @@ public class TripRequestIncludesSpecification : BaseSpecification<TripRequest>
             && (specParams.DriverId == null || tr.DriverId == specParams.DriverId)
             && (specParams.VehicleId == null || tr.VehicleId == specParams.VehicleId)
             && (!specParams.Date.HasValue || tr.Date.Date == specParams.Date.Value.Date)
-            && (!specParams.Status.HasValue || tr.Status == specParams.Status)
+            && (specParams.Status == null || specParams.Status.Contains(tr.Status))
         )
     {
         ApplyIncludes();
@@ -36,9 +36,9 @@ public class TripRequestIncludesSpecification : BaseSpecification<TripRequest>
             && (driverId == null || tr.DriverId == driverId)
             && (vehicleId == null || tr.VehicleId == vehicleId)
         ) { }
-    
+
     public TripRequestIncludesSpecification(string id)
-        :base(f => f.Id == id)
+        : base(f => f.Id == id)
     {
         ApplyIncludes();
     }

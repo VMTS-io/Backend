@@ -1,5 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 using FluentValidation;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using VMTS.API.ActionFilters;
@@ -7,6 +8,7 @@ using VMTS.API.Errors;
 using VMTS.API.GlobalExceptionHnadler;
 using VMTS.API.Helpers;
 using VMTS.API.Middlewares;
+using VMTS.Core.Entities.Identity;
 using VMTS.Core.Interfaces.Repositories;
 using VMTS.Core.Interfaces.Services;
 using VMTS.Core.Interfaces.UnitOfWork;
@@ -78,6 +80,7 @@ public static class VTMSServicesExtension
         services.AddScoped<IFaultReportService, FaultReportService>();
         services.AddScoped<ITripRequestService, TripRequestService>();
         services.AddScoped<IDriverReportsService, DriverReportsService>();
+        services.AddScoped<IMechanicReportsServices, MechaincReportsServices>();
         services.AddScoped<IMaintenanceRequestServices, MaintenanceRequestServices>();
         services.AddScoped<IVehicleSerivces, VehicleServices>();
         services.AddScoped<IUserService, UserService>();

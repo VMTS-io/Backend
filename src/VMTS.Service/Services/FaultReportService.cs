@@ -39,7 +39,11 @@ public class FaultReportService : IFaultReportService
     {
         // Get active trip
         var tripSpec = new TripRequestIncludesSpecification(
-            new TripRequestSpecParams() { DriverId = userId, Status = TripStatus.Approved }
+            new TripRequestSpecParams()
+            {
+                DriverId = userId,
+                Status = new[] { TripStatus.Approved },
+            }
         );
         var tripRequest = await _unitOfWork
             .GetRepo<TripRequest>()

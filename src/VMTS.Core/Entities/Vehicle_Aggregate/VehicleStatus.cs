@@ -16,4 +16,3 @@ public enum VehicleStatus
     [EnumMember(Value = "Retired")]
     Retired,
 }
-

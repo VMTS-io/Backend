@@ -12,6 +12,7 @@ using VMTS.Core.Helpers;
 using VMTS.Core.Interfaces.Services;
 using VMTS.Core.Interfaces.UnitOfWork;
 using VMTS.Core.ServicesContract;
+using VMTS.Core.Specifications;
 
 namespace VMTS.API.Controllers;
 
@@ -47,7 +48,7 @@ public class UserController : BaseApiController
     [Authorize(Roles = Roles.Admin)]
     [ProducesResponseType(typeof(RegisterResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status400BadRequest)]
-    public async Task<ActionResult<RegisterResponse>> CreateUser(RegisterRequest model)
+    public async Task<ActionResult<RegisterResponse>> Create(RegisterRequest model)
     {
         var email = await _authService.GenerateUniqueEmailAsync(model.FirstName, model.LastName);
         var password = "Pa$$w0rd";
@@ -109,27 +110,23 @@ public class UserController : BaseApiController
 
     #endregion
 
+
     #region Get All Users
-    [HttpGet("all")]
-    [Authorize(Roles = Roles.Admin)]
-    [ProducesResponseType(typeof(IReadOnlyList<UserResponse>), StatusCodes.Status200OK)]
+
+    [HttpGet]
+    [Authorize(Roles = Roles.Manager)]
+    [ProducesResponseType(
+        typeof(IReadOnlyList<BusinessUserGetAllResponse>),
+        StatusCodes.Status200OK
+    )]
     [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status400BadRequest)]
-    public async Task<ActionResult<IReadOnlyList<UserResponse>>> GetAllUsers()
+    public async Task<ActionResult<IReadOnlyList<BusinessUserGetAllResponse>>> GetAll(
+        [FromQuery] BusinessUserSpecParams specParams
+    )
     {
-        var users = await _userManager.Users.Include(u => u.Address).ToListAsync();
+        var users = await _userService.GetAllUsersAsync(specParams);
 
-        var userResponses = new List<UserResponse>();
-        foreach (var user in users)
-        {
-            var role = await _userManager.GetRolesAsync(user);
-
-            if (role.Contains(Roles.Admin))
-                continue;
-            var mappedUser = _mapper.Map<UserResponse>(user);
-            var roles = await _userManager.GetRolesAsync(user);
-            mappedUser.Role = roles.FirstOrDefault();
-            userResponses.Add(mappedUser);
-        }
+        var userResponses = _mapper.Map<IReadOnlyList<BusinessUserGetAllResponse>>(users);
 
         return Ok(userResponses);
     }
@@ -165,7 +162,7 @@ public class UserController : BaseApiController
     #region Get All Drivers
 
     [HttpGet("drivers")]
-    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = $"{Roles.Driver},{Roles.Manager}")]
+    [Authorize(Roles = $"{Roles.Driver},{Roles.Manager}")]
     [ProducesResponseType(typeof(IReadOnlyList<UserResponse>), StatusCodes.Status200OK)]
     public async Task<ActionResult<IReadOnlyList<UserResponse>>> GetDrivers()
     {
@@ -191,7 +188,10 @@ public class UserController : BaseApiController
     #region Get All Mechanics
 
     [HttpGet("mechanics")]
-    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = $"{Roles.Driver},{Roles.Manager}")]
+    [Authorize(
+        AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme,
+        Roles = $"{Roles.Driver},{Roles.Manager}"
+    )]
     [ProducesResponseType(typeof(IReadOnlyList<UserResponse>), StatusCodes.Status200OK)]
     public async Task<ActionResult<IReadOnlyList<UserResponse>>> GetMechanics()
     {
@@ -216,7 +216,10 @@ public class UserController : BaseApiController
 
     #region Get User By Id
     [HttpGet("{userId}")]
-    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = $"{Roles.Driver},{Roles.Manager}")]
+    [Authorize(
+        AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme,
+        Roles = $"{Roles.Driver},{Roles.Manager}"
+    )]
     [ProducesResponseType(typeof(UserResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<UserResponse>> GetById([FromRoute] string userId)
@@ -256,40 +259,30 @@ public class UserController : BaseApiController
 
     #endregion
 
+
     #region Delete User
-    [HttpDelete("{userId}")]
-    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = Roles.Admin)]
+
+    [Authorize(Roles = Roles.Admin)]
     [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status400BadRequest)]
-    public async Task<ActionResult> DeleteUser([FromRoute] string userId)
+    [HttpDelete("{Id}")]
+    public async Task<ActionResult> DeleteUser([FromRoute] string Id)
     {
-        var user = await _userManager.FindByIdAsync(userId);
-        if (user == null)
-            return BadRequest(new ApiErrorResponse(400, "User not found"));
-
-        var result = await _userManager.DeleteAsync(user);
-        if (!result.Succeeded)
-            return BadRequest(
-                new ApiErrorResponse(
-                    400,
-                    string.Join(", ", result.Errors.Select(e => e.Description))
-                )
-            );
-
-        return Ok(new ApiErrorResponse(200, "User deleted successfully"));
+        await _userService.DeleteUserAsync(Id);
+        return NoContent();
     }
 
     #endregion
 
     #region Edit User
-    [HttpPut("{userId}")]
+    [HttpPut("{Id}")]
     [Authorize(Roles = Roles.Admin)]
     [ProducesResponseType(typeof(bool), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status400BadRequest)]
-    public async Task<ActionResult> Edit(EditUserRequest request, [FromRoute] string userId)
+    public async Task<ActionResult> Edit(EditUserRequest request, [FromRoute] string Id)
     {
-        var result = await _userService.EditUserAsync(
-            userId,
+        await _userService.EditUserAsync(
+            Id,
             request.FirstName,
             request.LastName,
             request.NationalId,
@@ -302,10 +295,7 @@ public class UserController : BaseApiController
             request.Role
         );
 
-        if (!result)
-            return BadRequest(new ApiErrorResponse(400, "Failed to update user"));
-
-        return Ok(result);
+        return NoContent();
     }
     #endregion
 }

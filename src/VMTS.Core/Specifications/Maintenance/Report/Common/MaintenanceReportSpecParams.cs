@@ -12,6 +12,8 @@ public class MaintenanceReportSpecParams
     public string? Search { get; set; }
     public string? Sort { get; set; }
 
+    public string? Filter { get; set; }
+
     public int PageIndex { get; set; } = 1;
     private const int MaxPageSize = 50;
     private int _pageSize = 10;
@@ -22,4 +24,3 @@ public class MaintenanceReportSpecParams
         set => _pageSize = value > MaxPageSize ? MaxPageSize : value;
     }
 }
-

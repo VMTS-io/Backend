@@ -64,13 +64,24 @@ public class TripRequestService : ITripRequestService
         if (vehicleUnderMaintenance.Status == VehicleStatus.UnderMaintenance)
             throw new InvalidOperationException("Vehicle is under maintenance");
 
+        if (vehicleUnderMaintenance.Status == VehicleStatus.Inactive)
+            throw new InvalidOperationException("Vehicle is not active right now");
+
+        if (vehicleUnderMaintenance.Status == VehicleStatus.Retired)
+            throw new InvalidOperationException("Vehicle is retired xxx");
+
         // Check for past date
         if (date.Date < DateTime.UtcNow.Date)
             throw new ArgumentException("Trip date cannot be in the past.");
 
         // Check driver availability
         var driverAvailabilitySpec = new TripRequestIncludesSpecification(
-            new TripRequestSpecParams { DriverId = driverId, Status = TripStatus.Approved }
+            new TripRequestSpecParams
+            {
+                DriverId = driverId,
+                Date = date,
+                Status = new[] { TripStatus.Approved, TripStatus.Pending },
+            }
         );
         var driverTrips = await _unitOfWork
             .GetRepo<TripRequest>()
@@ -80,14 +91,19 @@ public class TripRequestService : ITripRequestService
 
         // Check vehicle availability
         var vehicleAvailabilitySpec = new TripRequestIncludesSpecification(
-            new TripRequestSpecParams { VehicleId = vehicleId, Status = TripStatus.Approved }
+            new TripRequestSpecParams
+            {
+                VehicleId = vehicleId,
+                Date = date,
+                Status = new[] { TripStatus.Approved, TripStatus.Pending },
+            }
         );
         var vehicleTrips = await _unitOfWork
             .GetRepo<TripRequest>()
             .GetAllWithSpecificationAsync(vehicleAvailabilitySpec);
 
         if (vehicleTrips.Any())
-            throw new InvalidOperationException("Vehicle already on a trip right now");
+            throw new InvalidOperationException("Vehicle already on a trip on this date");
 
         var tripRequest = new TripRequest
         {

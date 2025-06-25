@@ -1,20 +1,43 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using VMTS.Core.Entities.Identity;
+using VMTS.Core.Entities.Maintenace;
+using VMTS.Core.Entities.Trip;
+using VMTS.Core.Entities.User_Business;
+using VMTS.Core.Interfaces.Repositories;
 using VMTS.Core.Interfaces.Services;
+using VMTS.Core.Interfaces.UnitOfWork;
+using VMTS.Core.Specifications;
 
 namespace VMTS.Service.Services;
 
 public class UserService : IUserService
 {
     private readonly UserManager<AppUser> _userManager;
+    private readonly RoleManager<IdentityRole> _roleManager;
 
-    public UserService(UserManager<AppUser> userManager)
+    private readonly IUnitOfWork _unitOfWork;
+
+    public UserService(
+        UserManager<AppUser> userManager,
+        RoleManager<IdentityRole> roleManager,
+        IUnitOfWork unitOfWork
+    )
     {
         _userManager = userManager;
+        _roleManager = roleManager;
+
+        _unitOfWork = unitOfWork;
     }
 
-    public async Task<bool> EditUserAsync(
+    #region create
+
+    // public Task<AppUser> CreateUserAsync(AppUser model) { }
+
+    #endregion
+
+    #region edit
+    public async Task EditUserAsync(
         string userId,
         string firstName,
         string lastName,
@@ -25,7 +48,7 @@ public class UserService : IUserService
         string area,
         string governorate,
         string country,
-        string? role
+        string role
     )
     {
         var user = await _userManager
@@ -33,14 +56,17 @@ public class UserService : IUserService
             .FirstOrDefaultAsync(u => u.Id == userId);
 
         if (user == null)
-            return false;
+            throw new InvalidOperationException("User not found.");
 
         user.FirstName = firstName;
         user.LastName = lastName;
+        user.NormalizedUserName = user.UserName.ToUpper();
+        user.DisplayName = $"{user.FirstName} {user.LastName}";
+        user.UserName = user.Email.Split('@')[0].ToLower();
         user.PhoneNumber = phoneNumber;
         user.NationalId = nationalId;
         user.DateOfBirth = dateOfBirth;
-        // Address update
+
         user.Address.Street = street;
         user.Address.Area = area;
         user.Address.Governorate = governorate;
@@ -55,10 +81,99 @@ public class UserService : IUserService
 
             var roleResult = await _userManager.AddToRoleAsync(user, role);
             if (!roleResult.Succeeded)
-                return false;
+                throw new InvalidOperationException("Failed to update user role.");
         }
 
         var updateResult = await _userManager.UpdateAsync(user);
-        return updateResult.Succeeded;
+        if (!updateResult.Succeeded)
+            throw new InvalidOperationException("Failed to update user.");
+
+        var businessUser = await _unitOfWork.GetRepo<BusinessUser>().GetByIdAsync(userId);
+        if (businessUser != null)
+        {
+            businessUser.DisplayName = $"{user.FirstName} {user.LastName}";
+            businessUser.Email = user.Email;
+            businessUser.PhoneNumber = user.PhoneNumber;
+            businessUser.NormalizedEmail = user.NormalizedEmail;
+            businessUser.Role = role;
+            _unitOfWork.GetRepo<BusinessUser>().Update(businessUser); // Fix: use businessUser, not AppUser
+        }
+
+        await _unitOfWork.SaveChanges();
     }
+
+    #endregion
+
+    #region delete
+
+    public async Task DeleteUserAsync(string userId)
+    {
+        var user = await _userManager.FindByIdAsync(userId);
+        if (user == null)
+            throw new ArgumentNullException("user not found");
+        var result = await _userManager.DeleteAsync(user);
+        if (!result.Succeeded)
+            throw new InvalidOperationException("Failed to delete user.");
+        var businessUser = await _unitOfWork.GetRepo<BusinessUser>().GetByIdAsync(userId);
+        if (businessUser != null)
+        {
+            _unitOfWork.GetRepo<BusinessUser>().Delete(businessUser);
+        }
+        await _unitOfWork.SaveChanges();
+    }
+
+    #endregion
+
+    #region Get All
+
+    public async Task<IReadOnlyList<BusinessUser>> GetAllUsersAsync(
+        BusinessUserSpecParams specParams
+    )
+    {
+        var businessUserSpec = new BusinessUserSpecification(specParams);
+        var businessUsers = await _unitOfWork
+            .GetRepo<BusinessUser>()
+            .GetAllWithSpecificationAsync(businessUserSpec);
+
+        var freeBusinessUsers = new List<BusinessUser>();
+
+        if (string.IsNullOrWhiteSpace(specParams.Filter) || specParams.Filter == "FreeDrivers")
+        {
+            foreach (var businessUser in businessUsers)
+            {
+                bool hasConflictingRequest = businessUser.DriverTripRequest.Any(req =>
+                    (
+                        !specParams.TripDate.HasValue
+                        || req.Date.Date == specParams.TripDate.Value.Date
+                    ) && (req.Status == TripStatus.Approved || req.Status == TripStatus.Pending)
+                );
+
+                if (!hasConflictingRequest)
+                    freeBusinessUsers.Add(businessUser);
+            }
+            return freeBusinessUsers;
+        }
+        else if (
+            string.IsNullOrWhiteSpace(specParams.Filter)
+            || specParams.Filter == "FreeMechanics"
+        )
+        {
+            foreach (var businessUser in businessUsers)
+            {
+                var inCompletedRequest = businessUser.MechanicMaintenaceRequests.Where(mr =>
+                    mr.Status != Status.Completed
+                );
+
+                bool hasConflictingRequest = inCompletedRequest.Count() > 5;
+
+                if (!hasConflictingRequest)
+                    freeBusinessUsers.Add(businessUser);
+            }
+
+            return freeBusinessUsers;
+        }
+        return businessUsers;
+    }
+
+    #endregion
 }

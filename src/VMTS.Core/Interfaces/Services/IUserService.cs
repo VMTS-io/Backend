@@ -1,10 +1,14 @@
 using VMTS.Core.Entities.Identity;
+using VMTS.Core.Entities.User_Business;
+using VMTS.Core.Specifications;
 
 namespace VMTS.Core.Interfaces.Services;
 
 public interface IUserService
 {
-    public Task<bool> EditUserAsync(
+    // Task<AppUser> CreateUserAsync(AppUser user);
+
+    Task EditUserAsync(
         string userId,
         string firstName,
         string lastName,
@@ -15,6 +19,10 @@ public interface IUserService
         string area,
         string governorate,
         string country,
-        string? role
+        string role
     );
+
+    Task DeleteUserAsync(string userId);
+
+    Task<IReadOnlyList<BusinessUser>> GetAllUsersAsync(BusinessUserSpecParams specParams);
 }

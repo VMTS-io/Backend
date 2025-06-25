@@ -26,6 +26,8 @@ public class MappingProfile : Profile
 {
     public MappingProfile()
     {
+        CreateMap<BusinessUser, BusinessUserGetAllResponse>();
+
         CreateMap<TripReport, DriverReportItemDto>()
             .ForMember(dest => dest.ReportType, opt => opt.MapFrom(_ => "Trip"))
             .ForMember(dest => dest.Driver, opt => opt.MapFrom(src => src.Driver))
