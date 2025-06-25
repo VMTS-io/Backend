@@ -12,6 +12,7 @@ using VMTS.Core.Helpers;
 using VMTS.Core.Interfaces.Services;
 using VMTS.Core.Interfaces.UnitOfWork;
 using VMTS.Core.ServicesContract;
+using VMTS.Core.Specifications;
 
 namespace VMTS.API.Controllers;
 
@@ -109,27 +110,23 @@ public class UserController : BaseApiController
 
     #endregion
 
+
     #region Get All Users
-    [HttpGet("all")]
-    [Authorize(Roles = Roles.Admin)]
-    [ProducesResponseType(typeof(IReadOnlyList<UserResponse>), StatusCodes.Status200OK)]
+
+    [HttpGet]
+    [Authorize(Roles = Roles.Manager)]
+    [ProducesResponseType(
+        typeof(IReadOnlyList<BusinessUserGetAllResponse>),
+        StatusCodes.Status200OK
+    )]
     [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status400BadRequest)]
-    public async Task<ActionResult<IReadOnlyList<UserResponse>>> GetAllUsers()
+    public async Task<ActionResult<IReadOnlyList<BusinessUserGetAllResponse>>> GetAll(
+        [FromQuery] BusinessUserSpecParams specParams
+    )
     {
-        var users = await _userManager.Users.Include(u => u.Address).ToListAsync();
+        var users = await _userService.GetAllUsersAsync(specParams);
 
-        var userResponses = new List<UserResponse>();
-        foreach (var user in users)
-        {
-            var role = await _userManager.GetRolesAsync(user);
-
-            if (role.Contains(Roles.Admin))
-                continue;
-            var mappedUser = _mapper.Map<UserResponse>(user);
-            var roles = await _userManager.GetRolesAsync(user);
-            mappedUser.Role = roles.FirstOrDefault();
-            userResponses.Add(mappedUser);
-        }
+        var userResponses = _mapper.Map<IReadOnlyList<BusinessUserGetAllResponse>>(users);
 
         return Ok(userResponses);
     }
@@ -165,10 +162,7 @@ public class UserController : BaseApiController
     #region Get All Drivers
 
     [HttpGet("drivers")]
-    [Authorize(
-        AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme,
-        Roles = $"{Roles.Driver},{Roles.Manager}"
-    )]
+    [Authorize(Roles = $"{Roles.Driver},{Roles.Manager}")]
     [ProducesResponseType(typeof(IReadOnlyList<UserResponse>), StatusCodes.Status200OK)]
     public async Task<ActionResult<IReadOnlyList<UserResponse>>> GetDrivers()
     {
@@ -271,24 +265,24 @@ public class UserController : BaseApiController
     [Authorize(Roles = Roles.Admin)]
     [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status400BadRequest)]
-    [HttpDelete("{userId}")]
-    public async Task<ActionResult> DeleteUser([FromRoute] string userId)
+    [HttpDelete("{Id}")]
+    public async Task<ActionResult> DeleteUser([FromRoute] string Id)
     {
-        await _userService.DeleteUserAsync(userId);
-        return Ok(new { Message = "User deleted successfully" });
+        await _userService.DeleteUserAsync(Id);
+        return NoContent();
     }
 
     #endregion
 
     #region Edit User
-    [HttpPut("{userId}")]
+    [HttpPut("{Id}")]
     [Authorize(Roles = Roles.Admin)]
     [ProducesResponseType(typeof(bool), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status400BadRequest)]
-    public async Task<ActionResult> Edit(EditUserRequest request, [FromRoute] string userId)
+    public async Task<ActionResult> Edit(EditUserRequest request, [FromRoute] string Id)
     {
         await _userService.EditUserAsync(
-            userId,
+            Id,
             request.FirstName,
             request.LastName,
             request.NationalId,
@@ -301,7 +295,7 @@ public class UserController : BaseApiController
             request.Role
         );
 
-        return Ok(new { Message = "User updated successfully." });
+        return NoContent();
     }
     #endregion
 }
