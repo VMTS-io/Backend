@@ -4,28 +4,6 @@ namespace VMTS.Core.Specifications.VehicleSpecification;
 
 public class VehicleIncludesSpecification : BaseSpecification<Vehicle>
 {
-    private void ApplyIncludes()
-    {
-        // Includes.Add(v => v.VehicleModel);
-        // IncludeStrings.Add($"{nameof(VehicleModel)}.{nameof(VehicleModel.Category)}");
-        // IncludeStrings.Add($"{nameof(VehicleModel)}.{nameof(VehicleModel.Brand)}");
-        Includes.Add(v => v.VehicleModel.Category);
-        Includes.Add(v => v.VehicleModel.Brand);
-    }
-
-    private void ApplyAllIncludes()
-    {
-        // IncludeStrings.Add($"{nameof(VehicleModel)}.{nameof(VehicleModel.Category)}");
-        // IncludeStrings.Add($"{nameof(VehicleModel)}.{nameof(VehicleModel.Brand)}");
-        // Includes.Add(v => v.VehicleModel);
-        Includes.Add(v => v.TripRequests);
-        Includes.Add(v => v.TripReports);
-        Includes.Add(v => v.MaintenaceReports);
-        Includes.Add(v => v.MaintenaceRequests);
-        Includes.Add(v => v.VehicleModel.Category);
-        Includes.Add(v => v.VehicleModel.Brand);
-    }
-
     public VehicleIncludesSpecification(string id)
         : base(v => v.Id == id)
     {
@@ -38,6 +16,10 @@ public class VehicleIncludesSpecification : BaseSpecification<Vehicle>
                 string.IsNullOrEmpty(specParams.PalletNumber)
                 || v.PalletNumber == specParams.PalletNumber
             )
+            && (
+                string.IsNullOrEmpty(specParams.CategoryId)
+                || v.VehicleModel.CategoryId == specParams.CategoryId
+            )
             && (!specParams.Status.HasValue || v.Status == specParams.Status)
             && (!specParams.MaxKMDriven.HasValue || v.KMDriven <= specParams.MaxKMDriven)
             && (!specParams.MaxJoindYear.HasValue || v.JoinedYear <= specParams.MaxJoindYear)
@@ -49,17 +31,44 @@ public class VehicleIncludesSpecification : BaseSpecification<Vehicle>
                 )
             )
             && (string.IsNullOrEmpty(specParams.ModelId) || v.ModelId == specParams.ModelId)
+            && (
+                !specParams.TripDate.HasValue
+                || v.TripRequests.Where(tr => tr.Date.Date == specParams.TripDate.Value.Date)
+                    .FirstOrDefault() == null
+            )
         )
     {
         ApplyIncludes();
 
-        if (!string.IsNullOrEmpty(specParams.Sort))
+        if (specParams.TripDate.HasValue)
+            Includes.Add(v => v.TripRequests);
+
+        ApplaySort(specParams.Sort);
+        AddPaginaiton(specParams.PageIndex - 1, specParams.PageSize);
+    }
+
+    private void ApplyIncludes()
+    {
+        Includes.Add(v => v.VehicleModel.Category);
+        Includes.Add(v => v.VehicleModel.Brand);
+    }
+
+    private void ApplyAllIncludes()
+    {
+        Includes.Add(v => v.TripRequests);
+        Includes.Add(v => v.TripReports);
+        Includes.Add(v => v.MaintenaceReports);
+        Includes.Add(v => v.MaintenaceRequests);
+        Includes.Add(v => v.VehicleModel.Category);
+        Includes.Add(v => v.VehicleModel.Brand);
+    }
+
+    private void ApplaySort(string? sort)
+    {
+        if (!string.IsNullOrEmpty(sort))
         {
-            switch (specParams.Sort)
+            switch (sort)
             {
-                // case "StatusAsc":
-                //     AddOrderBy(v => v.Status);
-                //     break;
                 case "StatusDes":
                     AddOrderByDesc(v => v.Status);
                     break;
@@ -81,7 +90,5 @@ public class VehicleIncludesSpecification : BaseSpecification<Vehicle>
         {
             AddOrderBy(v => v.Status);
         }
-
-        AddPaginaiton(specParams.PageIndex - 1, specParams.PageSize);
     }
 }

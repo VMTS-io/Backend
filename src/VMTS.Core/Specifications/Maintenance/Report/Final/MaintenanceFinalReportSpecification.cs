@@ -5,18 +5,6 @@ namespace VMTS.Core.Specifications.Maintenance.Report.Final;
 
 public class MaintenanceFinalReportSpecification : BaseSpecification<MaintenanceFinalReport>
 {
-    private void ApplyIncludes()
-    {
-        Includes.Add(r => r.Vehicle.VehicleModel.Brand);
-        Includes.Add(r => r.Vehicle.VehicleModel.Category);
-        Includes.Add(r => r.Mechanic);
-        Includes.Add(r => r.InitialReport);
-        Includes.Add(r => r.MaintenaceRequest);
-        // Includes.Add(r => r.ChangedParts);
-        Includes.Add(r => r.MaintenanceCategory);
-        IncludeStrings.Add("ChangedParts.Part");
-    }
-
     public MaintenanceFinalReportSpecification(string id)
         : base(r => r.Id == id)
     {
@@ -62,34 +50,8 @@ public class MaintenanceFinalReportSpecification : BaseSpecification<Maintenance
     {
         ApplyIncludes();
 
-        // Sorting
-        if (!string.IsNullOrWhiteSpace(specParams.Sort))
-        {
-            switch (specParams.Sort)
-            {
-                case "DateAsc":
-                    AddOrderBy(r => r.FinishedDate);
-                    break;
-                case "DateDesc":
-                    AddOrderByDesc(r => r.FinishedDate);
-                    break;
-                case "CostAsc":
-                    AddOrderBy(r => r.TotalCost);
-                    break;
-                case "CostDesc":
-                    AddOrderByDesc(r => r.TotalCost);
-                    break;
-                default:
-                    AddOrderByDesc(r => r.FinishedDate);
-                    break;
-            }
-        }
-        else
-        {
-            AddOrderByDesc(r => r.FinishedDate);
-        }
+        ApplySort(specParams.Sort);
 
-        // Pagination
         AddPaginaiton((specParams.PageIndex - 1) * specParams.PageSize, specParams.PageSize);
     }
 
@@ -120,25 +82,49 @@ public class MaintenanceFinalReportSpecification : BaseSpecification<Maintenance
     {
         ApplyIncludes();
 
-        switch (specParams.Sort)
-        {
-            case "DateAsc":
-                AddOrderBy(r => r.FinishedDate);
-                break;
-            case "DateDesc":
-                AddOrderByDesc(r => r.FinishedDate);
-                break;
-            case "CostAsc":
-                AddOrderBy(r => r.TotalCost);
-                break;
-            case "CostDesc":
-                AddOrderByDesc(r => r.TotalCost);
-                break;
-            default:
-                AddOrderByDesc(r => r.FinishedDate);
-                break;
-        }
+        ApplySort(specParams.Sort);
 
         AddPaginaiton((specParams.PageIndex - 1) * specParams.PageSize, specParams.PageSize);
+    }
+
+    private void ApplySort(string? sort)
+    {
+        if (!string.IsNullOrWhiteSpace(sort))
+        {
+            switch (sort)
+            {
+                case "DateAsc":
+                    AddOrderBy(r => r.FinishedDate);
+                    break;
+                case "DateDesc":
+                    AddOrderByDesc(r => r.FinishedDate);
+                    break;
+                case "CostAsc":
+                    AddOrderBy(r => r.TotalCost);
+                    break;
+                case "CostDesc":
+                    AddOrderByDesc(r => r.TotalCost);
+                    break;
+                default:
+                    AddOrderByDesc(r => r.FinishedDate);
+                    break;
+            }
+        }
+        else
+        {
+            AddOrderByDesc(r => r.FinishedDate);
+        }
+    }
+
+    private void ApplyIncludes()
+    {
+        Includes.Add(r => r.Vehicle.VehicleModel.Brand);
+        Includes.Add(r => r.Vehicle.VehicleModel.Category);
+        Includes.Add(r => r.Mechanic);
+        Includes.Add(r => r.InitialReport);
+        Includes.Add(r => r.MaintenaceRequest);
+        // Includes.Add(r => r.ChangedParts);
+        Includes.Add(r => r.MaintenanceCategory);
+        IncludeStrings.Add("ChangedParts.Part");
     }
 }

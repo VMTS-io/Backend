@@ -41,7 +41,7 @@ public class MaintenanceFinalReportController : BaseApiController
     [HttpPut("{id}")]
     public async Task<IActionResult> Update(
         [FromRoute] string id,
-        [FromBody] MaintenanceFinalReportRequestDto dto
+        [FromBody] MaintenanceFinalReportUpdateDto dto
     )
     {
         var report = _mapper.Map<MaintenanceFinalReport>(dto);
@@ -64,12 +64,10 @@ public class MaintenanceFinalReportController : BaseApiController
     #region Get By Id
     [Authorize(Roles = $"{Roles.Mechanic},{Roles.Manager}")]
     [HttpGet("{id}")]
-    public async Task<ActionResult<MaintenanceFinalReportResponseDto>> GetById(
-        [FromRoute] string id
-    )
+    public async Task<ActionResult<MaintenanceFinalReportDetailsDto>> GetById([FromRoute] string id)
     {
         var report = await _service.GetFinalReportByIdAsync(id);
-        var response = _mapper.Map<MaintenanceFinalReportResponseDto>(report);
+        var response = _mapper.Map<MaintenanceFinalReportDetailsDto>(report);
         return Ok(response);
     }
     #endregion

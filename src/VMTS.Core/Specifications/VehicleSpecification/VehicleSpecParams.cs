@@ -8,6 +8,8 @@ public class VehicleSpecParams
 
     public VehicleStatus? Status { get; set; }
 
+    public string? CategoryId { get; set; }
+
     public int? MaxKMDriven { get; set; }
 
     public DateOnly? MaxJoindYear { get; set; }
@@ -15,6 +17,8 @@ public class VehicleSpecParams
     public string? ModelId { get; set; }
 
     public string? Sort { get; set; }
+
+    public DateTime? TripDate { get; set; }
 
     private string? search;
 

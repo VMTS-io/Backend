@@ -5,18 +5,6 @@ namespace VMTS.Core.Specifications.Maintenance.Report.Initial;
 
 public class MaintenanceIntialReportSpecification : BaseSpecification<MaintenanceInitialReport>
 {
-    private void ApplyIncludes()
-    {
-        Includes.Add(mir => mir.Vehicle.VehicleModel.Brand);
-        Includes.Add(mir => mir.Vehicle.VehicleModel.Category);
-        Includes.Add(mir => mir.Mechanic);
-        Includes.Add(mir => mir.MaintenanceCategory);
-        Includes.Add(mir => mir.MaintenanceRequest);
-        Includes.Add(mir => mir.MissingParts);
-        // Includes.Add(mir => mir.ExpectedChangedParts.Single().Part);
-        IncludeStrings.Add("ExpectedChangedParts.Part");
-    }
-
     public MaintenanceIntialReportSpecification(string id)
         : base(mir => mir.Id == id)
     {
@@ -95,10 +83,26 @@ public class MaintenanceIntialReportSpecification : BaseSpecification<Maintenanc
         )
     {
         ApplyIncludes();
+        ApplaySort(specParams.Sort);
+        AddPaginaiton((specParams.PageIndex - 1) * specParams.PageSize, specParams.PageSize);
+    }
 
-        if (!string.IsNullOrWhiteSpace(specParams.Sort))
+    private void ApplyIncludes()
+    {
+        Includes.Add(mir => mir.Vehicle.VehicleModel.Brand);
+        Includes.Add(mir => mir.Vehicle.VehicleModel.Category);
+        Includes.Add(mir => mir.Mechanic);
+        Includes.Add(mir => mir.MaintenanceCategory);
+        Includes.Add(mir => mir.MaintenanceRequest);
+        Includes.Add(mir => mir.MissingParts);
+        IncludeStrings.Add("ExpectedChangedParts.Part");
+    }
+
+    private void ApplaySort(string? sort)
+    {
+        if (!string.IsNullOrWhiteSpace(sort))
         {
-            switch (specParams.Sort)
+            switch (sort)
             {
                 case "DateAsc":
                     AddOrderBy(mir => mir.Date);
@@ -112,7 +116,5 @@ public class MaintenanceIntialReportSpecification : BaseSpecification<Maintenanc
         {
             AddOrderByDesc(mir => mir.Date);
         }
-
-        AddPaginaiton((specParams.PageIndex - 1) * specParams.PageSize, specParams.PageSize);
     }
 }

@@ -19,4 +19,18 @@ public class MaintenanceRequestSpecParams
     public Status? Status { get; set; }
     public DateTime? Date { get; set; }
     public string? OrderBy { get; set; }
+
+    public MaintenanceRequestSpecParams() { }
+
+    public MaintenanceRequestSpecParams(MaintenanceRequestSpecParamsForMechanic mechanicSpecParams)
+    {
+        PageSize = mechanicSpecParams.PageSize;
+        Date = mechanicSpecParams.Date;
+        Status = mechanicSpecParams.Status;
+        OrderBy = mechanicSpecParams.OrderBy;
+        PageIndex = mechanicSpecParams.PageIndex;
+        VehicleId = mechanicSpecParams.VehicleId;
+        Id = mechanicSpecParams.Id;
+        // MechanicId = mechanicId;
+    }
 }

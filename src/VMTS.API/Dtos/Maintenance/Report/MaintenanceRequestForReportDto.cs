@@ -1,16 +1,15 @@
 using VMTS.Core.Entities.Maintenace;
 
-namespace VMTS.API.Dtos.Maintenance.Request;
+namespace VMTS.API.Dtos.Maintenance.Report;
 
-public class MaintenanceReportDto
+public class MaintenanceRequestForReportDto
 {
     public string Id { get; set; } = default!;
 
     public string Description { get; set; } = default!;
 
-    public decimal Cost { get; set; }
-
     public DateTime Date { get; set; }
 
     public Status Status { get; set; }
 }
+

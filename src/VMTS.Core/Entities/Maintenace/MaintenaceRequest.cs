@@ -24,8 +24,8 @@ public class MaintenaceRequest : BaseEntity
     public string VehicleId { get; set; } = default!;
 
     public MaintenaceCategory MaintenanceCategory { get; set; } = default!;
-
     public string MaintenanceCategoryId { get; set; } = default!;
+
     public MaintenanceInitialReport InitialReport { get; set; } = default!;
     public MaintenanceFinalReport FinalReport { get; set; } = default!;
 
