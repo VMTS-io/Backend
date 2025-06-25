@@ -1,9 +1,7 @@
 using AutoMapper;
 using VMTS.API.Dtos;
-
 using VMTS.API.Dtos.DriverReportsResponse;
 using VMTS.API.Dtos.Maintenance;
-
 using VMTS.API.Dtos.Maintenance.Category;
 using VMTS.API.Dtos.Maintenance.Report;
 using VMTS.API.Dtos.Maintenance.Report.Final;
@@ -29,6 +27,8 @@ public class MappingProfile : Profile
 {
     public MappingProfile()
     {
+        CreateMap<BusinessUser, BusinessUserGetAllResponse>();
+
         CreateMap<TripReport, DriverReportItemDto>()
             .ForMember(dest => dest.ReportType, opt => opt.MapFrom(_ => "Trip"))
             .ForMember(dest => dest.Driver, opt => opt.MapFrom(src => src.Driver))
