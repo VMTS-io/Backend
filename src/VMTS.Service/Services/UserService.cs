@@ -1,27 +1,33 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using VMTS.Core.Entities.Identity;
+using VMTS.Core.Entities.Maintenace;
+using VMTS.Core.Entities.Trip;
 using VMTS.Core.Entities.User_Business;
 using VMTS.Core.Interfaces.Repositories;
 using VMTS.Core.Interfaces.Services;
+using VMTS.Core.Interfaces.UnitOfWork;
+using VMTS.Core.Specifications;
 
 namespace VMTS.Service.Services;
 
 public class UserService : IUserService
 {
     private readonly UserManager<AppUser> _userManager;
-    private readonly RoleManager<AppUser> _roleManager;
-    private readonly IGenericRepository<BusinessUser> _businessUserRepo;
+    private readonly RoleManager<IdentityRole> _roleManager;
+
+    private readonly IUnitOfWork _unitOfWork;
 
     public UserService(
         UserManager<AppUser> userManager,
-        RoleManager<AppUser> roleManager,
-        IGenericRepository<BusinessUser> businessUserRepo
+        RoleManager<IdentityRole> roleManager,
+        IUnitOfWork unitOfWork
     )
     {
         _userManager = userManager;
         _roleManager = roleManager;
-        _businessUserRepo = businessUserRepo;
+
+        _unitOfWork = unitOfWork;
     }
 
     #region create
@@ -54,6 +60,9 @@ public class UserService : IUserService
 
         user.FirstName = firstName;
         user.LastName = lastName;
+        user.NormalizedUserName = user.UserName.ToUpper();
+        user.DisplayName = $"{user.FirstName} {user.LastName}";
+        user.UserName = user.Email.Split('@')[0].ToLower();
         user.PhoneNumber = phoneNumber;
         user.NationalId = nationalId;
         user.DateOfBirth = dateOfBirth;
@@ -75,16 +84,22 @@ public class UserService : IUserService
                 throw new InvalidOperationException("Failed to update user role.");
         }
 
-        var businessUser = await _businessUserRepo.GetByIdAsync(userId);
-        if (businessUser != null)
-        {
-            businessUser.Role = role;
-            _businessUserRepo.Update(businessUser); // Fix: use businessUser, not AppUser
-        }
-
         var updateResult = await _userManager.UpdateAsync(user);
         if (!updateResult.Succeeded)
             throw new InvalidOperationException("Failed to update user.");
+
+        var businessUser = await _unitOfWork.GetRepo<BusinessUser>().GetByIdAsync(userId);
+        if (businessUser != null)
+        {
+            businessUser.DisplayName = $"{user.FirstName} {user.LastName}";
+            businessUser.Email = user.Email;
+            businessUser.PhoneNumber = user.PhoneNumber;
+            businessUser.NormalizedEmail = user.NormalizedEmail;
+            businessUser.Role = role;
+            _unitOfWork.GetRepo<BusinessUser>().Update(businessUser); // Fix: use businessUser, not AppUser
+        }
+
+        await _unitOfWork.SaveChanges();
     }
 
     #endregion
@@ -99,11 +114,65 @@ public class UserService : IUserService
         var result = await _userManager.DeleteAsync(user);
         if (!result.Succeeded)
             throw new InvalidOperationException("Failed to delete user.");
-        var businessUser = await _businessUserRepo.GetByIdAsync(userId);
+        var businessUser = await _unitOfWork.GetRepo<BusinessUser>().GetByIdAsync(userId);
         if (businessUser != null)
         {
-            _businessUserRepo.Delete(businessUser);
+            _unitOfWork.GetRepo<BusinessUser>().Delete(businessUser);
         }
+        await _unitOfWork.SaveChanges();
+    }
+
+    #endregion
+
+    #region Get All
+
+    public async Task<IReadOnlyList<BusinessUser>> GetAllUsersAsync(
+        BusinessUserSpecParams specParams
+    )
+    {
+        var businessUserSpec = new BusinessUserSpecification(specParams);
+        var businessUsers = await _unitOfWork
+            .GetRepo<BusinessUser>()
+            .GetAllWithSpecificationAsync(businessUserSpec);
+
+        var freeBusinessUsers = new List<BusinessUser>();
+
+        if (string.IsNullOrWhiteSpace(specParams.Filter) || specParams.Filter == "FreeDrivers")
+        {
+            foreach (var businessUser in businessUsers)
+            {
+                bool hasConflictingRequest = businessUser.DriverTripRequest.Any(req =>
+                    (
+                        !specParams.TripDate.HasValue
+                        || req.Date.Date == specParams.TripDate.Value.Date
+                    ) && (req.Status == TripStatus.Approved || req.Status == TripStatus.Pending)
+                );
+
+                if (!hasConflictingRequest)
+                    freeBusinessUsers.Add(businessUser);
+            }
+            return freeBusinessUsers;
+        }
+        else if (
+            string.IsNullOrWhiteSpace(specParams.Filter)
+            || specParams.Filter == "FreeMechanics"
+        )
+        {
+            foreach (var businessUser in businessUsers)
+            {
+                var inCompletedRequest = businessUser.MechanicMaintenaceRequests.Where(mr =>
+                    mr.Status != Status.Completed
+                );
+
+                bool hasConflictingRequest = inCompletedRequest.Count() > 5;
+
+                if (!hasConflictingRequest)
+                    freeBusinessUsers.Add(businessUser);
+            }
+
+            return freeBusinessUsers;
+        }
+        return businessUsers;
     }
 
     #endregion
