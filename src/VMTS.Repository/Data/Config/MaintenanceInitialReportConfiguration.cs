@@ -19,20 +19,20 @@ public class MaintenanceInitialReportConfiguration
 
         builder
             .HasOne(mir => mir.Mechanic)
-            .WithMany()
+            .WithMany(u => u.MechanicMaintenaceInitialReports)
             .HasForeignKey(mir => mir.MechanicId)
             .OnDelete(DeleteBehavior.Cascade)
             .IsRequired();
 
         builder
             .HasOne(mir => mir.Vehicle)
-            .WithMany()
+            .WithMany(v => v.MaintenaceInitialReports)
             .HasForeignKey(mir => mir.VehicleId)
             .OnDelete(DeleteBehavior.NoAction);
 
         builder
             .HasOne(mir => mir.MaintenanceRequest)
-            .WithOne()
+            .WithOne(mr => mr.InitialReport)
             .HasForeignKey<MaintenanceInitialReport>(mir => mir.MaintenanceRequestId)
             .OnDelete(DeleteBehavior.Cascade);
 

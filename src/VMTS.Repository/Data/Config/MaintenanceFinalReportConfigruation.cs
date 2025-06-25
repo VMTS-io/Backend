@@ -10,16 +10,9 @@ public class MaintenanceFinalReportConfigruation : IEntityTypeConfiguration<Main
     {
         builder
             .HasOne(mfr => mfr.Mechanic)
-            .WithMany()
+            .WithMany(u => u.MechanicMaintenaceFinalReports)
             .HasForeignKey(mir => mir.MechanicId)
             .OnDelete(DeleteBehavior.Cascade);
-
-        // builder
-        //     .HasOne(mfr => mfr.Manager)
-        //     .WithMany()
-        //     .HasForeignKey(mir => mir.Manager)
-        //     .OnDelete(DeleteBehavior.Cascade);
-
 
         builder
             .HasOne(mfr => mfr.MaintenanceCategory)
@@ -28,24 +21,22 @@ public class MaintenanceFinalReportConfigruation : IEntityTypeConfiguration<Main
 
         builder
             .HasOne(mfr => mfr.Vehicle)
-            .WithMany()
+            .WithMany(v => v.MaintenaceFinalReports)
             .HasForeignKey(mir => mir.VehicleId)
             .OnDelete(DeleteBehavior.Restrict);
 
         builder
             .HasOne(mfr => mfr.InitialReport)
-            .WithMany()
-            .HasForeignKey(mir => mir.InitialReportId)
+            .WithOne()
+            .HasForeignKey<MaintenanceFinalReport>(mir => mir.InitialReportId)
             .OnDelete(DeleteBehavior.Restrict);
 
         builder
             .HasOne(mfr => mfr.MaintenaceRequest)
-            .WithMany()
-            .HasForeignKey(mir => mir.MaintenaceRequestId)
+            .WithOne(mr => mr.FinalReport)
+            .HasForeignKey<MaintenanceFinalReport>(mir => mir.MaintenaceRequestId)
             .OnDelete(DeleteBehavior.Cascade);
 
-        builder.HasOne(mfr => mfr.MaintenanceCategory).WithMany();
-        // builder.HasMany(mfr => mfr.ChangedPartss).WithMany();
         builder.Property(mfr => mfr.TotalCost).HasColumnType("decimal(18,2)");
     }
 }

@@ -20,6 +20,8 @@ public class VehicleSpecParams
 
     public DateTime? TripDate { get; set; }
 
+    public bool? AvailableForTrip { get; set; } = false;
+
     private string? search;
 
     public string? Search
