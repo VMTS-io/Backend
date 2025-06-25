@@ -1,5 +1,4 @@
 using AutoMapper;
-using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
 using VMTS.API.ActionFilters;
 using VMTS.API.Dtos.Vehicles.Category;
@@ -14,17 +13,11 @@ namespace VMTS.API.Controllers;
 public class VehicleCategoryController : BaseApiController
 {
     private readonly IMapper _mapper;
-    private readonly IValidator<VehicleCategoryUpsertDto> _validator;
     private readonly IVehicleCategoryServices _services;
 
-    public VehicleCategoryController(
-        IMapper mapper,
-        IValidator<VehicleCategoryUpsertDto> validator,
-        IVehicleCategoryServices services
-    )
+    public VehicleCategoryController(IMapper mapper, IVehicleCategoryServices services)
     {
         _mapper = mapper;
-        _validator = validator;
         _services = services;
     }
 
