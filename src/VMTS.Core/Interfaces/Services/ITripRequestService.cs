@@ -14,6 +14,7 @@ public interface ITripRequestService
         TripType tripType,
         DateTime date,
         string details,
+        string pickupLocation,
         string destination
     );
 
@@ -22,11 +23,12 @@ public interface ITripRequestService
         string managerId,
         string driverId,
         string vehicleId,
-        string destination,
         string details,
         DateTime date,
         TripType tripType,
-        TripStatus status
+        TripStatus status,
+        string pickupLocation,
+        string destination
     );
 
     Task DeleteTripRequestAsync(string tripId, string managerId);
@@ -35,4 +37,8 @@ public interface ITripRequestService
     Task<IReadOnlyList<TripRequest>> GetAllTripRequestsAsync(TripRequestSpecParams specParams);
 
     Task<IReadOnlyList<TripRequest>> GetAllTripsForUserAsync(TripRequestSpecParams specParams);
+
+    Task UpdateTripRequestStatusAsync(string tripId);
+
+    string GenerateNominatimLink(string address);
 }
