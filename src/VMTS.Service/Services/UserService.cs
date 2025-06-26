@@ -124,61 +124,9 @@ public class UserService : IUserService
 
     #endregion
 
-    #region Get All
 
+    #region  Get All
     public async Task<IReadOnlyList<BusinessUser>> GetAllUsersAsync(
-        BusinessUserSpecParams specParams
-    )
-    {
-        var businessUserSpec = new BusinessUserSpecification(specParams);
-        var businessUsers = await _unitOfWork
-            .GetRepo<BusinessUser>()
-            .GetAllWithSpecificationAsync(businessUserSpec);
-
-        var freeBusinessUsers = new List<BusinessUser>();
-
-        if (string.IsNullOrWhiteSpace(specParams.Filter) || specParams.Filter == "FreeDrivers")
-        {
-            foreach (var businessUser in businessUsers)
-            {
-                bool hasConflictingRequest = businessUser.DriverTripRequest.Any(req =>
-                    (
-                        !specParams.TripDate.HasValue
-                        || req.Date.Date == specParams.TripDate.Value.Date
-                    ) && (req.Status == TripStatus.Approved || req.Status == TripStatus.Pending)
-                );
-
-                if (!hasConflictingRequest)
-                    freeBusinessUsers.Add(businessUser);
-            }
-            return freeBusinessUsers;
-        }
-        else if (
-            string.IsNullOrWhiteSpace(specParams.Filter)
-            || specParams.Filter == "FreeMechanics"
-        )
-        {
-            foreach (var businessUser in businessUsers)
-            {
-                var inCompletedRequest = businessUser.MechanicMaintenaceRequests.Where(mr =>
-                    mr.Status != Status.Completed
-                );
-
-                bool hasConflictingRequest = inCompletedRequest.Count() > 5;
-
-                if (!hasConflictingRequest)
-                    freeBusinessUsers.Add(businessUser);
-            }
-
-            return freeBusinessUsers;
-        }
-        return businessUsers;
-    }
-
-    #endregion
-
-    #region Temp Get All
-    public async Task<IReadOnlyList<BusinessUser>> GetAllUsersAsyncTemp(
         BusinessUserSpecParams specParams
     )
     {
