@@ -105,13 +105,15 @@ namespace VMTS.Repository.Data.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("DestinationLatitude")
+                    b.Property<double>("DestinationLatitude")
+                        .HasColumnType("float");
+
+                    b.Property<string>("DestinationLocationNominatimLink")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("DestinationLongitude")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<double>("DestinationLongitude")
+                        .HasColumnType("float");
 
                     b.Property<string>("Details")
                         .IsRequired()
@@ -129,11 +131,13 @@ namespace VMTS.Repository.Data.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("PickupLocationLatitude")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<double>("PickupLocationLatitude")
+                        .HasColumnType("float");
 
-                    b.Property<string>("PickupLocationLongitude")
+                    b.Property<double>("PickupLocationLongitude")
+                        .HasColumnType("float");
+
+                    b.Property<string>("PickupLocationNominatimLink")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 

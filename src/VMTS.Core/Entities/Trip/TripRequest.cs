@@ -30,12 +30,16 @@ public class TripRequest : BaseEntity
     public string Details { get; set; }
 
     public string PickupLocation { get; set; }
-    public string PickupLocationLatitude { get; set; }
-    public string PickupLocationLongitude { get; set; }
+
+    public string PickupLocationNominatimLink { get; set; }
+    public double PickupLocationLatitude { get; set; }
+    public double PickupLocationLongitude { get; set; }
 
     public string Destination { get; set; }
-    public string DestinationLatitude { get; set; }
-    public string DestinationLongitude { get; set; }
+
+    public string DestinationLocationNominatimLink { get; set; }
+    public double DestinationLatitude { get; set; }
+    public double DestinationLongitude { get; set; }
     public DateTime Date { get; set; }
     public TripStatus Status { get; set; }
 
