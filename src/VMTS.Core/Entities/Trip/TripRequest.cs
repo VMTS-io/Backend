@@ -28,7 +28,14 @@ public class TripRequest : BaseEntity
 
     public TripType Type { get; set; }
     public string Details { get; set; }
+
+    public string PickupLocation { get; set; }
+    public string PickupLocationLatitude { get; set; }
+    public string PickupLocationLongitude { get; set; }
+
     public string Destination { get; set; }
+    public string DestinationLatitude { get; set; }
+    public string DestinationLongitude { get; set; }
     public DateTime Date { get; set; }
     public TripStatus Status { get; set; }
 
