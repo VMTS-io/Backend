@@ -1,3 +1,4 @@
+using System.Linq.Expressions;
 using VMTS.Core.Entities.Maintenace;
 using VMTS.Core.Entities.User_Business;
 
@@ -41,6 +42,11 @@ public class BusinessUserSpecification : BaseSpecification<BusinessUser>
             }
         }
     }
+
+    public BusinessUserSpecification() { }
+
+    public BusinessUserSpecification(Expression<Func<BusinessUser, bool>> criteria)
+        : base(criteria) { }
 
     private void ApplyMechanicIncludes()
     {

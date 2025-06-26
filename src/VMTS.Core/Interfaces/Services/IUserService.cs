@@ -25,4 +25,5 @@ public interface IUserService
     Task DeleteUserAsync(string userId);
 
     Task<IReadOnlyList<BusinessUser>> GetAllUsersAsync(BusinessUserSpecParams specParams);
+    Task<IReadOnlyList<BusinessUser>> GetAllUsersAsyncTemp(BusinessUserSpecParams specParams);
 }

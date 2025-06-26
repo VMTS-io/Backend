@@ -124,7 +124,7 @@ public class UserController : BaseApiController
         [FromQuery] BusinessUserSpecParams specParams
     )
     {
-        var users = await _userService.GetAllUsersAsync(specParams);
+        var users = await _userService.GetAllUsersAsyncTemp(specParams);
 
         var userResponses = _mapper.Map<IReadOnlyList<BusinessUserGetAllResponse>>(users);
 
