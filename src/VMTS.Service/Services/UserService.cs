@@ -177,6 +177,16 @@ public class UserService : IUserService
 
     #endregion
 
+    #region Temp Get All
+    public async Task<IReadOnlyList<BusinessUser>> GetAllUsersAsyncTemp(
+        BusinessUserSpecParams specParams
+    )
+    {
+        var spec = new BusinessUserSpecificationForDropDownList(specParams);
+        return await _unitOfWork.GetRepo<BusinessUser>().GetAllWithSpecificationAsync(spec);
+    }
+    #endregion
+
     #region Get All Users based on role
 
     public async Task<IReadOnlyList<AppUser>> GetUsersByRoleAsync(string roleName)
