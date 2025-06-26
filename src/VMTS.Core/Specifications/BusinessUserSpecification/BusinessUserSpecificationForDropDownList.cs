@@ -18,7 +18,7 @@ public class BusinessUserSpecificationForDropDownList : BaseSpecification<Busine
     {
         ApplySorting(specParams);
         ApplyPagination(specParams);
-        ApplyIncludes(specParams);
+        // ApplyIncludes(specParams);
     }
 
     private static Expression<Func<BusinessUser, bool>> BuildCriteria(
