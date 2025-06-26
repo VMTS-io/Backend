@@ -9,8 +9,6 @@ public class TripRequestResponse
 
     public string Details { get; set; }
 
-    public string Destination { get; set; }
-
     public TripType TripType { get; set; }
 
     public DateTime Date { get; set; }
@@ -20,4 +18,10 @@ public class TripRequestResponse
     public VehicleDto Vehicle { get; set; }
 
     public TripStatus Status { get; set; }
+
+    public string PickupLocation { get; set; }
+    public string PickupLocationNominatimLink { get; set; }
+
+    public string Destination { get; set; }
+    public string DestinationLocationNominatimLink { get; set; }
 }
