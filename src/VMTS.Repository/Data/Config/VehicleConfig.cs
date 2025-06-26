@@ -29,10 +29,28 @@ public class VehicleConfig : IEntityTypeConfiguration<Vehicle>
             .OnDelete(DeleteBehavior.Restrict);
 
         builder
+            .HasMany(v => v.FaultReports)
+            .WithOne(t => t.Vehicle)
+            .HasForeignKey(fr => fr.VehicleId)
+            .IsRequired();
+
+        builder
             .HasMany(v => v.MaintenaceRequests)
             .WithOne(r => r.Vehicle)
             .HasForeignKey(M => M.VehicleId)
             .IsRequired()
+            .OnDelete(DeleteBehavior.Restrict);
+
+        builder
+            .HasMany(v => v.MaintenanceTrackings)
+            .WithOne(m => m.Vehicle)
+            .HasForeignKey(m => m.VehicleId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        builder
+            .HasMany(v => v.MaintenanceFinalReportParts)
+            .WithOne(m => m.Vehicle)
+            .HasForeignKey(m => m.VehicleId)
             .OnDelete(DeleteBehavior.Restrict);
     }
 }
