@@ -15,7 +15,7 @@ public class VehicleFilterationCount : BaseSpecification<Vehicle>
                 || v.VehicleModel.CategoryId == specParams.CategoryId
             )
             && (!specParams.Status.HasValue || v.Status == specParams.Status)
-            && (!specParams.MaxKMDriven.HasValue || v.KMDriven <= specParams.MaxKMDriven)
+            && (!specParams.MaxKMDriven.HasValue || v.CurrentOdometerKM <= specParams.MaxKMDriven)
             && (specParams.MaxJoindYear.HasValue || v.JoinedYear <= specParams.MaxJoindYear)
             && (
                 string.IsNullOrEmpty(specParams.Search)
