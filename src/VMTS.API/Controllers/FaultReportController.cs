@@ -11,6 +11,7 @@ using VMTS.Core.Specifications.FaultReportSepcification;
 
 namespace VMTS.API.Controllers;
 
+[Route("api/Trip/Report/Fault")]
 public class FaultReportController : BaseApiController
 {
     private readonly IFaultReportService _ireportService;
