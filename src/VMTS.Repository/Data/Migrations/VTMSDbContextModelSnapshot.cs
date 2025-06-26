@@ -343,31 +343,6 @@ namespace VMTS.Repository.Data.Migrations
                     b.ToTable("MaintenanceRequests");
                 });
 
-            modelBuilder.Entity("VMTS.Core.Entities.Maintenace.MaintenaceTracking", b =>
-                {
-                    b.Property<string>("Id")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<int>("Count")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("LastTimeMaintained")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("MaintenanceType")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("NextMaintainDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime>("PreviousMaintainDate")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("MaintenanceTrackings");
-                });
-
             modelBuilder.Entity("VMTS.Core.Entities.Maintenace.MaintenanceFinalReport", b =>
                 {
                     b.Property<string>("Id")
@@ -425,6 +400,12 @@ namespace VMTS.Repository.Data.Migrations
                     b.Property<string>("Id")
                         .HasColumnType("nvarchar(450)");
 
+                    b.Property<DateTime>("ChangedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("KMAtChange")
+                        .HasColumnType("int");
+
                     b.Property<string>("MaintnenanceFinalReportId")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
@@ -436,11 +417,17 @@ namespace VMTS.Repository.Data.Migrations
                     b.Property<int>("Quantity")
                         .HasColumnType("int");
 
+                    b.Property<string>("VehicleId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
                     b.HasKey("Id");
 
                     b.HasIndex("MaintnenanceFinalReportId");
 
                     b.HasIndex("PartId");
+
+                    b.HasIndex("VehicleId");
 
                     b.ToTable("MaintenanceFinalReportParts");
                 });
@@ -518,6 +505,46 @@ namespace VMTS.Repository.Data.Migrations
                     b.ToTable("MaintenanceInitialReportParts");
                 });
 
+            modelBuilder.Entity("VMTS.Core.Entities.Maintenace.MaintenanceTracking", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<bool>("IsAlmostDue")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsDue")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("KMAtLastChange")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("LastChangedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("NextChangeDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("NextChangeKM")
+                        .HasColumnType("int");
+
+                    b.Property<string>("PartId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("VehicleId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PartId");
+
+                    b.HasIndex("VehicleId");
+
+                    b.ToTable("MaintenanceTrackings");
+                });
+
             modelBuilder.Entity("VMTS.Core.Entities.Parts.Part", b =>
                 {
                     b.Property<string>("Id")
@@ -525,6 +552,12 @@ namespace VMTS.Repository.Data.Migrations
 
                     b.Property<decimal>("Cost")
                         .HasColumnType("decimal(18,2)");
+
+                    b.Property<int?>("LifeSpanDays")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("LifeSpanKM")
+                        .HasColumnType("int");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -657,14 +690,14 @@ namespace VMTS.Repository.Data.Migrations
                     b.Property<string>("Id")
                         .HasColumnType("nvarchar(450)");
 
+                    b.Property<int>("CurrentOdometerKM")
+                        .HasColumnType("int");
+
                     b.Property<int>("FuelType")
                         .HasColumnType("int");
 
                     b.Property<DateOnly>("JoinedYear")
                         .HasColumnType("date");
-
-                    b.Property<int>("KMDriven")
-                        .HasColumnType("int");
 
                     b.Property<DateTime?>("LastAssignedDate")
                         .HasColumnType("datetime2");
@@ -752,7 +785,7 @@ namespace VMTS.Repository.Data.Migrations
                         .IsRequired();
 
                     b.HasOne("VMTS.Core.Entities.Vehicle_Aggregate.Vehicle", "Vehicle")
-                        .WithMany()
+                        .WithMany("FaultReports")
                         .HasForeignKey("VehicleId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -905,9 +938,17 @@ namespace VMTS.Repository.Data.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("VMTS.Core.Entities.Vehicle_Aggregate.Vehicle", "Vehicle")
+                        .WithMany("MaintenanceFinalReportParts")
+                        .HasForeignKey("VehicleId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
                     b.Navigation("FinalReport");
 
                     b.Navigation("Part");
+
+                    b.Navigation("Vehicle");
                 });
 
             modelBuilder.Entity("VMTS.Core.Entities.Maintenace.MaintenanceInitialReport", b =>
@@ -962,6 +1003,25 @@ namespace VMTS.Repository.Data.Migrations
                     b.Navigation("InitialReport");
 
                     b.Navigation("Part");
+                });
+
+            modelBuilder.Entity("VMTS.Core.Entities.Maintenace.MaintenanceTracking", b =>
+                {
+                    b.HasOne("VMTS.Core.Entities.Parts.Part", "Part")
+                        .WithMany("MaintenancePartTrackings")
+                        .HasForeignKey("PartId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("VMTS.Core.Entities.Vehicle_Aggregate.Vehicle", "Vehicle")
+                        .WithMany("MaintenanceTrackings")
+                        .HasForeignKey("VehicleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Part");
+
+                    b.Navigation("Vehicle");
                 });
 
             modelBuilder.Entity("VMTS.Core.Entities.Trip.TripReport", b =>
@@ -1053,6 +1113,11 @@ namespace VMTS.Repository.Data.Migrations
                     b.Navigation("ExpectedChangedParts");
                 });
 
+            modelBuilder.Entity("VMTS.Core.Entities.Parts.Part", b =>
+                {
+                    b.Navigation("MaintenancePartTrackings");
+                });
+
             modelBuilder.Entity("VMTS.Core.Entities.User_Business.BusinessUser", b =>
                 {
                     b.Navigation("DriverFaultReport");
@@ -1079,11 +1144,17 @@ namespace VMTS.Repository.Data.Migrations
 
             modelBuilder.Entity("VMTS.Core.Entities.Vehicle_Aggregate.Vehicle", b =>
                 {
+                    b.Navigation("FaultReports");
+
                     b.Navigation("MaintenaceFinalReports");
 
                     b.Navigation("MaintenaceInitialReports");
 
                     b.Navigation("MaintenaceRequests");
+
+                    b.Navigation("MaintenanceFinalReportParts");
+
+                    b.Navigation("MaintenanceTrackings");
 
                     b.Navigation("TripReports");
 
