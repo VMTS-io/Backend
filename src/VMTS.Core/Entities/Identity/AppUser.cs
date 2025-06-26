@@ -15,4 +15,8 @@ public class AppUser : IdentityUser
 
     public string PictureUrl { get; set; } = default!;
     public bool MustChangePassword { get; set; } = true;
+
+    public string RoleId { get; set; } = default!; // ✅ FK
+
+    public AppRole Role { get; set; } = default!; // ✅ Navigation
 }
