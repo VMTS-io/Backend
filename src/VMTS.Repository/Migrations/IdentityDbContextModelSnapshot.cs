@@ -199,6 +199,9 @@ namespace VMTS.Repository.Migrations
                     b.Property<int>("AccessFailedCount")
                         .HasColumnType("int");
 
+                    b.Property<string>("AppRoleId")
+                        .HasColumnType("nvarchar(450)");
+
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
                         .HasColumnType("nvarchar(max)");
@@ -259,10 +262,6 @@ namespace VMTS.Repository.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("RoleId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("nvarchar(max)");
 
@@ -275,6 +274,8 @@ namespace VMTS.Repository.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("AppRoleId");
+
                     b.HasIndex("NormalizedEmail")
                         .HasDatabaseName("EmailIndex");
 
@@ -282,8 +283,6 @@ namespace VMTS.Repository.Migrations
                         .IsUnique()
                         .HasDatabaseName("UserNameIndex")
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
-
-                    b.HasIndex("RoleId");
 
                     b.HasIndex("UserName");
 
@@ -352,13 +351,9 @@ namespace VMTS.Repository.Migrations
 
             modelBuilder.Entity("VMTS.Core.Entities.Identity.AppUser", b =>
                 {
-                    b.HasOne("VMTS.Core.Entities.Identity.AppRole", "Role")
+                    b.HasOne("VMTS.Core.Entities.Identity.AppRole", null)
                         .WithMany("Users")
-                        .HasForeignKey("RoleId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("Role");
+                        .HasForeignKey("AppRoleId");
                 });
 
             modelBuilder.Entity("VMTS.Core.Entities.Identity.AppRole", b =>
