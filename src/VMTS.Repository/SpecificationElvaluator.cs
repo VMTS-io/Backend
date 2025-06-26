@@ -29,7 +29,6 @@ public static class SpecificationElvaluator<T>
             query,
             (currentQuery, Expression) => currentQuery.Include(Expression)
         );
-        query = query.AsSplitQuery();
 
         if (specs.IsPaginaitonEnabled)
             query = query.Skip(specs.Skip).Take(specs.Take);
