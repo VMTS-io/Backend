@@ -49,7 +49,7 @@ public class BusinessUserSpecificationForDropDownList : BaseSpecification<Busine
             // 👇 Mechanic Filter
             && (
                 (!string.IsNullOrEmpty(specParams.Filter) && specParams.Filter != "FreeMechanics")
-                || u.MechanicMaintenaceRequests.Count(mr => mr.Status != Status.Completed) <=5 
+                || u.MechanicMaintenaceRequests.Count(mr => mr.Status != Status.Completed) <= 5
             );
     }
 
@@ -63,12 +63,12 @@ public class BusinessUserSpecificationForDropDownList : BaseSpecification<Busine
                     Includes.Add(bs => bs.DriverTripRequest);
                     break;
 
-                case "mechanic":
-                    Includes.Add(bs =>
-                        bs.MechanicMaintenaceRequests
-                    // .Where(mr => mr.Status != Status.Completed)
-                    );
-                    break;
+                // case "mechanic":
+                //     Includes.Add(bs =>
+                //         bs.MechanicMaintenaceRequests
+                //     // .Where(mr => mr.Status != Status.Completed)
+                //     );
+                //     break;
 
                 case "manager":
                     Includes.Add(bs => bs.ManagerTripRequest);

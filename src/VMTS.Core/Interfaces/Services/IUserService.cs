@@ -26,4 +26,5 @@ public interface IUserService
 
     Task<IReadOnlyList<BusinessUser>> GetAllUsersAsync(BusinessUserSpecParams specParams);
     Task<IReadOnlyList<BusinessUser>> GetAllUsersAsyncTemp(BusinessUserSpecParams specParams);
+    Task<IReadOnlyList<AppUser>> GetUsersByRoleAsync(string roleName);
 }

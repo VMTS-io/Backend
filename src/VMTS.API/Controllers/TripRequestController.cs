@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using VMTS.API.Dtos;
 using VMTS.API.Dtos.Trip;
 using VMTS.API.Errors;
+using VMTS.Core.Entities.Trip;
 using VMTS.Core.Helpers;
 using VMTS.Core.ServicesContract;
 using VMTS.Core.Specifications.TripRequestSpecification;
@@ -51,6 +52,7 @@ public class TripRequestController : BaseApiController
             request.TripType,
             request.Date,
             request.Details,
+            request.PickupLocation,
             request.Destination
         );
 
@@ -80,11 +82,12 @@ public class TripRequestController : BaseApiController
             managerId,
             request.DriverId,
             request.VehicleId,
-            request.Destination,
             request.Details,
             request.Date,
             request.TripType,
-            request.Status
+            request.Status,
+            request.PickupLocation,
+            request.Destination
         );
 
         return NoContent();
@@ -172,6 +175,17 @@ public class TripRequestController : BaseApiController
         var mapped = _mapper.Map<List<TripRequestResponse>>(trips);
 
         return Ok(new TripRequestListResponse { StatusCode = status, TripRequests = mapped });
+    }
+
+    #endregion
+
+    #region update status
+
+    [HttpPatch("{id}")]
+    public async Task<ActionResult> UpdateStatus([FromRoute] string id)
+    {
+        await _requestService.UpdateTripRequestStatusAsync(id);
+        return NoContent();
     }
 
     #endregion

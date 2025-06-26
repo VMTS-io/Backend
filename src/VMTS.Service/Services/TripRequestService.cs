@@ -36,6 +36,7 @@ public class TripRequestService : ITripRequestService
         TripType tripType,
         DateTime date,
         string details,
+        string pickupLocation,
         string destination
     )
     {
@@ -109,13 +110,16 @@ public class TripRequestService : ITripRequestService
         {
             Id = Guid.NewGuid().ToString(),
             Type = tripType,
-            Destination = destination,
             Details = details,
             Date = date,
             Status = TripStatus.Pending,
             DriverId = driverId,
             ManagerId = managerId,
             VehicleId = vehicleId,
+            PickupLocation = pickupLocation,
+            PickupLocationNominatimLink = GenerateNominatimLink(pickupLocation),
+            Destination = destination,
+            DestinationLocationNominatimLink = GenerateNominatimLink(destination),
         };
 
         await _unitOfWork.GetRepo<TripRequest>().CreateAsync(tripRequest);
@@ -144,11 +148,12 @@ public class TripRequestService : ITripRequestService
         string managerId,
         string driverId,
         string vehicleId,
-        string destination,
         string details,
         DateTime date,
         TripType tripType,
-        TripStatus status
+        TripStatus status,
+        string pickupLocation,
+        string destination
     )
     {
         var trip = await _unitOfWork.GetRepo<TripRequest>().GetByIdAsync(tripId);
@@ -159,13 +164,23 @@ public class TripRequestService : ITripRequestService
             throw new ForbbidenException("you are not authorized to update this trip request.");
 
         trip.Date = date;
-        trip.Destination = destination;
         trip.Details = details;
         trip.DriverId = driverId;
         trip.VehicleId = vehicleId;
         trip.Type = tripType;
         trip.Status = status;
+        if (trip.PickupLocation != pickupLocation)
+        {
+            trip.PickupLocation = pickupLocation;
+            trip.PickupLocationNominatimLink = GenerateNominatimLink(pickupLocation);
+        }
 
+        if (trip.Destination != destination)
+        {
+            trip.Destination = destination;
+            trip.DestinationLocationNominatimLink = GenerateNominatimLink(destination);
+        }
+        trip.Destination = destination;
         _unitOfWork.GetRepo<TripRequest>().Update(trip);
         await _unitOfWork.SaveChanges();
     }
@@ -222,6 +237,36 @@ public class TripRequestService : ITripRequestService
         var spec = new TripRequestIncludesSpecification(specParams);
         var trips = await _unitOfWork.GetRepo<TripRequest>().GetAllWithSpecificationAsync(spec);
         return trips;
+    }
+
+    #endregion
+
+    #region update status
+
+    public async Task UpdateTripRequestStatusAsync(string tripId)
+    {
+        var tripRequest = await _unitOfWork.GetRepo<TripRequest>().GetByIdAsync(tripId);
+        if (tripRequest is null)
+            throw new NotFoundException("Trip Request Not Found");
+
+        if (tripRequest.Date.Date != DateTime.UtcNow.Date)
+            throw new InvalidOperationException("trip has not started yet");
+
+        if (tripRequest.Status == TripStatus.Pending)
+            tripRequest.Status = TripStatus.Approved;
+
+        _unitOfWork.GetRepo<TripRequest>().Update(tripRequest);
+        await _unitOfWork.SaveChanges();
+    }
+
+    #endregion
+
+    #region NominatimLink
+
+    public string GenerateNominatimLink(string address)
+    {
+        var encoded = address;
+        return $"https://nominatim.openstreetmap.org/search?q={encoded}&format=json&polygon_geojson=1&addressdetails=1";
     }
 
     #endregion

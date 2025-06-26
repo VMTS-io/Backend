@@ -133,83 +133,35 @@ public class UserController : BaseApiController
 
     #endregion
 
-    #region GetAllManagers
-
-    [HttpGet("managers")]
-    [Authorize(Roles = Roles.Admin)]
-    [ProducesResponseType(typeof(IReadOnlyList<UserResponse>), StatusCodes.Status200OK)]
-    public async Task<ActionResult<IReadOnlyList<UserResponse>>> GetManagers()
+    #region Get All Users Based On Role
+    [Authorize(Roles = $"{Roles.Admin},{Roles.Manager}")]
+    [HttpGet("all/{role}")]
+    public async Task<IReadOnlyList<UserResponse>> GetAllUsersByRole(string role)
     {
-        var users = await _userManager.Users.Include(u => u.Address).ToListAsync();
-        var managers = new List<UserResponse>();
+        var users = await _userService.GetUsersByRoleAsync(role);
 
-        foreach (var user in users)
-        {
-            var roles = await _userManager.GetRolesAsync(user);
-            if (roles.Contains("Manager"))
+        return users
+            .Select(u => new UserResponse
             {
-                var mappedUser = _mapper.Map<UserResponse>(user);
-                mappedUser.Role = roles.FirstOrDefault();
-                managers.Add(mappedUser);
-            }
-        }
-
-        return Ok(managers);
-    }
-
-    #endregion
-
-    #region Get All Drivers
-
-    [HttpGet("drivers")]
-    [Authorize(Roles = $"{Roles.Driver},{Roles.Manager}")]
-    [ProducesResponseType(typeof(IReadOnlyList<UserResponse>), StatusCodes.Status200OK)]
-    public async Task<ActionResult<IReadOnlyList<UserResponse>>> GetDrivers()
-    {
-        var users = await _userManager.Users.Include(u => u.Address).ToListAsync();
-        var drivers = new List<UserResponse>();
-
-        foreach (var user in users)
-        {
-            var roles = await _userManager.GetRolesAsync(user);
-            if (roles.Contains("Driver"))
-            {
-                var mappedUser = _mapper.Map<UserResponse>(user);
-                mappedUser.Role = roles.FirstOrDefault();
-                drivers.Add(mappedUser);
-            }
-        }
-
-        return Ok(drivers);
-    }
-
-    #endregion
-
-    #region Get All Mechanics
-
-    [HttpGet("mechanics")]
-    [Authorize(
-        AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme,
-        Roles = $"{Roles.Driver},{Roles.Manager}"
-    )]
-    [ProducesResponseType(typeof(IReadOnlyList<UserResponse>), StatusCodes.Status200OK)]
-    public async Task<ActionResult<IReadOnlyList<UserResponse>>> GetMechanics()
-    {
-        var users = await _userManager.Users.Include(u => u.Address).ToListAsync();
-        var mechanics = new List<UserResponse>();
-
-        foreach (var user in users)
-        {
-            var roles = await _userManager.GetRolesAsync(user);
-            if (roles.Contains("Mechanic"))
-            {
-                var mappedUser = _mapper.Map<UserResponse>(user);
-                mappedUser.Role = roles.FirstOrDefault();
-                mechanics.Add(mappedUser);
-            }
-        }
-
-        return Ok(mechanics);
+                Id = u.Id,
+                FirstName = u.FirstName,
+                LastName = u.LastName,
+                DisplayName = u.DisplayName,
+                Email = u.Email,
+                UserName = u.UserName,
+                DateOfBirth = u.DateOfBirth,
+                NationalId = u.NationalId,
+                PhoneNumber = u.PhoneNumber,
+                Role = role,
+                Address = new AddressDto
+                {
+                    Street = u.Address?.Street,
+                    Area = u.Address?.Area,
+                    Governorate = u.Address?.Governorate,
+                    Country = u.Address?.Country,
+                },
+            })
+            .ToList();
     }
 
     #endregion
