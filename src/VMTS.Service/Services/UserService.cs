@@ -176,4 +176,21 @@ public class UserService : IUserService
     }
 
     #endregion
+
+    #region Get All Users based on role
+
+    public async Task<IReadOnlyList<AppUser>> GetUsersByRoleAsync(string roleName)
+    {
+        // Get user IDs in the role
+        var usersInRole = await _userManager.GetUsersInRoleAsync(roleName);
+        var userIds = usersInRole.Select(u => u.Id).ToList();
+
+        // Load all users with Address in one query
+        return await _userManager
+            .Users.Where(u => userIds.Contains(u.Id))
+            .Include(u => u.Address)
+            .ToListAsync();
+    }
+
+    #endregion
 }
