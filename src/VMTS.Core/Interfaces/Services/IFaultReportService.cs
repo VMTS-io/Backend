@@ -38,4 +38,6 @@ public interface IFaultReportService
         int fuelRefile
     );
     Task DeleteFaultReportAsync(string reportId, string managerId);
+
+    Task UpdateMarkAsSeen(string faultReportId);
 }
