@@ -418,7 +418,6 @@ namespace VMTS.Repository.Data.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("VehicleId")
-                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
@@ -941,8 +940,7 @@ namespace VMTS.Repository.Data.Migrations
                     b.HasOne("VMTS.Core.Entities.Vehicle_Aggregate.Vehicle", "Vehicle")
                         .WithMany("MaintenanceFinalReportParts")
                         .HasForeignKey("VehicleId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.Navigation("FinalReport");
 
