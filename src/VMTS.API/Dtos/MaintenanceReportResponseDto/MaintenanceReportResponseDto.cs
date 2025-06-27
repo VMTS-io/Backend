@@ -41,4 +41,6 @@ public class MaintenanceReportResponseDto
 
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public string? InitialReportSummary { get; set; }
+
+    public bool Seen { get; set; }
 }

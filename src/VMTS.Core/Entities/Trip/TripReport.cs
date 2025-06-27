@@ -38,6 +38,8 @@ public class TripReport : BaseEntity
 
     public TripReportStatus Status { get; set; } = TripReportStatus.Reported;
 
+    public bool Seen { get; set; } = false;
+
     // FKs
     public string TripId { get; set; }
     public string VehicleId { get; set; }

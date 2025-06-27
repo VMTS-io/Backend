@@ -26,4 +26,6 @@ public interface ITripReportService
     Task<TripReport> GetTripReportByIdAsync(string id);
 
     Task<IReadOnlyList<TripReport>> GetAllTripReportsForUserAsync(TripReportSpecParams specParams);
+
+    Task UpdateMarkAsSeen(string tripReportId);
 }

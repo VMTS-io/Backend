@@ -91,4 +91,16 @@ public class MaintenanceInitialReportController : BaseApiController
         return Ok(response);
     }
     #endregion
+
+    #region seen
+
+    [HttpPatch("{id}/mark-as-seen")]
+    public async Task<ActionResult> MarkAsSeen(string id)
+    {
+        await _service.UpdateMarkAsSeen(id);
+        var status = HttpContext.Response.StatusCode;
+        return Ok(new { StatusCode = status });
+    }
+
+    #endregion
 }

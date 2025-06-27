@@ -185,7 +185,9 @@ public class TripRequestController : BaseApiController
     public async Task<ActionResult> UpdateStatus([FromRoute] string id)
     {
         await _requestService.UpdateTripRequestStatusAsync(id);
-        return NoContent();
+        var status = HttpContext.Response.StatusCode;
+        return Ok(new { StatusCode = status });
+        ;
     }
 
     #endregion
