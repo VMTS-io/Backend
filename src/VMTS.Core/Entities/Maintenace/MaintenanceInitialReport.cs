@@ -32,4 +32,6 @@ public class MaintenanceInitialReport : BaseEntity
 
     public MaintenaceRequest MaintenanceRequest { get; set; } = default!;
     public string MaintenanceRequestId { get; set; } = default!;
+
+    public bool Seen { get; set; } = false;
 }

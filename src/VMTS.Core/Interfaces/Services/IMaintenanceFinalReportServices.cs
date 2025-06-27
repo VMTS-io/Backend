@@ -16,4 +16,6 @@ public interface IMaintenanceFinalReportServices
     );
     Task<MaintenanceFinalReport> GetFinalReportByIdAsync(string id);
     Task DeleteFinalReportAsync(string id);
+
+    Task UpdateMarkAsSeen(string finalReportId);
 }

@@ -58,6 +58,7 @@ public class MaintenanceReportController : BaseApiController
                 ExpectedChangedParts = ir
                     .ExpectedChangedParts.Select(ecp => ecp.Part.Name)
                     .ToList(),
+                Seen = ir.Seen,
             })
             .ToList();
 
@@ -83,6 +84,8 @@ public class MaintenanceReportController : BaseApiController
 
                 // Optional: include summary from Initial Report if available
                 InitialReportSummary = fr.InitialReport?.Notes,
+
+                Seen = fr.Seen,
             })
             .ToList();
 

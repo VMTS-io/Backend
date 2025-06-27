@@ -16,4 +16,6 @@ public interface IMaintenanceInitialReportServices
     );
     Task<MaintenanceInitialReport> GetInitialReportByIdAsync(string id);
     Task DeleteInitialReportAsync(string id);
+
+    Task UpdateMarkAsSeen(string initialReportId);
 }

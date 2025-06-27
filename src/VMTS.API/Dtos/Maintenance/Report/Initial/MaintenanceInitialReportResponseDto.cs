@@ -17,4 +17,6 @@ public class MaintenanceInitialReportResponseDto
     public string MaintenanceCategory { get; set; } = default!;
     public List<string> MissingParts { get; set; } = [];
     public List<string> ExpectedChangedParts { get; set; } = [];
+
+    public bool Seen { get; set; }
 }
