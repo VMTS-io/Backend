@@ -42,7 +42,7 @@ public class MaintenanceInitialReportServices : IMaintenanceInitialReportService
 
         if (validatedReport.MissingParts is null || validatedReport.MissingParts.Count == 0)
         {
-            validatedReport.MaintenanceRequest.Status = Status.InProgress;
+            validatedReport.MaintenanceRequest.Status = MaintenanceStatus.InProgress;
             _requestRepo.Update(validatedReport.MaintenanceRequest);
         }
         await _reportRepo.CreateAsync(validatedReport);
