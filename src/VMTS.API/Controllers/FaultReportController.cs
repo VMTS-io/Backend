@@ -182,4 +182,16 @@ public class FaultReportController : BaseApiController
     }
 
     #endregion
+
+    #region seen
+
+    [HttpPatch("Report/Fault/{id}/mark-as-seen")]
+    public async Task<ActionResult> MarkAsSeen(string id)
+    {
+        await _ireportService.UpdateMarkAsSeen(id);
+        var status = HttpContext.Response.StatusCode;
+        return Ok(new { StatusCode = status });
+    }
+
+    #endregion
 }

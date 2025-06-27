@@ -17,4 +17,6 @@ public class MaintenanceFinalReportResponseDto
 
     public string MaintenanceCategory { get; set; } = default!;
     public List<string> ChangedParts { get; set; } = [];
+
+    public bool Seen { get; set; }
 }

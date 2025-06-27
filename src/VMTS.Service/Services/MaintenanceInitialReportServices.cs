@@ -264,4 +264,19 @@ public class MaintenanceInitialReportServices : IMaintenanceInitialReportService
         existing.MissingParts = outOfStockParts;
     }
     #endregion
+
+    #region mark as seen
+
+    public async Task UpdateMarkAsSeen(string initialReportId)
+    {
+        var initialReport = await _unitOfWork.GetRepo<FaultReport>().GetByIdAsync(initialReportId);
+        if (initialReport is null)
+            throw new NotFoundException("Fault Report Not Found");
+        if (initialReport.Seen == false)
+            initialReport.Seen = true;
+
+        await _unitOfWork.SaveChanges();
+    }
+
+    #endregion
 }

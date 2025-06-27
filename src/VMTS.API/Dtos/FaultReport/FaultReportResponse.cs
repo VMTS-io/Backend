@@ -17,4 +17,6 @@ public class FaultReportResponse
     public decimal Cost { get; set; }
     public int FuelRefile { get; set; }
     public DateTime CreatedAt { get; set; }
+
+    public bool Seen { get; set; }
 }

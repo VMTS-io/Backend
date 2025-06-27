@@ -226,22 +226,18 @@ public class FaultReportService : IFaultReportService
 
     #endregion
 
-    /// #region Get All For Vehicle
-    ///
-    /// public async Task<IReadOnlyList<FaultReport>> GetAllFaultReportsForVehicleAsync(
-    ///     string vehicleId,
-    ///     FaultReportSpecParams specParams
-    /// )
-    /// {
-    ///     var vehicle = _unitOfWork.GetRepo<Vehicle>().GetByIdAsync(vehicleId);
-    ///     if (vehicle == null)
-    ///         throw new ArgumentException("Vehicle not found.");
-    ///     var specs = new FaultReportIncludesSpecification(vehicleId, specParams);
-    ///     var vehicleReports = await _unitOfWork
-    ///         .GetRepo<FaultReport>()
-    ///         .GetAllWithSpecificationAsync(specs);
-    ///     return vehicleReports;
-    /// }
-    ///
-    // /#endregion
+    #region mark as seen
+
+    public async Task UpdateMarkAsSeen(string faultReportId)
+    {
+        var faultReport = await _unitOfWork.GetRepo<FaultReport>().GetByIdAsync(faultReportId);
+        if (faultReport is null)
+            throw new NotFoundException("Fault Report Not Found");
+        if (faultReport.Seen == false)
+            faultReport.Seen = true;
+
+        await _unitOfWork.SaveChanges();
+    }
+
+    #endregion
 }
