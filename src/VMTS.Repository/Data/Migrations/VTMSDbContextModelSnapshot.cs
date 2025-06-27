@@ -55,6 +55,9 @@ namespace VMTS.Repository.Data.Migrations
                     b.Property<DateTime>("ReportedAt")
                         .HasColumnType("datetime2");
 
+                    b.Property<bool>("Seen")
+                        .HasColumnType("bit");
+
                     b.Property<int>("Status")
                         .HasColumnType("int");
 
@@ -371,6 +374,9 @@ namespace VMTS.Repository.Data.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<bool>("Seen")
+                        .HasColumnType("bit");
+
                     b.Property<decimal>("TotalCost")
                         .HasColumnType("decimal(18,2)");
 
@@ -460,6 +466,9 @@ namespace VMTS.Repository.Data.Migrations
                     b.Property<string>("Notes")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("Seen")
+                        .HasColumnType("bit");
 
                     b.Property<string>("VehicleId")
                         .IsRequired()
@@ -613,6 +622,9 @@ namespace VMTS.Repository.Data.Migrations
 
                     b.Property<DateTime>("ReportedAt")
                         .HasColumnType("datetime2");
+
+                    b.Property<bool>("Seen")
+                        .HasColumnType("bit");
 
                     b.Property<int>("Status")
                         .HasColumnType("int");
