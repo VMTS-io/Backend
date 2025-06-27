@@ -53,7 +53,7 @@ public class BusinessUserSpecification : BaseSpecification<BusinessUser>
         Includes.Add(bs => bs.MechanicMaintenaceInitialReports);
         Includes.Add(bs => bs.MechanicMaintenaceFinalReports);
         Includes.Add(bs =>
-            bs.MechanicMaintenaceRequests.Where(mr => mr.Status != Status.Completed)
+            bs.MechanicMaintenaceRequests.Where(mr => mr.Status != MaintenanceStatus.Completed)
         );
     }
 

@@ -9,7 +9,7 @@ public class MaintenaceRequest : BaseEntity
 
     public DateTime Date { get; set; } = DateTime.UtcNow;
 
-    public Status Status { get; set; } = Status.Pending;
+    public MaintenanceStatus Status { get; set; } = MaintenanceStatus.Pending;
 
     public BusinessUser Manager { get; set; } = default!;
 

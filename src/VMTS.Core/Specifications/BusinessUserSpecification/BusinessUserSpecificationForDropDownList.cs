@@ -49,7 +49,9 @@ public class BusinessUserSpecificationForDropDownList : BaseSpecification<Busine
             // 👇 Mechanic Filter
             && (
                 (!string.IsNullOrEmpty(specParams.Filter) && specParams.Filter != "FreeMechanics")
-                || u.MechanicMaintenaceRequests.Count(mr => mr.Status != Status.Completed) <= 5
+                || u.MechanicMaintenaceRequests.Count(mr =>
+                    mr.Status != MaintenanceStatus.Completed
+                ) <= 5
             );
     }
 
@@ -106,13 +108,17 @@ public class BusinessUserSpecificationForDropDownList : BaseSpecification<Busine
 
             case "mechanicloadasc":
                 AddOrderBy(u =>
-                    u.MechanicMaintenaceRequests.Count(mr => mr.Status != Status.Completed)
+                    u.MechanicMaintenaceRequests.Count(mr =>
+                        mr.Status != MaintenanceStatus.Completed
+                    )
                 );
                 break;
 
             case "mechanicloaddsc":
                 AddOrderByDesc(u =>
-                    u.MechanicMaintenaceRequests.Count(mr => mr.Status != Status.Completed)
+                    u.MechanicMaintenaceRequests.Count(mr =>
+                        mr.Status != MaintenanceStatus.Completed
+                    )
                 );
                 break;
 

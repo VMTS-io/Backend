@@ -26,7 +26,8 @@ public class Vehicle : BaseEntity
     public ICollection<MaintenanceInitialReport> MaintenaceInitialReports { get; set; } = [];
     public ICollection<MaintenanceFinalReport> MaintenaceFinalReports { get; set; } = [];
     public ICollection<MaintenaceRequest> MaintenaceRequests { get; set; } = [];
-    public ICollection<MaintenanceTracking> MaintenanceTrackings { get; set; }
+    public ICollection<MaintenanceTracking> MaintenanceTrackings { get; set; } = default!;
 
-    public ICollection<MaintenanceFinalReportParts> MaintenanceFinalReportParts { get; set; }
+    public ICollection<MaintenanceFinalReportParts> MaintenanceFinalReportParts { get; set; } =
+        default!;
 }
