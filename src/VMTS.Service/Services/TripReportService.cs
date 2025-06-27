@@ -220,4 +220,19 @@ public class TripReportService : ITripReportService
     }
 
     #endregion
+
+    #region mark as seen
+
+    public async Task UpdateMarkAsSeen(string tripReportId)
+    {
+        var tripReport = await _unitOfWork.GetRepo<TripReport>().GetByIdAsync(tripReportId);
+        if (tripReport is null)
+            throw new NotFoundException("Fault Report Not Found");
+        if (tripReport.Seen == false)
+            tripReport.Seen = true;
+
+        await _unitOfWork.SaveChanges();
+    }
+
+    #endregion
 }

@@ -17,4 +17,6 @@ public class TripReportResponse
     public TripDto Trip { get; set; }
 
     public DateTime ReportedAt { get; set; }
+
+    public bool Seen { get; set; }
 }
