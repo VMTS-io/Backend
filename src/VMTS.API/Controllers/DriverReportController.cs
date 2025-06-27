@@ -47,6 +47,7 @@ public class DriverReportController : BaseApiController
             Destination = tr.Destination,
             FuelCost = tr.FuelCost,
             Status = tr.Trip.Status,
+            Seen = tr.Seen,
         });
         var mappedfaults = result.FaultReports.Select(fr => new DriverReportItemDto
         {
@@ -61,6 +62,7 @@ public class DriverReportController : BaseApiController
             FaultType = fr.FaultType,
             Cost = fr.Cost,
             Status = fr.Trip.Status,
+            Seen = fr.Seen,
         });
 
         var response = mappedtrips

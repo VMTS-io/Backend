@@ -34,4 +34,5 @@ public class DriverReportItemDto
 
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public decimal? Cost { get; set; }
+    public bool Seen { get; set; }
 }
