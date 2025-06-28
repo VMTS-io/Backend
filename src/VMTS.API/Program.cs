@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Scalar.AspNetCore;
 using VMTS.API.Extensions;
+using VMTS.API.Hubs;
 using VMTS.API.Middlewares;
 
 namespace VMTS.API
@@ -55,12 +56,12 @@ namespace VMTS.API
                         }
                     );
             });
-
             app.UseHttpsRedirection();
             app.UseMiddleware<ExceptionMiddleware>();
             // app.UseExceptionHandler();
             app.UseStaticFiles();
             app.UseCors(c => c.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin());
+            app.MapHub<LocationHub>("/hubs/location");
             app.UseAuthentication();
             app.UseAuthorization();
             app.UseStatusCodePagesWithReExecute("/errors/{0}");

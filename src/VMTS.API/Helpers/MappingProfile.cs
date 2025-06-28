@@ -26,6 +26,7 @@ public class MappingProfile : Profile
 {
     public MappingProfile()
     {
+        CreateMap<TripLocationDto, TripLocation>().ReverseMap();
         CreateMap<BusinessUser, BusinessUserGetAllResponse>();
 
         CreateMap<TripReport, DriverReportItemDto>()
