@@ -2,6 +2,8 @@ namespace VMTS.API.Dtos;
 
 public class TripLocationDto
 {
+    public int StatusCode { get; set; }
+
     public string TripId { get; set; } = default!;
     public double Lat { get; set; }
     public double Lng { get; set; }

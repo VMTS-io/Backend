@@ -22,7 +22,8 @@ public class TripLocationController : BaseApiController
     {
         var mappedmodel = _mapper.Map<TripLocation>(dto);
         await _locationService.SetLocationAsync(mappedmodel);
-        return Ok();
+        var status = HttpContext.Response.StatusCode;
+        return Ok(new { StatusCode = status });
     }
 
     [HttpGet("{tripId}")]
@@ -31,7 +32,7 @@ public class TripLocationController : BaseApiController
         var result = await _locationService.GetLocationAsync(tripId);
         if (result is null)
             return NotFound();
-
-        return Ok(result);
+        var status = HttpContext.Response.StatusCode;
+        return Ok(new { Data = result, StatusCode = status });
     }
 }
