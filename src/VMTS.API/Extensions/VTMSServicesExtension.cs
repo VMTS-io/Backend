@@ -3,10 +3,12 @@ using FluentValidation;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using StackExchange.Redis;
 using VMTS.API.ActionFilters;
 using VMTS.API.Errors;
 using VMTS.API.GlobalExceptionHnadler;
 using VMTS.API.Helpers;
+using VMTS.API.Hubs;
 using VMTS.API.Middlewares;
 using VMTS.Core.Entities.Identity;
 using VMTS.Core.Interfaces.Repositories;
@@ -62,6 +64,29 @@ public static class VTMSServicesExtension
         //     };
         // });
 
+        services.AddSignalR();
+
+        var redisConfiguration = new ConfigurationOptions
+        {
+            EndPoints = { "humane-imp-25093.upstash.io:6379" },
+            User = "default",
+            Password = "AWIFAAIjcDE5OWE1YmZlYzYwMGU0MGE3YWRhNTFlZTk3ZTkxYjEyNXAxMA",
+            Ssl = true,
+            AbortOnConnectFail = false,
+        };
+
+        // ✅ Register for caching
+        services.AddStackExchangeRedisCache(options =>
+        {
+            options.ConfigurationOptions = redisConfiguration;
+        });
+
+        // ✅ Register for IConnectionMultiplexer (used by TripLocationService)
+        var multiplexer = ConnectionMultiplexer.Connect(redisConfiguration);
+        services.AddSingleton<IConnectionMultiplexer>(multiplexer);
+
+        services.AddScoped<ILocationBroadcaster, SignalRLocationBroadcaster>();
+        services.AddScoped<ITripLocationService, TripLocationService>();
         services.AddProblemDetails();
         services.AddExceptionHandler<GlobalEaxceptionHandler>();
         services
