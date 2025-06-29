@@ -6,6 +6,7 @@ using VMTS.API.Dtos.Maintenance.Report;
 using VMTS.API.Dtos.Maintenance.Report.Final;
 using VMTS.API.Dtos.Maintenance.Report.Initial;
 using VMTS.API.Dtos.Maintenance.Request;
+using VMTS.API.Dtos.Maintenance.Tracking;
 using VMTS.API.Dtos.Part;
 using VMTS.API.Dtos.Trip;
 using VMTS.API.Dtos.TripReport;
@@ -239,5 +240,6 @@ public class MappingProfile : Profile
                 dest => dest.MaintenaceCategory,
                 opts => opts.MapFrom(src => $"{src.MaintenanceCategory.Categorty} Maintenance")
             );
+        CreateMap<MaintenanceTrackingCreateDto, MaintenanceTracking>();
     }
 }

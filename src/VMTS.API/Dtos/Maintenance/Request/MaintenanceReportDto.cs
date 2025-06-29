@@ -12,5 +12,5 @@ public class MaintenanceReportDto
 
     public DateTime Date { get; set; }
 
-    public Status Status { get; set; }
+    public MaintenanceStatus Status { get; set; }
 }

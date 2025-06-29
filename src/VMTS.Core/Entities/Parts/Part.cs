@@ -14,5 +14,6 @@ public class Part : BaseEntity
 
     public int? LifeSpanDays { get; set; }
 
-    public ICollection<MaintenanceTracking> MaintenancePartTrackings { get; set; }
+    public ICollection<MaintenanceTracking> MaintenancePartTrackings { get; set; } = default!;
+    public ICollection<MaintenanceFinalReportParts> PartHistory { get; set; } = default!;
 }

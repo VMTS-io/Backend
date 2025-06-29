@@ -38,8 +38,11 @@ public class MaintenanceFinalReportServices : IMaintenanceFinalReportServices
     {
         var validatedReport = await ValidateAndResolveAsync(report);
 
-        validatedReport.MaintenaceRequest.Status = Status.Completed;
+        validatedReport.MaintenaceRequest.Status = MaintenanceStatus.Completed;
+        validatedReport.Vehicle.Status = VehicleStatus.Active;
+
         _requestRepo.Update(validatedReport.MaintenaceRequest);
+        _vehicleRepo.Update(validatedReport.Vehicle);
 
         await _finalReportRepo.CreateAsync(validatedReport);
 
@@ -138,7 +141,7 @@ public class MaintenanceFinalReportServices : IMaintenanceFinalReportServices
         var maintenanceRequestSpec = new BaseSpecification<MaintenaceRequest>()
         {
             Criteria = mr => mr.Id == initialReport.MaintenanceRequestId,
-            Includes = [mr => mr.FinalReport],
+            Includes = [mr => mr.FinalReport, mr => mr.Vehicle],
         };
         var maintenanceRequest =
             await _requestRepo.GetByIdWithSpecificationAsync(maintenanceRequestSpec)
@@ -155,6 +158,7 @@ public class MaintenanceFinalReportServices : IMaintenanceFinalReportServices
         report.MaintenaceRequest = maintenanceRequest;
         report.MaintenanceCategoryId = initialReport.MaintenanceCategoryId;
         report.VehicleId = maintenanceRequest.VehicleId;
+        report.Vehicle = maintenanceRequest.Vehicle;
 
         var partIds = report.ChangedParts.Select(p => p.PartId).ToHashSet();
         var foundParts = await _partRepo.GetByIdsAsync(partIds);

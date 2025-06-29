@@ -31,8 +31,8 @@ public class VMTSDataSeed
                 await SeedPartsAsync(dbContext, logger);
                 await SeedMaintenanceCategoriesAsync(dbContext, logger);
                 await dbContext.SaveChangesAsync();
-                await SeedMaintenanceRequestsAsync(dbContext, logger);
-                await dbContext.SaveChangesAsync();
+                // await SeedMaintenanceRequestsAsync(dbContext, logger);
+                // await dbContext.SaveChangesAsync();
             }
             catch (Exception ex)
             {

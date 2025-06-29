@@ -9,7 +9,7 @@ public class MaintenanceReportResponseDto
 
     public string ReportType { get; set; }
     public string Notes { get; set; } = default!;
-    public Status RequestStatus { get; set; }
+    public MaintenanceStatus RequestStatus { get; set; }
     public string MechanicName { get; set; } = default!;
     public string VehicleName { get; set; } = default!;
     public string RequestTitle { get; set; } = default!;
