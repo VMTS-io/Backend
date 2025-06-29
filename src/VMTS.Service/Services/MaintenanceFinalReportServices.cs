@@ -265,14 +265,17 @@ public class MaintenanceFinalReportServices : IMaintenanceFinalReportServices
 
     public async Task UpdateMarkAsSeen(string finallReportId)
     {
-        var tripReport = await _unitOfWork
+        var finalReport = await _unitOfWork
             .GetRepo<MaintenanceFinalReport>()
             .GetByIdAsync(finallReportId);
-        if (tripReport is null)
-            throw new NotFoundException("Fault Report Not Found");
-        if (tripReport.Seen == false)
-            tripReport.Seen = true;
-        await _unitOfWork.SaveChanges();
+        if (finalReport is null)
+            throw new NotFoundException("Final Report Not Found");
+        if (finalReport.Seen == false)
+        {
+            finalReport.Seen = true;
+            _unitOfWork.GetRepo<MaintenanceFinalReport>().Update(finalReport);
+            await _unitOfWork.SaveChanges();
+        }
     }
 
     #endregion

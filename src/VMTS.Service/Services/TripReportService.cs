@@ -200,7 +200,6 @@ public class TripReportService : ITripReportService
 
     #endregion
 
-
     #region get trip reports for user
 
 
@@ -227,11 +226,13 @@ public class TripReportService : ITripReportService
     {
         var tripReport = await _unitOfWork.GetRepo<TripReport>().GetByIdAsync(tripReportId);
         if (tripReport is null)
-            throw new NotFoundException("Fault Report Not Found");
+            throw new NotFoundException("Trip Report Not Found");
         if (tripReport.Seen == false)
+        {
             tripReport.Seen = true;
-
-        await _unitOfWork.SaveChanges();
+            _unitOfWork.GetRepo<TripReport>().Update(tripReport);
+            await _unitOfWork.SaveChanges();
+        }
     }
 
     #endregion
