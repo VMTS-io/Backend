@@ -14,7 +14,7 @@ public class MaintenanceFinalReportParts : BaseEntity
     public string MaintnenanceFinalReportId { get; set; } = default!;
     public string PartId { get; set; } = default!;
 
-    public Vehicle Vehicle { get; set; }
+    public Vehicle Vehicle { get; set; } = default!;
     public Part Part { get; set; } = default!;
     public MaintenanceFinalReport FinalReport { get; set; } = default!;
 }
