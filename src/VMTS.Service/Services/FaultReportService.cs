@@ -234,9 +234,11 @@ public class FaultReportService : IFaultReportService
         if (faultReport is null)
             throw new NotFoundException("Fault Report Not Found");
         if (faultReport.Seen == false)
+        {
             faultReport.Seen = true;
-
-        await _unitOfWork.SaveChanges();
+            _unitOfWork.GetRepo<FaultReport>().Update(faultReport);
+            await _unitOfWork.SaveChanges();
+        }
     }
 
     #endregion
