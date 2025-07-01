@@ -12,7 +12,7 @@ public class MaintenanceTracking : BaseEntity
     public int KMAtLastChange { get; set; }
 
     public DateTime? NextChangeDate { get; set; } // computed
-    public int? NextChangeKM { get; set; } // computed
+    public int NextChangeKM { get; set; } // computed
 
     public bool IsDue { get; set; } // updated by a background job or on query
     public bool IsAlmostDue { get; set; } // optional for pre-warning
