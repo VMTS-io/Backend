@@ -75,4 +75,9 @@ public class GenericRepository<T> : IGenericRepository<T>
     {
         return await _dbContext.Set<T>().Where(e => ids.Contains(e.Id)).ToListAsync();
     }
+
+    public async Task AddRangeAsync(IEnumerable<T> range)
+    {
+        await _dbContext.AddRangeAsync(range);
+    }
 }

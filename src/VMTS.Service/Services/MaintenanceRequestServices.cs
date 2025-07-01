@@ -38,9 +38,12 @@ public class MaintenanceRequestServices : IMaintenanceRequestServices
         if (mechanic.Role != Roles.Mechanic)
             throw new ConflictException("User With ID {mechanic.Id} is not a mechanic");
 
-        if (!await _vehicleRepo.ExistAsync(model.VehicleId))
-            throw new Exception("Vechile Not Found");
+        var vehicle =
+            await _vehicleRepo.GetByIdAsync(model.VehicleId)
+            ?? throw new Exception("Vechile Not Found");
+        vehicle.Status = VehicleStatus.UnderMaintenance;
 
+        _vehicleRepo.Update(vehicle);
         await _repo.CreateAsync(model);
         await _unitOfWork.SaveChanges();
     }

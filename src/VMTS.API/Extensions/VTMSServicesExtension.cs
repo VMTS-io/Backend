@@ -139,6 +139,7 @@ public static class VTMSServicesExtension
         services.AddScoped<IMaintenanceFinalReportServices, MaintenanceFinalReportServices>();
         services.AddScoped<IPartService, PartService>();
         services.AddScoped<IMaintenanceCategoryServices, MaintenanceCategoryServices>();
+        services.AddScoped<IMaintenanceTrackingServices, MaintenanceTrackingServices>();
         services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
 
         return services;

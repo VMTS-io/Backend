@@ -10,7 +10,7 @@ public class MaintenanceRequestResponseDto
 
     public DateTime Date { get; set; }
 
-    public Status Status { get; set; }
+    public MaintenanceStatus Status { get; set; }
 
     public BussinessUserDto Manager { get; set; } = default!;
     public BussinessUserDto Mechanic { get; set; } = default!;

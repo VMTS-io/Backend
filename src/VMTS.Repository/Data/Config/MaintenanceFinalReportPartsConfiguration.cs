@@ -15,6 +15,9 @@ public class MaintenanceFinalReportPartsConfiguration
             .HasForeignKey(mfrp => mfrp.MaintnenanceFinalReportId)
             .OnDelete(DeleteBehavior.Cascade);
 
-        builder.HasOne(mirp => mirp.Part).WithMany().HasForeignKey(mfrp => mfrp.PartId);
+        builder
+            .HasOne(mirp => mirp.Part)
+            .WithMany(p => p.PartHistory)
+            .HasForeignKey(mfrp => mfrp.PartId);
     }
 }

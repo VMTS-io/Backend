@@ -16,7 +16,7 @@ public class MaintenanceRequestSpecParams
     public string? Id { get; set; }
 
     public string? VehicleId { get; set; }
-    public Status? Status { get; set; }
+    public MaintenanceStatus? Status { get; set; }
     public DateTime? Date { get; set; }
     public string? OrderBy { get; set; }
 

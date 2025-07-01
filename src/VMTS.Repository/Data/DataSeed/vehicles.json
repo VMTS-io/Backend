@@ -1,57 +1,58 @@
 [
-    {
-        "Id": "1",
-        "PalletNumber": "TRK-001",
-        "JoinedYear": "2023-01-15",
-        "FuelType": "Diesel",
-        "KMDriven": 150000,
-        "Status": "Active",
-        "ModelYear": "2022-06-01",
-        "LastAssignedDate": "2025-06-10T14:30:00Z",
-        "ModelId": "1"
-    },
-    {
-        "Id": "2",
-        "PalletNumber": "VAN-001",
-        "JoinedYear": "2022-03-20",
-        "FuelType": "Petrol",
-        "KMDriven": 80000,
-        "Status": "UnderMaintenance",
-        "ModelYear": "2021-09-01",
-        "LastAssignedDate": "2025-05-25T09:00:00Z",
-        "ModelId": "2"
-    },
-    {
-        "Id": "3",
-        "PalletNumber": "VAN-002",
-        "JoinedYear": "2021-07-10",
-        "FuelType": "Hybrid",
-        "KMDriven": 120000,
-        "Status": "Inactive",
-        "ModelYear": "2020-12-01",
-        "LastAssignedDate": null,
-        "ModelId": "3"
-    },
-    {
-        "Id": "4",
-        "PalletNumber": "VAN-003",
-        "JoinedYear": "2024-02-05",
-        "FuelType": "CNG",
-        "KMDriven": 30000,
-        "Status": "Active",
-        "ModelYear": "2023-11-01",
-        "LastAssignedDate": "2025-06-15T08:45:00Z",
-        "ModelId": "4"
-    },
-    {
-        "Id": "5",
-        "PalletNumber": "CAR-001",
-        "JoinedYear": "2023-09-12",
-        "FuelType": "Electric",
-        "KMDriven": 45000,
-        "Status": "Retired",
-        "ModelYear": "2023-03-01",
-        "LastAssignedDate": "2025-04-20T16:00:00Z",
-        "ModelId": "5"
-    }
+  {
+    "Id": "1",
+    "PalletNumber": "TRK-001",
+    "JoinedYear": "2023-01-15",
+    "FuelType": "Diesel",
+    "CurrentOdometerKM": 150000,
+    "Status": "Active",
+    "ModelYear": "2022-06-01",
+    "LastAssignedDate": "2025-06-10T14:30:00Z",
+    "ModelId": "1"
+  },
+  {
+    "Id": "2",
+    "PalletNumber": "VAN-001",
+    "JoinedYear": "2022-03-20",
+    "FuelType": "Petrol",
+    "CurrentOdometerKM": 80000,
+    "Status": "UnderMaintenance",
+    "ModelYear": "2021-09-01",
+    "LastAssignedDate": "2025-05-25T09:00:00Z",
+    "ModelId": "2"
+  },
+  {
+    "Id": "3",
+    "PalletNumber": "VAN-002",
+    "JoinedYear": "2021-07-10",
+    "FuelType": "Hybrid",
+    "CurrentOdometerKM": 120000,
+    "Status": "Inactive",
+    "ModelYear": "2020-12-01",
+    "LastAssignedDate": null,
+    "ModelId": "3"
+  },
+  {
+    "Id": "4",
+    "PalletNumber": "VAN-003",
+    "JoinedYear": "2024-02-05",
+    "FuelType": "CNG",
+    "CurrentOdometerKM": 30000,
+    "Status": "Active",
+    "ModelYear": "2023-11-01",
+    "LastAssignedDate": "2025-06-15T08:45:00Z",
+    "ModelId": "4"
+  },
+  {
+    "Id": "5",
+    "PalletNumber": "CAR-001",
+    "JoinedYear": "2023-09-12",
+    "FuelType": "Electric",
+    "CurrentOdometerKM": 45000,
+    "Status": "Retired",
+    "ModelYear": "2023-03-01",
+    "LastAssignedDate": "2025-04-20T16:00:00Z",
+    "ModelId": "5"
+  }
 ]
+

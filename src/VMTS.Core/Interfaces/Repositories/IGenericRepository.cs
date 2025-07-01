@@ -17,4 +17,5 @@ public interface IGenericRepository<T>
     Task<bool> ExistAsync(string id);
     Task<IReadOnlyList<T>> GetByIdsAsync(IEnumerable<string> ids);
     IQueryable<T> AsQueryable();
+    public Task AddRangeAsync(IEnumerable<T> range);
 }
