@@ -9,9 +9,9 @@ public class Vehicle : BaseEntity
 
     public DateOnly JoinedYear { get; set; }
 
-    public FuelType FuelType { get; set; }
+    public FuelType FuelType { get; set; } //
 
-    public int CurrentOdometerKM { get; set; }
+    public int CurrentOdometerKM { get; set; } //
 
     public VehicleStatus Status { get; set; } = VehicleStatus.Active;
     public DateOnly ModelYear { get; set; }
