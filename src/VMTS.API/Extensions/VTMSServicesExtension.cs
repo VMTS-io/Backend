@@ -64,6 +64,7 @@ public static class VTMSServicesExtension
         //     };
         // });
 
+        services.AddScoped<IMaintenanceTrackingService, MaintenanceTrackingService>();
         services.AddSignalR();
 
         var redisConfiguration = new ConfigurationOptions
@@ -96,7 +97,7 @@ public static class VTMSServicesExtension
                 options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()); // Convert enums to strings
                 options.JsonSerializerOptions.Converters.Add(new DateOnlyJsonConverter()); // Custom DateOnly converter
 
-                options.JsonSerializerOptions.MaxDepth = 128;
+                options.JsonSerializerOptions.MaxDepth = 256;
             });
         services.AddValidatorsFromAssemblyContaining<Program>();
         services.AddScoped(typeof(ValidateModelActionFilter<>));
