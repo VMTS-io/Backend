@@ -1,16 +1,11 @@
-﻿using System.Runtime.InteropServices;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.Identity.Client;
+﻿using Microsoft.AspNetCore.Identity;
 using VMTS.Core.Entities.Identity;
-using VMTS.Core.Entities.Maintenace;
-using VMTS.Core.Entities.Report;
 using VMTS.Core.Entities.Trip;
 using VMTS.Core.Entities.User_Business;
 using VMTS.Core.Entities.Vehicle_Aggregate;
 using VMTS.Core.Helpers;
 using VMTS.Core.Interfaces.UnitOfWork;
 using VMTS.Core.ServicesContract;
-using VMTS.Core.Specifications;
 using VMTS.Core.Specifications.TripRequestSpecification;
 using VMTS.Core.Specifications.VehicleSpecification;
 using VMTS.Service.Exceptions;
@@ -65,8 +60,11 @@ public class TripRequestService : ITripRequestService
         if (vehicleUnderMaintenance.Status == VehicleStatus.UnderMaintenance)
             throw new InvalidOperationException("Vehicle is under maintenance");
 
-        if (vehicleUnderMaintenance.Status == VehicleStatus.Inactive)
-            throw new InvalidOperationException("Vehicle is not active right now");
+        if (vehicleUnderMaintenance.Status == VehicleStatus.OnTrip)
+            throw new InvalidOperationException("Vehicle is On a Trip right now");
+
+        if (vehicleUnderMaintenance.Status == VehicleStatus.OutOfService)
+            throw new InvalidOperationException("Vehicle is out of serivce right now");
 
         if (vehicleUnderMaintenance.Status == VehicleStatus.Retired)
             throw new InvalidOperationException("Vehicle is retired xxx");
