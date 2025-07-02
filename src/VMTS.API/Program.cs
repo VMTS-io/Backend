@@ -1,4 +1,3 @@
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Scalar.AspNetCore;
 using VMTS.API.Extensions;
 using VMTS.API.Hubs;

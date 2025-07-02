@@ -57,4 +57,28 @@ public class PartService : IPartService
     {
         return await _partRepo.GetAllAsync();
     }
+
+    public async Task<bool> IsExist(string id)
+    {
+        return await _partRepo.ExistAsync(id);
+    }
+
+    public async Task<Dictionary<string, Part>> ValidatePartIdsExistAsync(
+        IEnumerable<string> partIds
+    )
+    {
+        var partIdSet = partIds.ToHashSet();
+
+        var foundParts = await _partRepo.GetByIdsAsync(partIdSet);
+        var foundDict = foundParts.ToDictionary(p => p.Id);
+
+        var missingIds = partIdSet.Except(foundDict.Keys).ToList();
+
+        if (missingIds.Any())
+            throw new NotFoundException(
+                $"The following part IDs do not exist: {string.Join(", ", missingIds)}"
+            );
+
+        return foundDict;
+    }
 }

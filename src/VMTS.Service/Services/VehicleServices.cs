@@ -1,3 +1,4 @@
+using VMTS.Core.Entities.Maintenace;
 using VMTS.Core.Entities.Vehicle_Aggregate;
 using VMTS.Core.Interfaces.Repositories;
 using VMTS.Core.Interfaces.Services;
@@ -12,12 +13,16 @@ public class VehicleServices : IVehicleSerivces
     private readonly IUnitOfWork _unitOfWork;
     private readonly IGenericRepository<Vehicle> _vehicleRepo;
     private readonly IGenericRepository<VehicleModel> _vehicleModelRepo;
+    private readonly IGenericRepository<MaintenanceTracking> _trackingRepo;
+    private readonly IPartService _partService;
 
-    public VehicleServices(IUnitOfWork unitOfWork)
+    public VehicleServices(IUnitOfWork unitOfWork, IPartService partService)
     {
         _unitOfWork = unitOfWork;
         _vehicleRepo = _unitOfWork.GetRepo<Vehicle>();
         _vehicleModelRepo = _unitOfWork.GetRepo<VehicleModel>();
+        _trackingRepo = _unitOfWork.GetRepo<MaintenanceTracking>();
+        _partService = partService;
     }
 
     #region Create
@@ -34,6 +39,25 @@ public class VehicleServices : IVehicleSerivces
             await _vehicleRepo.GetByIdWithSpecificationAsync(spec)
             ?? throw new NotFoundException("Vehicle Not Found");
         return returnVehicle;
+    }
+    #endregion
+
+    #region Create With histoy
+    public async Task CreateVehicleWithHistoryAsync(
+        Vehicle vehicle,
+        List<MaintenanceTracking> maintenanceTracking
+    )
+    {
+        if (!await _vehicleModelRepo.ExistAsync(vehicle.ModelId))
+            throw new NotFoundException("Model Not Found");
+
+        var partIds = maintenanceTracking.Select(mt => mt.PartId);
+        await _partService.ValidatePartIdsExistAsync(partIds);
+
+        await _vehicleRepo.CreateAsync(vehicle);
+        //[NOTE]  i think calling omar emthod , to calculate is duo or allmost due and next maintence date and km
+        await _trackingRepo.AddRangeAsync(maintenanceTracking);
+        await _unitOfWork.SaveChanges();
     }
     #endregion
 

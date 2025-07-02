@@ -9,4 +9,6 @@ public interface IPartService
     Task DeleteAsync(string id);
     Task<Part> GetByIdAsync(string id);
     Task<IReadOnlyList<Part>> GetAllAsync();
+    Task<bool> IsExist(string id);
+    Task<Dictionary<string, Part>> ValidatePartIdsExistAsync(IEnumerable<string> partIds);
 }
