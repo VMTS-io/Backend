@@ -944,7 +944,7 @@ namespace VMTS.Repository.Data.Migrations
                         .IsRequired();
 
                     b.HasOne("VMTS.Core.Entities.Parts.Part", "Part")
-                        .WithMany()
+                        .WithMany("PartHistory")
                         .HasForeignKey("PartId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -1126,6 +1126,8 @@ namespace VMTS.Repository.Data.Migrations
             modelBuilder.Entity("VMTS.Core.Entities.Parts.Part", b =>
                 {
                     b.Navigation("MaintenancePartTrackings");
+
+                    b.Navigation("PartHistory");
                 });
 
             modelBuilder.Entity("VMTS.Core.Entities.User_Business.BusinessUser", b =>

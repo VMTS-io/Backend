@@ -11,8 +11,8 @@ public class MaintenanceTracking : BaseEntity
     public DateTime LastChangedDate { get; set; }
     public int KMAtLastChange { get; set; }
 
-    public DateTime? NextChangeDate { get; set; }=DateTime.Now.AddDays(30);// computed
-    public int? NextChangeKM { get; set; } = 19900; // computed
+    public DateTime? NextChangeDate { get; set; } // computed
+    public int? NextChangeKM { get; set; } // computed
 
     public bool IsDue { get; set; } = false; // updated by a background job or on query
     public bool IsAlmostDue { get; set; } = false; // optional for pre-warning

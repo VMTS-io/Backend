@@ -34,15 +34,12 @@ public class MaintenanceTrackingServices : IMaintenanceTrackingServices
 
         entity.IsDue =
             (entity.NextChangeDate.HasValue && entity.NextChangeDate <= DateTime.Today)
-            || (entity.NextChangeKM.HasValue && vehicle.CurrentOdometerKM >= entity.NextChangeKM);
+            || (vehicle.CurrentOdometerKM >= entity.NextChangeKM);
 
         entity.IsAlmostDue =
             (entity.NextChangeDate.HasValue && entity.NextChangeDate <= DateTime.Today.AddDays(15))
-            || (
-                entity.NextChangeKM.HasValue
-                && vehicle.CurrentOdometerKM >= entity.NextChangeKM - 500
-            );
-        entity.NextChangeKM = part.LifeSpanKM + vehicle.CurrentOdometerKM;
+            || (vehicle.CurrentOdometerKM >= entity.NextChangeKM - 500);
+        entity.NextChangeKM = part.LifeSpanKM.Value + vehicle.CurrentOdometerKM;
         // entity.NextChangeDate = DateTime.UtcNow.AddDays(part.LifeSpanDays!.Value);
         await _unitOfWork.GetRepo<MaintenanceTracking>().CreateAsync(entity);
         await _unitOfWork.SaveChanges();
@@ -62,28 +59,20 @@ public class MaintenanceTrackingServices : IMaintenanceTrackingServices
 
         existedEntity.VehicleId = entity.VehicleId;
         existedEntity.PartId = entity.PartId;
-        existedEntity.NextChangeKM = part.LifeSpanKM + vehicle.CurrentOdometerKM;
+        existedEntity.NextChangeKM = part.LifeSpanKM.Value + vehicle.CurrentOdometerKM;
         // existedEntity.NextChangeDate = DateTime.UtcNow.AddDays(part.LifeSpanDays!.Value);
         #region propably will replaced with omar's methods
         existedEntity.IsDue =
             (
                 existedEntity.NextChangeDate.HasValue
                 && existedEntity.NextChangeDate <= DateTime.Today
-            )
-            || (
-                existedEntity.NextChangeKM.HasValue
-                && vehicle.CurrentOdometerKM >= existedEntity.NextChangeKM
-            );
+            ) || (vehicle.CurrentOdometerKM >= existedEntity.NextChangeKM);
 
         existedEntity.IsAlmostDue =
             (
                 existedEntity.NextChangeDate.HasValue
                 && existedEntity.NextChangeDate <= DateTime.Today.AddDays(15)
-            )
-            || (
-                existedEntity.NextChangeKM.HasValue
-                && vehicle.CurrentOdometerKM >= existedEntity.NextChangeKM - 500
-            );
+            ) || (vehicle.CurrentOdometerKM >= existedEntity.NextChangeKM - 500);
 
         #endregion
         _unitOfWork.GetRepo<MaintenanceTracking>().Update(existedEntity);

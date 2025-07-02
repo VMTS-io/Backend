@@ -1,0 +1,27 @@
+using VMTS.Core.Entities.Parts;
+using VMTS.Core.Entities.Vehicle_Aggregate;
+
+namespace VMTS.Core.Non_Entities_Class;
+
+public class VehicleWithDueParts
+{
+    public string VehicleId { get; set; } = null!;
+    public string PlateNumber { get; set; } = null!;
+
+    public string ModelName => VehicleModel.Name;
+    public string BrandName => VehicleModel.Brand.Name;
+    public string CategoryName => VehicleCategory.Name;
+
+    public List<DuePart> DueParts { get; set; } = [];
+
+    // Additional info
+    public FuelType FuelType { get; set; }
+    public VehicleStatus Status { get; set; }
+    public int CurrentOdometerKM { get; set; }
+    public DateOnly ModelYear { get; set; }
+    public string ModelId { get; set; }
+    public VehicleModel VehicleModel { get; set; }
+    public VehicleCategory VehicleCategory { get; set; }
+
+    public DateTime LastAssignedDate { get; set; }
+}

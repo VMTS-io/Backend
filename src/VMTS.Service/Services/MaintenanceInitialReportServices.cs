@@ -269,13 +269,17 @@ public class MaintenanceInitialReportServices : IMaintenanceInitialReportService
 
     public async Task UpdateMarkAsSeen(string initialReportId)
     {
-        var initialReport = await _unitOfWork.GetRepo<FaultReport>().GetByIdAsync(initialReportId);
+        var initialReport = await _unitOfWork
+            .GetRepo<MaintenanceInitialReport>()
+            .GetByIdAsync(initialReportId);
         if (initialReport is null)
-            throw new NotFoundException("Fault Report Not Found");
+            throw new NotFoundException("Initial Report Not Found");
         if (initialReport.Seen == false)
+        {
             initialReport.Seen = true;
-
-        await _unitOfWork.SaveChanges();
+            _unitOfWork.GetRepo<MaintenanceInitialReport>().Update(initialReport);
+            await _unitOfWork.SaveChanges();
+        }
     }
 
     #endregion

@@ -169,7 +169,7 @@ public class TripReportController : BaseApiController
     #region seen
 
     [HttpPatch("Report/Regular/{id}/mark-as-seen")]
-    public async Task<ActionResult> MarkAsSeen(string id)
+    public async Task<ActionResult> MarkAsSeen([FromRoute] string id)
     {
         await _tripReportService.UpdateMarkAsSeen(id);
         var status = HttpContext.Response.StatusCode;

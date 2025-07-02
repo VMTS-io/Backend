@@ -1,0 +1,18 @@
+namespace VMTS.API.Dtos.MaintenanceTrackingForGetVehicleInDue;
+
+public class VehicleWithDuePartsSpecParams
+{
+    public string? VehicleId { get; set; }
+
+    public string? CategoryId { get; set; }
+
+    public string? PartId { get; set; }
+
+    public DateTime? LastChangedDate { get; set; }
+
+    public DateTime? NextChangeDate { get; set; } // computed
+
+    public bool? IsDue { get; set; } // updated by a background job or on query
+
+    public bool? IsAlmostDue { get; set; } // optional for pre-warning
+}

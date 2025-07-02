@@ -95,7 +95,7 @@ public class MaintenanceInitialReportController : BaseApiController
     #region seen
 
     [HttpPatch("{id}/mark-as-seen")]
-    public async Task<ActionResult> MarkAsSeen(string id)
+    public async Task<ActionResult> MarkAsSeen([FromRoute] string id)
     {
         await _service.UpdateMarkAsSeen(id);
         var status = HttpContext.Response.StatusCode;

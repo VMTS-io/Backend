@@ -2,7 +2,8 @@ using VMTS.Core.Entities.Maintenace;
 
 namespace VMTS.Core.Specifications.Maintenance.Tracking
 {
-    public class MaintenanceTrackingSpecification : BaseSpecification<MaintenanceTracking>
+    public class MaintenanceTrackingSpecification
+        : BaseSpecification<Entities.Maintenace.MaintenanceTracking>
     {
         public MaintenanceTrackingSpecification() { }
 
