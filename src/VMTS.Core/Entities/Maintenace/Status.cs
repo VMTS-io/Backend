@@ -7,10 +7,9 @@ public enum MaintenanceStatus
     [EnumMember(Value = "Pending")]
     Pending,
 
-    [EnumMember(Value = "InProgress")]
+    [EnumMember(Value = "In Progress")]
     InProgress,
 
     [EnumMember(Value = "Completed")]
     Completed,
 }
-

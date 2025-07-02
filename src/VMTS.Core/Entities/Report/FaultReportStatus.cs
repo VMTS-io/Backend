@@ -7,7 +7,7 @@ public enum FaultReportStatus
     [EnumMember(Value = "Reported")]
     Reported,
 
-    [EnumMember(Value = "UnderReview")]
+    [EnumMember(Value = "Under Review")]
     UnderReview,
 
     [EnumMember(Value = "Resolved")]

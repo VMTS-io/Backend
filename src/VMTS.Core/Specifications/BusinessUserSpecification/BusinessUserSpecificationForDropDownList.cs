@@ -26,7 +26,10 @@ public class BusinessUserSpecificationForDropDownList : BaseSpecification<Busine
     )
     {
         return u =>
-            (string.IsNullOrEmpty(specParams.Role) || u.Role == specParams.Role)
+            (
+                string.IsNullOrEmpty(specParams.Role)
+                || u.Role!.ToLower() == specParams.Role.ToLower()
+            )
             && (string.IsNullOrEmpty(specParams.Email) || u.Email.Contains(specParams.Email))
             && (
                 string.IsNullOrEmpty(specParams.PhoneNumber)
@@ -36,9 +39,14 @@ public class BusinessUserSpecificationForDropDownList : BaseSpecification<Busine
                 string.IsNullOrEmpty(specParams.DisplayName)
                 || u.DisplayName.Contains(specParams.DisplayName)
             )
-            // 👇 Driver Filter
             && (
-                !string.IsNullOrEmpty(specParams.Filter) && specParams.Filter != "FreeDrivers"
+                (
+                    string.IsNullOrEmpty(specParams.Filter)
+                    || (
+                        !string.IsNullOrEmpty(specParams.Filter)
+                        && specParams.Filter != "FreeDrivers"
+                    )
+                )
                 || !u.DriverTripRequest.Any(tr =>
                     (
                         !specParams.TripDate.HasValue
@@ -46,9 +54,23 @@ public class BusinessUserSpecificationForDropDownList : BaseSpecification<Busine
                     ) && (tr.Status == TripStatus.Approved || tr.Status == TripStatus.Pending)
                 )
             )
+            // 👇 Driver Filter
+
+            // && (
+            //     string.IsNullOrEmpty(specParams.Filter)
+            //     || specParams.Filter.ToLower() != "FreeDrivers".ToLower()
+            //     || !u.DriverTripRequest.Any(tr =>
+            //         (
+            //             !specParams.TripDate.HasValue
+            //             || tr.Date.Date == specParams.TripDate.Value.Date
+            //         ) && (tr.Status == TripStatus.Approved || tr.Status == TripStatus.Pending)
+            //     )
+            // )
             // 👇 Mechanic Filter
+
             && (
-                (!string.IsNullOrEmpty(specParams.Filter) && specParams.Filter != "FreeMechanics")
+                string.IsNullOrEmpty(specParams.Filter)
+                || specParams.Filter.ToLower() != "FreeMechanics".ToLower()
                 || u.MechanicMaintenaceRequests.Count(mr =>
                     mr.Status != MaintenanceStatus.Completed
                 ) <= 5
