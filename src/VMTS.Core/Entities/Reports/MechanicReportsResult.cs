@@ -1,5 +1,4 @@
 using VMTS.Core.Entities.Maintenace;
-using VMTS.Core.Specifications.Maintenance.Report.Initial;
 
 namespace VMTS.Core.Entities.Reports;
 

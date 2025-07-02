@@ -64,7 +64,7 @@ public class MaintenanceTrackingService : IMaintenanceTrackingService
                             IsDue = mt.IsDue,
                             IsAlmostDue = mt.IsAlmostDue,
                             LastReplacedAtKm = mt.KMAtLastChange,
-                            NextChangeKm = mt.NextChangeKM,
+                            NextChangeKm = mt.NextChangeKM.Value,
                             CurrentKm = mt.Vehicle?.CurrentOdometerKM ?? 0,
                         })
                         .ToList(),
@@ -83,27 +83,27 @@ public class MaintenanceTrackingService : IMaintenanceTrackingService
 
     public async Task RecalculateAllAsync(VehicleWithDuePartsSpecParams specParams)
     {
-        
         var specs = new TrackingDuePartsSpecification(specParams);
-        var allTrackings = await _unitOfWork.GetRepo<MaintenanceTracking>().GetAllWithSpecificationAsync(specs);
+        var allTrackings = await _unitOfWork
+            .GetRepo<MaintenanceTracking>()
+            .GetAllWithSpecificationAsync(specs);
         foreach (var tracking in allTrackings)
         {
             await RecalculateRowAsync(tracking);
         }
         await _unitOfWork.SaveChanges();
-        
     }
-
-    
 
     #endregion
 
     #region Recalculate For Vehicle
 
-    public async Task RecalculateForVehicleAsync(VehicleWithDuePartsSpecParams specParams )
+    public async Task RecalculateForVehicleAsync(VehicleWithDuePartsSpecParams specParams)
     {
         var specs = new TrackingDuePartsSpecification(specParams);
-        var allTrackings = await _unitOfWork.GetRepo<MaintenanceTracking>().GetAllWithSpecificationAsync(specs);
+        var allTrackings = await _unitOfWork
+            .GetRepo<MaintenanceTracking>()
+            .GetAllWithSpecificationAsync(specs);
         foreach (var tracking in allTrackings)
         {
             await RecalculateRowAsync(tracking);
@@ -120,17 +120,22 @@ public class MaintenanceTrackingService : IMaintenanceTrackingService
         var currentKM = tracking.Vehicle.CurrentOdometerKM;
         tracking.IsDue =
             (tracking.NextChangeKM > 0 && currentKM >= tracking.NextChangeKM)
-            || (tracking.NextChangeDate.HasValue && tracking.NextChangeDate.Value <= DateTime.Today);
+            || (
+                tracking.NextChangeDate.HasValue && tracking.NextChangeDate.Value <= DateTime.Today
+            );
 
-        tracking.IsAlmostDue =
-            (!tracking.IsDue && (
+        tracking.IsAlmostDue = (
+            !tracking.IsDue
+            && (
                 (tracking.NextChangeKM > 0 && currentKM >= tracking.NextChangeKM - 500)
-                || (tracking.NextChangeDate.HasValue && tracking.NextChangeDate.Value <= DateTime.Today.AddDays(15))
-            ));   
+                || (
+                    tracking.NextChangeDate.HasValue
+                    && tracking.NextChangeDate.Value <= DateTime.Today.AddDays(15)
+                )
+            )
+        );
         return Task.CompletedTask;
     }
 
     #endregion
-    
-
 }

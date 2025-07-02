@@ -1,16 +1,13 @@
 ﻿using System.Text.Json.Serialization;
 using FluentValidation;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using OfficeOpenXml;
 using StackExchange.Redis;
 using VMTS.API.ActionFilters;
-using VMTS.API.Errors;
 using VMTS.API.GlobalExceptionHnadler;
 using VMTS.API.Helpers;
 using VMTS.API.Hubs;
 using VMTS.API.Middlewares;
-using VMTS.Core.Entities.Identity;
 using VMTS.Core.Interfaces.Repositories;
 using VMTS.Core.Interfaces.Services;
 using VMTS.Core.Interfaces.UnitOfWork;
@@ -121,6 +118,7 @@ public static class VTMSServicesExtension
             );
         });
 
+        ExcelPackage.License.SetNonCommercialPersonal("Bassel Raafat");
         services.AddScoped<ITripReportService, TripReportService>();
         services.AddAutoMapper(typeof(MappingProfile));
         services.AddScoped<IUnitOfWork, UnitOfWork>();

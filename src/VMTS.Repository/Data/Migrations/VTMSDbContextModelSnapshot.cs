@@ -533,7 +533,7 @@ namespace VMTS.Repository.Data.Migrations
                     b.Property<DateTime?>("NextChangeDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("NextChangeKM")
+                    b.Property<int?>("NextChangeKM")
                         .HasColumnType("int");
 
                     b.Property<string>("PartId")

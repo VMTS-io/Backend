@@ -10,7 +10,7 @@ public enum VehicleStatus
     [EnumMember(Value = "Inactive")]
     Inactive,
 
-    [EnumMember(Value = "UnderMaintenance")]
+    [EnumMember(Value = "Under Maintenance")]
     UnderMaintenance,
 
     [EnumMember(Value = "Retired")]

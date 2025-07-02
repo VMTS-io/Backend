@@ -1,8 +1,10 @@
 using VMTS.Core.Entities.Maintenace;
 using VMTS.Core.Entities.Parts;
 using VMTS.Core.Entities.Vehicle_Aggregate;
+using VMTS.Core.Interfaces.Repositories;
 using VMTS.Core.Interfaces.Services;
 using VMTS.Core.Interfaces.UnitOfWork;
+using VMTS.Core.Specifications.Maintenance.Tracking;
 using VMTS.Service.Exceptions;
 
 namespace VMTS.Service.Services;
@@ -10,10 +12,15 @@ namespace VMTS.Service.Services;
 public class MaintenanceTrackingServices : IMaintenanceTrackingServices
 {
     private readonly IUnitOfWork _unitOfWork;
+    private readonly IGenericRepository<MaintenanceTracking> _trackingRepo;
 
-    public MaintenanceTrackingServices(IUnitOfWork unitOfWork)
+    public MaintenanceTrackingServices(
+        IUnitOfWork unitOfWork,
+        IGenericRepository<MaintenanceTracking> trackingRepo
+    )
     {
         _unitOfWork = unitOfWork;
+        _trackingRepo = _unitOfWork.GetRepo<MaintenanceTracking>();
     }
 
     public async Task Create(MaintenanceTracking entity)
@@ -72,15 +79,19 @@ public class MaintenanceTrackingServices : IMaintenanceTrackingServices
         await _unitOfWork.SaveChanges();
     }
 
-    // public async Task<MaintenanceTracking> GetVehiclePatsHistory(string vehicleId)
-    // {
-    //     var specs = new MaintenanceTrackingSpecification()
-    //     {
-    //         Criteria = mt => mt.VehicleId == vehicleId,
-    //     };
-    //     var tracking = await _unitOfWork
-    //         .GetRepo<MaintenanceTracking>()
-    //         .GetAllWithSpecificationAsync(specs);
-    //     // var test=tracking.GroupBy(mt=>mt.Vehicle).SelectMany(v=>v.);
-    // }
+    public async Task GetVehiclePatsHistory(string vehicleId)
+    {
+        var specs = new MaintenanceTrackingSpecification()
+        {
+            Criteria = mt => mt.VehicleId == vehicleId,
+            Includes = [mt => mt.Part, mt => mt.Vehicle],
+        };
+        var tracking = await _unitOfWork
+            .GetRepo<MaintenanceTracking>()
+            .GetAllWithSpecificationAsync(specs);
+        // var obj = new {
+        //     Vehicle = tracking.
+        //
+        // };
+    }
 }

@@ -1,12 +1,8 @@
 using System.Security.Claims;
-using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using VMTS.API.Dtos.Maintenance.Report;
-using VMTS.API.Dtos.Maintenance.Report.Final;
-using VMTS.API.Dtos.Maintenance.Report.Initial;
 using VMTS.API.Dtos.MaintenanceReportResponseDto;
-using VMTS.Core.Entities.Maintenace;
 using VMTS.Core.Helpers;
 using VMTS.Core.Interfaces.Services;
 using VMTS.Core.Specifications.Maintenance.Report;
@@ -33,10 +29,10 @@ public class MaintenanceReportController : BaseApiController
     {
         var managerId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-        var result = await _mechanicReportsServices.GetMechanicReportsAsync(managerId, specParams);
+        var result = await _mechanicReportsServices.GetMechanicReportsAsync(managerId!, specParams);
 
         var initialReports = await _mechanicReportsServices.GetMechanicReportsAsync(
-            managerId,
+            managerId!,
             specParams
         );
 
@@ -63,7 +59,7 @@ public class MaintenanceReportController : BaseApiController
             .ToList();
 
         var finalReports = await _mechanicReportsServices.GetMechanicReportsAsync(
-            managerId,
+            managerId!,
             specParams
         );
         var mappedFinalReports = result
