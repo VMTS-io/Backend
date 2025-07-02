@@ -241,5 +241,16 @@ public class MappingProfile : Profile
                 opts => opts.MapFrom(src => $"{src.MaintenanceCategory.Categorty} Maintenance")
             );
         CreateMap<MaintenanceTrackingCreateDto, MaintenanceTracking>();
+        CreateMap<MaintenanceTracknigForVehicleDto, MaintenanceTracking>()
+            .ForMember(
+                dest => dest.VehicleId,
+                opt =>
+                    opt.MapFrom(
+                        (src, dest, destMember, context) =>
+                            context.Items.ContainsKey("VehicleId")
+                                ? (string)context.Items["VehicleId"]
+                                : default!
+                    )
+            );
     }
 }
