@@ -38,7 +38,7 @@ public class MaintenanceInitialReportController : BaseApiController
         var report = _mapper.Map<MaintenanceInitialReport>(dto);
         report.MechanicId = mechanicId!;
         await _service.CreateInitialReportAsync(report);
-        return Ok();
+        return Ok(new { statusCode = StatusCodes.Status200OK });
     }
     #endregion
 
@@ -54,7 +54,7 @@ public class MaintenanceInitialReportController : BaseApiController
         var report = _mapper.Map<MaintenanceInitialReport>(dto);
         report.Id = id;
         await _service.UpdateInitialReportAsync(report);
-        return NoContent();
+        return Ok(new { statusCode = StatusCodes.Status200OK });
     }
     #endregion
 
@@ -64,7 +64,7 @@ public class MaintenanceInitialReportController : BaseApiController
     public async Task<IActionResult> Delete([FromRoute] string id)
     {
         await _service.DeleteInitialReportAsync(id);
-        return NoContent();
+        return Ok(new { statusCode = StatusCodes.Status200OK });
     }
     #endregion
 
@@ -75,7 +75,7 @@ public class MaintenanceInitialReportController : BaseApiController
     {
         var report = await _service.GetInitialReportByIdAsync(id);
         var response = _mapper.Map<MaintenanceInitialReportDetailsDto>(report);
-        return Ok(response);
+        return Ok(new { data = response, status = StatusCodes.Status200OK });
     }
     #endregion
 
@@ -88,7 +88,7 @@ public class MaintenanceInitialReportController : BaseApiController
     {
         var reports = await _service.GetAllInitialReportsAsync(specParams);
         var response = _mapper.Map<IReadOnlyList<MaintenanceInitialReportResponseDto>>(reports);
-        return Ok(response);
+        return Ok(new { data = response, status = StatusCodes.Status200OK });
     }
     #endregion
 
