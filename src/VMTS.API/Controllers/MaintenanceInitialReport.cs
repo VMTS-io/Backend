@@ -75,7 +75,7 @@ public class MaintenanceInitialReportController : BaseApiController
     {
         var report = await _service.GetInitialReportByIdAsync(id);
         var response = _mapper.Map<MaintenanceInitialReportDetailsDto>(report);
-        return Ok(new { data = response, status = StatusCodes.Status200OK });
+        return Ok(new { data = response, StatusCode = StatusCodes.Status200OK });
     }
     #endregion
 
@@ -88,7 +88,7 @@ public class MaintenanceInitialReportController : BaseApiController
     {
         var reports = await _service.GetAllInitialReportsAsync(specParams);
         var response = _mapper.Map<IReadOnlyList<MaintenanceInitialReportResponseDto>>(reports);
-        return Ok(new { data = response, status = StatusCodes.Status200OK });
+        return Ok(new { data = response, StatusCode = StatusCodes.Status200OK });
     }
     #endregion
 
