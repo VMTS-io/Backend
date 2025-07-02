@@ -34,7 +34,7 @@ public class MaintenanceFinalReportController : BaseApiController
         var report = _mapper.Map<MaintenanceFinalReport>(dto);
         report.MechanicId = mechanicId!;
         await _service.CreateFinalReportAsync(report);
-        return Ok(new { statusCode = StatusCodes.Status200OK });
+        return Ok(new { StatusCode = StatusCodes.Status200OK });
     }
     #endregion
 
@@ -50,7 +50,7 @@ public class MaintenanceFinalReportController : BaseApiController
         var report = _mapper.Map<MaintenanceFinalReport>(dto);
         report.Id = id;
         await _service.UpdateFinalReportAsync(report);
-        return Ok(new { statusCode = StatusCodes.Status200OK });
+        return Ok(new { StatusCode = StatusCodes.Status200OK });
     }
     #endregion
 
@@ -60,7 +60,7 @@ public class MaintenanceFinalReportController : BaseApiController
     public async Task<IActionResult> Delete([FromRoute] string id)
     {
         await _service.DeleteFinalReportAsync(id);
-        return Ok(new { statusCode = StatusCodes.Status200OK });
+        return Ok(new { StatusCode = StatusCodes.Status200OK });
     }
 
     #endregion
@@ -72,7 +72,7 @@ public class MaintenanceFinalReportController : BaseApiController
     {
         var report = await _service.GetFinalReportByIdAsync(id);
         var response = _mapper.Map<MaintenanceFinalReportDetailsDto>(report);
-        return Ok(new { data = response, statusCode = StatusCodes.Status200OK });
+        return Ok(new { data = response, StatusCode = StatusCodes.Status200OK });
     }
     #endregion
 
@@ -85,7 +85,7 @@ public class MaintenanceFinalReportController : BaseApiController
     {
         var reports = await _service.GetAllFinalReportsAsync(specParams);
         var response = _mapper.Map<IReadOnlyList<MaintenanceFinalReportResponseDto>>(reports);
-        return Ok(new { data = response, statusCode = StatusCodes.Status200OK });
+        return Ok(new { data = response, StatusCode = StatusCodes.Status200OK });
     }
     #endregion
 

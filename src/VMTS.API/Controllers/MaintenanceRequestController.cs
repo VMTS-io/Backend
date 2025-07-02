@@ -80,7 +80,7 @@ public class MaintenanceRequestController : BaseApiController
         )
             return Unauthorized(new ApiErrorResponse(401));
         var mappedModel = _mapper.Map<MaintenaceRequest, MaintenanceRequestResponseDto>(result);
-        return Ok(new { data = mappedModel, statusCode = 200 });
+        return Ok(new { data = mappedModel, StatusCode = StatusCodes.Status200OK });
     }
     #endregion
 
@@ -96,7 +96,7 @@ public class MaintenanceRequestController : BaseApiController
             IReadOnlyList<MaintenaceRequest>,
             IReadOnlyList<MaintenanceRequestResponseDto>
         >(result);
-        return Ok(new { data = mappedModel, statusCode = 200 });
+        return Ok(new { data = mappedModel, StatusCode = StatusCodes.Status200OK });
     }
     #endregion
 
@@ -114,7 +114,7 @@ public class MaintenanceRequestController : BaseApiController
             IReadOnlyList<MaintenaceRequest>,
             IReadOnlyList<MaintenanceRequestResponseDto>
         >(result);
-        return Ok(new { data = mappedResult, statusCode = 200 });
+        return Ok(new { data = mappedResult, StatusCode = StatusCodes.Status200OK });
     }
     #endregion
 }
