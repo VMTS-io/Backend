@@ -701,8 +701,20 @@ namespace VMTS.Repository.Data.Migrations
                     b.Property<string>("Id")
                         .HasColumnType("nvarchar(450)");
 
+                    b.Property<string>("BatteryStatus")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("BrakeCondition")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int>("CurrentOdometerKM")
                         .HasColumnType("int");
+
+                    b.Property<string>("EngineSize")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("ExpectedNextMaintenanceDate")
+                        .HasColumnType("datetime2");
 
                     b.Property<int>("FuelType")
                         .HasColumnType("int");
@@ -711,6 +723,9 @@ namespace VMTS.Repository.Data.Migrations
                         .HasColumnType("date");
 
                     b.Property<DateTime?>("LastAssignedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("LastMaintenanceDate")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("ModelId")
@@ -726,6 +741,12 @@ namespace VMTS.Repository.Data.Migrations
 
                     b.Property<int>("Status")
                         .HasColumnType("int");
+
+                    b.Property<string>("TireCondition")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("TransmissionType")
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
