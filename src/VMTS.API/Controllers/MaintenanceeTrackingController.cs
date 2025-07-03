@@ -41,11 +41,11 @@ public class MaintenanceeTrackingController : BaseApiController
         var mappedResult = _mapper.Map<IReadOnlyList<VehicleTrackingDto>>(result).FirstOrDefault();
         return mappedResult;
     }
-    
+
     [HttpPost("recalculate")]
-    public async Task<IActionResult> RecalculateAll(VehicleWithDuePartsSpecParams specParams)
+    public async Task<IActionResult> RecalculateAll()
     {
-        await _maintenanceTrackingService.RecalculateAllAsync(specParams);
+        await _maintenanceTrackingService.RecalculateAllAsync();
         return Ok(new { Message = "Recalculation completed successfully." });
     }
 }

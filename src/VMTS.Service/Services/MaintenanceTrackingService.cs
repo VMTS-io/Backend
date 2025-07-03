@@ -65,6 +65,7 @@ public class MaintenanceTrackingService : IMaintenanceTrackingService
                             IsAlmostDue = mt.IsAlmostDue,
                             LastReplacedAtKm = mt.KMAtLastChange,
                             NextChangeKm = mt.NextChangeKM.Value,
+                            NextChangeDate = mt.NextChangeDate.Value,
                             CurrentKm = mt.Vehicle?.CurrentOdometerKM ?? 0,
                         })
                         .ToList(),
@@ -81,16 +82,18 @@ public class MaintenanceTrackingService : IMaintenanceTrackingService
 
     #region Recalculate
 
-    public async Task RecalculateAllAsync(VehicleWithDuePartsSpecParams specParams)
+    public async Task RecalculateAllAsync()
     {
-        var specs = new TrackingDuePartsSpecification(specParams);
+        var specs = new TrackingDuePartsSpecification() { Includes = [mt => mt.Vehicle] };
         var allTrackings = await _unitOfWork
             .GetRepo<MaintenanceTracking>()
             .GetAllWithSpecificationAsync(specs);
         foreach (var tracking in allTrackings)
         {
             await RecalculateRowAsync(tracking);
+            _unitOfWork.GetRepo<MaintenanceTracking>().Update(tracking);
         }
+
         await _unitOfWork.SaveChanges();
     }
 
