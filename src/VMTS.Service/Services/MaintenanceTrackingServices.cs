@@ -40,7 +40,7 @@ public class MaintenanceTrackingServices : IMaintenanceTrackingServices
             (entity.NextChangeDate.HasValue && entity.NextChangeDate <= DateTime.Today.AddDays(15))
             || (vehicle.CurrentOdometerKM >= entity.NextChangeKM - 500);
         entity.NextChangeKM = part.LifeSpanKM.Value + vehicle.CurrentOdometerKM;
-        // entity.NextChangeDate = DateTime.UtcNow.AddDays(part.LifeSpanDays!.Value);
+        entity.NextChangeDate = DateTime.Now.AddDays(part.LifeSpanDays.Value);
         await _unitOfWork.GetRepo<MaintenanceTracking>().CreateAsync(entity);
         await _unitOfWork.SaveChanges();
     }
@@ -60,7 +60,7 @@ public class MaintenanceTrackingServices : IMaintenanceTrackingServices
         existedEntity.VehicleId = entity.VehicleId;
         existedEntity.PartId = entity.PartId;
         existedEntity.NextChangeKM = part.LifeSpanKM.Value + vehicle.CurrentOdometerKM;
-        // existedEntity.NextChangeDate = DateTime.UtcNow.AddDays(part.LifeSpanDays!.Value);
+        entity.NextChangeDate = DateTime.Now.AddDays(part.LifeSpanDays.Value);
         #region propably will replaced with omar's methods
         existedEntity.IsDue =
             (
