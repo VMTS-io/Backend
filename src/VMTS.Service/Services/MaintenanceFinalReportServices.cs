@@ -39,7 +39,7 @@ public class MaintenanceFinalReportServices : IMaintenanceFinalReportServices
         var validatedReport = await ValidateAndResolveAsync(report);
 
         validatedReport.MaintenaceRequest.Status = MaintenanceStatus.Completed;
-        validatedReport.Vehicle.Status = VehicleStatus.Active;
+        validatedReport.Vehicle.Status = VehicleStatus.Available;
 
         _requestRepo.Update(validatedReport.MaintenaceRequest);
         _vehicleRepo.Update(validatedReport.Vehicle);

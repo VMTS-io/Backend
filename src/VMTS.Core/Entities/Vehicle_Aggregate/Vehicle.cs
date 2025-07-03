@@ -13,10 +13,13 @@ public class Vehicle : BaseEntity
 
     public int CurrentOdometerKM { get; set; } //
 
-    public VehicleStatus Status { get; set; } = VehicleStatus.Active;
+    public VehicleStatus Status { get; set; } = VehicleStatus.Available;
     public DateOnly ModelYear { get; set; }
 
     public DateTime? LastAssignedDate { get; set; }
+
+    // public DateTime? LastMaintenanceDate { get; set; }
+    // public DateTime? ExpectedNextMaintenanceDate { get; set; }
     public string ModelId { get; set; } = default!;
     public VehicleModel VehicleModel { get; set; } = default!;
 
