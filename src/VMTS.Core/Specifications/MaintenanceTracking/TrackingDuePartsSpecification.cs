@@ -7,6 +7,8 @@ namespace VMTS.Core.Specifications.MaintenanceTracking;
 public class TrackingDuePartsSpecification
     : BaseSpecification<Entities.Maintenace.MaintenanceTracking>
 {
+    public TrackingDuePartsSpecification() { }
+
     public TrackingDuePartsSpecification(VehicleWithDuePartsSpecParams specParams)
         : base(mt =>
             (

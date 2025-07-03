@@ -10,5 +10,7 @@ public class DuePart
     public bool IsAlmostDue { get; set; } // "Due" or "AlmostDue"
     public int LastReplacedAtKm { get; set; }
     public int NextChangeKm { get; set; }
+
+    public DateTime NextChangeDate { get; set; }
     public int CurrentKm { get; set; }
 }
