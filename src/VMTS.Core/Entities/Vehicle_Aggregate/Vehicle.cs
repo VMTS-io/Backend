@@ -17,6 +17,9 @@ public class Vehicle : BaseEntity
     public DateOnly ModelYear { get; set; }
 
     public DateTime? LastAssignedDate { get; set; }
+
+    // public DateTime? LastMaintenanceDate { get; set; }
+    // public DateTime? ExpectedNextMaintenanceDate { get; set; }
     public string ModelId { get; set; } = default!;
     public VehicleModel VehicleModel { get; set; } = default!;
 
