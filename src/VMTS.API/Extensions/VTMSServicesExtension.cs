@@ -1,19 +1,26 @@
 ﻿using System.Text.Json.Serialization;
 using FluentValidation;
+using Hangfire;
+using Hangfire.MemoryStorage;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using OfficeOpenXml;
 using StackExchange.Redis;
 using VMTS.API.ActionFilters;
+using VMTS.API.Errors;
 using VMTS.API.GlobalExceptionHnadler;
 using VMTS.API.Helpers;
 using VMTS.API.Hubs;
 using VMTS.API.Middlewares;
+using VMTS.Core.Entities.Identity;
+using VMTS.Core.Interfaces;
 using VMTS.Core.Interfaces.Repositories;
 using VMTS.Core.Interfaces.Services;
 using VMTS.Core.Interfaces.UnitOfWork;
 using VMTS.Core.ServicesContract;
 using VMTS.Repository;
 using VMTS.Repository.Data;
+using VMTS.Repository.Data.Jobs;
 using VMTS.Repository.Repositories;
 using VMTS.Service.Services;
 
@@ -61,6 +68,8 @@ public static class VTMSServicesExtension
         //     };
         // });
 
+        services.AddScoped<RecalculateJob>();
+
         services.AddScoped<IMaintenanceTrackingService, MaintenanceTrackingService>();
         services.AddSignalR();
 
@@ -73,13 +82,11 @@ public static class VTMSServicesExtension
             AbortOnConnectFail = false,
         };
 
-        // ✅ Register for caching
         services.AddStackExchangeRedisCache(options =>
         {
             options.ConfigurationOptions = redisConfiguration;
         });
 
-        // ✅ Register for IConnectionMultiplexer (used by TripLocationService)
         var multiplexer = ConnectionMultiplexer.Connect(redisConfiguration);
         services.AddSingleton<IConnectionMultiplexer>(multiplexer);
 
@@ -104,6 +111,13 @@ public static class VTMSServicesExtension
             options.AddDocumentTransformer<BearerSecuritySchemeTransformer>();
         });
 
+        services.AddHangfire(config =>
+        {
+            config.UseMemoryStorage();
+        });
+
+        services.AddHangfireServer();
+
         services.AddSingleton<ExceptionMiddleware>();
         services.AddDbContext<VTMSDbContext>(options =>
         {
@@ -118,7 +132,8 @@ public static class VTMSServicesExtension
             );
         });
 
-        ExcelPackage.License.SetNonCommercialPersonal("Bassel Raafat");
+        services.AddScoped<IMaintenanceTrackingService, MaintenanceTrackingService>();
+
         services.AddScoped<ITripReportService, TripReportService>();
         services.AddAutoMapper(typeof(MappingProfile));
         services.AddScoped<IUnitOfWork, UnitOfWork>();

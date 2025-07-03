@@ -1,7 +1,10 @@
+using Hangfire;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Scalar.AspNetCore;
 using VMTS.API.Extensions;
 using VMTS.API.Hubs;
 using VMTS.API.Middlewares;
+using VMTS.Repository.Data.Jobs;
 
 namespace VMTS.API
 {
@@ -16,7 +19,18 @@ namespace VMTS.API
             builder.Services.AddIdentityServices(builder.Configuration);
 
             var app = builder.Build();
+            await using (var scope = app.Services.CreateAsyncScope())
+            {
+                var job = scope.ServiceProvider.GetRequiredService<RecalculateJob>();
+                var recurringJobManager =
+                    scope.ServiceProvider.GetRequiredService<IRecurringJobManager>();
 
+                recurringJobManager.AddOrUpdate(
+                    "RecalculateAllJob",
+                    () => job.RunRecalculateAll(),
+                    Cron.Daily(21, 30)
+                );
+            }
             await app.ApplyMigrationAsync();
             await app.ApplySeedAsync();
 
@@ -55,6 +69,7 @@ namespace VMTS.API
                         }
                     );
             });
+            app.UseHangfireDashboard();
             app.UseHttpsRedirection();
             app.UseMiddleware<ExceptionMiddleware>();
             // app.UseExceptionHandler();
