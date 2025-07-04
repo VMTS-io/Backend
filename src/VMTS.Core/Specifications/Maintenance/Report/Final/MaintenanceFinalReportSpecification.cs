@@ -124,7 +124,7 @@ public class MaintenanceFinalReportSpecification : BaseSpecification<Maintenance
         Includes.Add(r => r.InitialReport);
         Includes.Add(r => r.MaintenaceRequest);
         // Includes.Add(r => r.ChangedParts);
-        Includes.Add(r => r.MaintenanceCategory);
+        // Includes.Add(r => r.MaintenanceCategory);
         IncludeStrings.Add("ChangedParts.Part");
     }
 }
