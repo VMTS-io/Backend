@@ -34,7 +34,7 @@ public class MaintenanceRequestController : BaseApiController
         var managerId = User.FindFirstValue(ClaimTypes.NameIdentifier);
         var mappedModel = _mapper.Map<MaintenanceRequestUpsertDto, MaintenaceRequest>(model);
         mappedModel.ManagerId = managerId!;
-        await _services.CreateAsync(mappedModel);
+        await _services.CreateAsync(mappedModel, model.Parts);
         return NoContent();
     }
     #endregion
@@ -50,7 +50,7 @@ public class MaintenanceRequestController : BaseApiController
     {
         var mappedModel = _mapper.Map<MaintenanceRequestUpsertDto, MaintenaceRequest>(model);
         mappedModel.Id = id;
-        await _services.UpdateAsync(mappedModel);
+        await _services.UpdateAsync(mappedModel, model.Parts);
         return NoContent();
     }
     #endregion
