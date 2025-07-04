@@ -9,16 +9,16 @@ namespace VMTS.Service.Services;
 public class MaintenanceCategoryServices : IMaintenanceCategoryServices
 {
     private readonly IUnitOfWork _unitOfWork;
-    private readonly IGenericRepository<MaintenaceCategory> _categoryRepo;
+    private readonly IGenericRepository<MaintenaceCategories> _categoryRepo;
 
     public MaintenanceCategoryServices(IUnitOfWork unitOfWork)
     {
         _unitOfWork = unitOfWork;
-        _categoryRepo = _unitOfWork.GetRepo<MaintenaceCategory>();
+        _categoryRepo = _unitOfWork.GetRepo<MaintenaceCategories>();
     }
 
     #region Create
-    public async Task CreateCategoryAsync(MaintenaceCategory category)
+    public async Task CreateCategoryAsync(MaintenaceCategories category)
     {
         await _categoryRepo.CreateAsync(category);
         await _unitOfWork.SaveChanges();
@@ -26,7 +26,7 @@ public class MaintenanceCategoryServices : IMaintenanceCategoryServices
     #endregion
 
     #region Update
-    public async Task UpdateCategoryAsync(MaintenaceCategory category)
+    public async Task UpdateCategoryAsync(MaintenaceCategories category)
     {
         await GetCategoryOrThrowAsync(category.Id);
         _categoryRepo.Update(category);
@@ -44,21 +44,21 @@ public class MaintenanceCategoryServices : IMaintenanceCategoryServices
     #endregion
 
     #region Get All
-    public async Task<IReadOnlyList<MaintenaceCategory>> GetAllCategoriesAsync()
+    public async Task<IReadOnlyList<MaintenaceCategories>> GetAllCategoriesAsync()
     {
         return await _categoryRepo.GetAllAsync();
     }
     #endregion
 
     #region Get By Id
-    public async Task<MaintenaceCategory> GetCategoryByIdAsync(string id)
+    public async Task<MaintenaceCategories> GetCategoryByIdAsync(string id)
     {
         return await GetCategoryOrThrowAsync(id);
     }
     #endregion
 
     #region Get or throw
-    private async Task<MaintenaceCategory> GetCategoryOrThrowAsync(string id)
+    private async Task<MaintenaceCategories> GetCategoryOrThrowAsync(string id)
     {
         return await _categoryRepo.GetByIdAsync(id)
             ?? throw new NotFoundException($"Category with ID {id} not found.");

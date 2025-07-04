@@ -65,7 +65,7 @@ public class MaintenanceFinalReportServices : IMaintenanceFinalReportServices
         updatedReport.InitialReportId = existingReport.InitialReportId;
         updatedReport.MaintenaceRequestId = existingReport.MaintenaceRequestId;
         updatedReport.MechanicId = existingReport.MechanicId;
-        updatedReport.MaintenanceCategoryId = existingReport.MaintenanceCategoryId;
+        updatedReport.MaintenanceCategory = existingReport.MaintenanceCategory;
 
         await ValidateAndApplyUpdateAsync(existingReport, updatedReport);
 
@@ -156,7 +156,7 @@ public class MaintenanceFinalReportServices : IMaintenanceFinalReportServices
 
         report.MaintenaceRequestId = maintenanceRequest.Id;
         report.MaintenaceRequest = maintenanceRequest;
-        report.MaintenanceCategoryId = initialReport.MaintenanceCategoryId;
+        report.MaintenanceCategory = initialReport.MaintenanceCategory;
         report.VehicleId = maintenanceRequest.VehicleId;
         report.Vehicle = maintenanceRequest.Vehicle;
 

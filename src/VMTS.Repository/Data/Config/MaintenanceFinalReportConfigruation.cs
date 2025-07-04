@@ -14,10 +14,10 @@ public class MaintenanceFinalReportConfigruation : IEntityTypeConfiguration<Main
             .HasForeignKey(mir => mir.MechanicId)
             .OnDelete(DeleteBehavior.Cascade);
 
-        builder
-            .HasOne(mfr => mfr.MaintenanceCategory)
-            .WithMany()
-            .HasForeignKey(mfr => mfr.MaintenanceCategoryId);
+        // builder
+        //     .HasOne(mfr => mfr.MaintenanceCategory)
+        //     .WithMany()
+        //     .HasForeignKey(mfr => mfr.MaintenanceCategoryId);
 
         builder
             .HasOne(mfr => mfr.Vehicle)

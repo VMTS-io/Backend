@@ -1,4 +1,3 @@
-using VMTS.Core.Entities.Parts;
 using VMTS.Core.Entities.User_Business;
 using VMTS.Core.Entities.Vehicle_Aggregate;
 
@@ -14,8 +13,8 @@ public class MaintenanceFinalReport : BaseEntity
 
     // public Status Status { get; set; } = Status.Completed;
 
-    public MaintenaceCategory MaintenanceCategory { get; set; } = default!;
-    public string MaintenanceCategoryId { get; set; } = default!;
+    // public MaintenaceCategories MaintenanceCategory { get; set; } = default!;
+    public MaintenanceCategory MaintenanceCategory { get; set; } = default!;
 
     public ICollection<MaintenanceFinalReportParts> ChangedParts { get; set; } = [];
 

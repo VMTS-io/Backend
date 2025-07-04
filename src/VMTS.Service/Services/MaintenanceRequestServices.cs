@@ -14,20 +14,22 @@ namespace VMTS.Service.Services;
 public class MaintenanceRequestServices : IMaintenanceRequestServices
 {
     private readonly IUnitOfWork _unitOfWork;
+    private readonly IPartService _partServices;
     private readonly IGenericRepository<MaintenaceRequest> _repo;
     private readonly IGenericRepository<BusinessUser> _userRepo;
     private readonly IGenericRepository<Vehicle> _vehicleRepo;
 
-    public MaintenanceRequestServices(IUnitOfWork unitOfWork)
+    public MaintenanceRequestServices(IUnitOfWork unitOfWork, IPartService partServices)
     {
         _unitOfWork = unitOfWork;
+        _partServices = partServices;
         _repo = _unitOfWork.GetRepo<MaintenaceRequest>();
         _userRepo = _unitOfWork.GetRepo<BusinessUser>();
         _vehicleRepo = _unitOfWork.GetRepo<Vehicle>();
     }
 
     #region Create
-    public async Task CreateAsync(MaintenaceRequest model)
+    public async Task CreateAsync(MaintenaceRequest model, List<string> parts)
     {
         if (!await _userRepo.ExistAsync(model.ManagerId))
             throw new Exception("Manager Not Found");
@@ -41,8 +43,11 @@ public class MaintenanceRequestServices : IMaintenanceRequestServices
         var vehicle =
             await _vehicleRepo.GetByIdAsync(model.VehicleId)
             ?? throw new Exception("Vechile Not Found");
+        var partsDic = await _partServices.ValidatePartIdsExistAsync(parts);
+
         vehicle.Status = VehicleStatus.UnderMaintenance;
 
+        model.Parts = partsDic.Values.ToList();
         _vehicleRepo.Update(vehicle);
         await _repo.CreateAsync(model);
         await _unitOfWork.SaveChanges();
@@ -50,7 +55,7 @@ public class MaintenanceRequestServices : IMaintenanceRequestServices
     #endregion
 
     #region Update
-    public async Task UpdateAsync(MaintenaceRequest model)
+    public async Task UpdateAsync(MaintenaceRequest model, List<string> parts)
     {
         var existingRequest =
             await _repo.GetByIdAsync(model.Id)
@@ -58,10 +63,14 @@ public class MaintenanceRequestServices : IMaintenanceRequestServices
 
         if (!await _vehicleRepo.ExistAsync(model.VehicleId))
             throw new Exception("Vechile Not Found");
+        await _partServices.ValidatePartIdsExistAsync(model.Parts.Select(p => p.Id));
 
         model.ManagerId = existingRequest.ManagerId;
         model.Status = existingRequest.Status;
         model.Date = existingRequest.Date;
+
+        var partsDic = await _partServices.ValidatePartIdsExistAsync(parts);
+        model.Parts = partsDic.Values.ToList();
 
         _repo.Update(model);
         await _unitOfWork.SaveChanges();

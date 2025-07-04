@@ -7,13 +7,13 @@ public class MaintenanceReportResponseDto
 {
     public string Id { get; set; } = default!;
 
-    public string ReportType { get; set; }
+    public string ReportType { get; set; } = default!;
     public string Notes { get; set; } = default!;
     public MaintenanceStatus RequestStatus { get; set; }
     public string MechanicName { get; set; } = default!;
     public string VehicleName { get; set; } = default!;
     public string RequestTitle { get; set; } = default!;
-    public string MaintenanceCategory { get; set; } = default!;
+    public MaintenanceCategory MaintenanceCategory { get; set; } = default!;
 
     // Common Dates
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]

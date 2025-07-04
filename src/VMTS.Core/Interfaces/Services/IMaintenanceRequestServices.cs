@@ -5,8 +5,8 @@ namespace VMTS.Core.Interfaces.Services;
 
 public interface IMaintenanceRequestServices
 {
-    Task CreateAsync(MaintenaceRequest model);
-    Task UpdateAsync(MaintenaceRequest model);
+    Task CreateAsync(MaintenaceRequest model, List<string> parts);
+    Task UpdateAsync(MaintenaceRequest model, List<string> parts);
     Task DeleteAsync(string Id);
     Task<MaintenaceRequest> GetByIdAsync(string id);
     Task<IReadOnlyList<MaintenaceRequest>> GetAllAsync(MaintenanceRequestSpecParams specParams);

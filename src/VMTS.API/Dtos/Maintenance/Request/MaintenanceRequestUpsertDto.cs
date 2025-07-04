@@ -1,3 +1,5 @@
+using VMTS.Core.Entities.Maintenace;
+
 namespace VMTS.API.Dtos.Maintenance.Request;
 
 public class MaintenanceRequestUpsertDto
@@ -6,7 +8,9 @@ public class MaintenanceRequestUpsertDto
 
     public string VehicleId { get; set; } = default!;
 
-    public string MaintenanceCategoryId { get; set; } = default!;
+    public MaintenanceCategory MaintenanceCategory { get; set; } = default!;
+
+    public List<string> Parts { get; set; } = default!;
 
     public string Description { get; set; } = default!;
 }
