@@ -49,7 +49,7 @@ public class MaintenanceReportController : BaseApiController
                 MechanicName = ir.Mechanic.DisplayName,
                 VehicleName = ir.Vehicle.VehicleModel.Name,
                 RequestTitle = ir.MaintenanceRequest.Description,
-                MaintenanceCategory = ir.MaintenanceCategory.Categorty.ToString(),
+                MaintenanceCategory = ir.MaintenanceCategory,
                 MissingParts = ir.MissingParts.Select(p => p.Name).ToList(),
                 ExpectedChangedParts = ir
                     .ExpectedChangedParts.Select(ecp => ecp.Part.Name)
@@ -74,7 +74,7 @@ public class MaintenanceReportController : BaseApiController
                 MechanicName = fr.Mechanic.DisplayName,
                 VehicleName = fr.Vehicle.VehicleModel.Name,
                 RequestTitle = fr.MaintenaceRequest.Description,
-                MaintenanceCategory = fr.MaintenanceCategory.Categorty.ToString(),
+                MaintenanceCategory = fr.MaintenanceCategory,
 
                 ChangedParts = fr.ChangedParts.Select(cp => cp.Part.Name).ToList(),
 

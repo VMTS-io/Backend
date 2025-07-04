@@ -1,4 +1,3 @@
-using VMTS.API.Dtos.Maintenance.Report.Initial;
 using VMTS.Core.Entities.Maintenace;
 
 namespace VMTS.API.Dtos.Maintenance.Report.Final;
@@ -11,7 +10,7 @@ public class MaintenanceFinalReportDetailsDto
 
     public DateTime FinishedDate { get; set; }
 
-    public string MaintenanceCategory { get; set; } = default!;
+    public MaintenanceCategory MaintenanceCategory { get; set; } = default!;
 
     public BussinessUserDto Mechanic { get; set; } = default!;
 

@@ -46,7 +46,7 @@ public class MaintenaceCategoryController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] MaintenaceCategoryCreateUpdateDto dto)
     {
-        var category = _mapper.Map<MaintenaceCategory>(dto);
+        var category = _mapper.Map<MaintenaceCategories>(dto);
         await _categoryService.CreateCategoryAsync(category);
         return CreatedAtAction(nameof(GetById), new { id = category.Id }, null);
     }
@@ -59,7 +59,7 @@ public class MaintenaceCategoryController : ControllerBase
         [FromBody] MaintenaceCategoryCreateUpdateDto dto
     )
     {
-        var category = _mapper.Map<MaintenaceCategory>(dto);
+        var category = _mapper.Map<MaintenaceCategories>(dto);
         category.Id = id;
         await _categoryService.UpdateCategoryAsync(category);
         return NoContent();

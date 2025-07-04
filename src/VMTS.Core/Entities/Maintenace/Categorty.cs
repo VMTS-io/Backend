@@ -2,14 +2,14 @@
 
 namespace VMTS.Core.Entities.Maintenace;
 
-public enum Categorty
+public enum MaintenanceCategory
 {
     [EnumMember(Value = "Faults")]
     Faults,
 
-    [EnumMember(Value = "Millage")]
-    Millage,
-
-    [EnumMember(Value = "Time Based")]
-    TimeBased,
+    [EnumMember(Value = "Regular")]
+    Regular,
+    //
+    // [EnumMember(Value = "Time Based")]
+    // TimeBased,
 }

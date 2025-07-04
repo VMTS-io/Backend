@@ -92,7 +92,7 @@ public class MaintenanceIntialReportSpecification : BaseSpecification<Maintenanc
         Includes.Add(mir => mir.Vehicle.VehicleModel.Brand);
         Includes.Add(mir => mir.Vehicle.VehicleModel.Category);
         Includes.Add(mir => mir.Mechanic);
-        Includes.Add(mir => mir.MaintenanceCategory);
+        // Includes.Add(mir => mir.MaintenanceCategory);
         Includes.Add(mir => mir.MaintenanceRequest);
         Includes.Add(mir => mir.MissingParts);
         IncludeStrings.Add("ExpectedChangedParts.Part");
