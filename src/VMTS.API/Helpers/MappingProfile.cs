@@ -30,8 +30,9 @@ public class MappingProfile : Profile
     {
         CreateMap<TripLocationDto, TripLocation>().ReverseMap();
         CreateMap<BusinessUser, BusinessUserGetAllResponse>();
-
+        
         CreateMap<VehicleWithDueParts, VehicleWithDuePartsDto>();
+        CreateMap<VehicleWithDueParts, VehicleTrackingDto>();
         CreateMap<DuePart, DuePartDto>();
         CreateMap<TripReport, DriverReportItemDto>()
             .ForMember(dest => dest.ReportType, opt => opt.MapFrom(_ => "Trip"))

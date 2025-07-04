@@ -8,3 +8,4 @@ public class VehicleWithDuePartsDto
     public string PlateNumber { get; set; }
     public List<DuePart> DueParts { get; set; }
 }
+
