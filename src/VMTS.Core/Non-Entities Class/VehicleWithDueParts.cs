@@ -19,9 +19,9 @@ public class VehicleWithDueParts
     public VehicleStatus Status { get; set; }
     public int CurrentOdometerKM { get; set; }
     public DateOnly ModelYear { get; set; }
-    public string ModelId { get; set; }
-    public VehicleModel VehicleModel { get; set; }
-    public VehicleCategory VehicleCategory { get; set; }
+    public string ModelId { get; set; } = default!;
+    public VehicleModel VehicleModel { get; set; } = default!;
+    public VehicleCategory VehicleCategory { get; set; } = default!;
 
     public DateTime LastAssignedDate { get; set; }
 }
