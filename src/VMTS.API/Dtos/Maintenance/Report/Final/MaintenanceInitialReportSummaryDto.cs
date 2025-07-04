@@ -1,3 +1,5 @@
+using VMTS.Core.Entities.Maintenace;
+
 namespace VMTS.API.Dtos.Maintenance.Report.Final;
 
 public class MaintenanceInitialReportSummaryDto
@@ -7,6 +9,5 @@ public class MaintenanceInitialReportSummaryDto
     public decimal ExpectedCost { get; set; }
     public DateTime Date { get; set; }
     public DateOnly ExpectedFinishDate { get; set; }
-    public string MaintenanceCategory { get; set; } = default!;
+    public MaintenanceCategory MaintenanceCategory { get; set; } = default!;
 }
-

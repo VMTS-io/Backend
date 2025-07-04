@@ -1,4 +1,3 @@
-using System.Runtime.CompilerServices;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Microsoft.EntityFrameworkCore;
@@ -160,7 +159,7 @@ public class VMTSDataSeed
         ILogger<VMTSDataSeed> logger
     )
     {
-        if (!await dbContext.Set<MaintenaceCategory>().AnyAsync())
+        if (!await dbContext.Set<MaintenaceCategories>().AnyAsync())
         {
             var filePath = Path.Combine(
                 Directory.GetCurrentDirectory(),
@@ -169,7 +168,7 @@ public class VMTSDataSeed
                 "Data/DataSeed/maintenance-categories.json"
             );
             var jsonText = await File.ReadAllTextAsync(filePath);
-            var maintenanceCategories = JsonSerializer.Deserialize<List<MaintenaceCategory>>(
+            var maintenanceCategories = JsonSerializer.Deserialize<List<MaintenaceCategories>>(
                 jsonText,
                 _jsonOptions
             );
@@ -234,19 +233,20 @@ public class VMTSDataSeed
                         );
                         continue;
                     }
-                    if (
-                        !await dbContext.MaintenanceCategories.AnyAsync(c =>
-                            c.Id == request.MaintenanceCategoryId
-                        )
-                    )
-                    {
-                        logger.LogWarning(
-                            "Invalid MaintenanceCategoryId {MaintenanceCategoryId} for maintenance request {Description}",
-                            request.MaintenanceCategoryId,
-                            request.Description
-                        );
-                        continue;
-                    }
+                    // if (
+                    //     !await dbContext.MaintenanceCategories.AnyAsync(c =>
+                    //         c.Id == request.MaintenanceCategoryId
+                    //
+                    //     )
+                    // )
+                    // {
+                    //     logger.LogWarning(
+                    //         "Invalid MaintenanceCategoryId {MaintenanceCategoryId} for maintenance request {Description}",
+                    //         request.MaintenanceCategoryId,
+                    //         request.Description
+                    //     );
+                    //     continue;
+                    // }
                     await dbContext.AddAsync(request);
                     logger.LogInformation(
                         "Seeded MaintenanceRequest: {Description}",

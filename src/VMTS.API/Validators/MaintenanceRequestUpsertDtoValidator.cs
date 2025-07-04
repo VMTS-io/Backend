@@ -11,9 +11,9 @@ public class MaintenanceRequestUpsertDtoValidator : AbstractValidator<Maintenanc
 
         RuleFor(x => x.VehicleId).NotEmpty().WithMessage("Vehicle ID is required.");
 
-        RuleFor(x => x.MaintenanceCategoryId)
-            .NotEmpty()
-            .WithMessage("Maintenance category ID is required.");
+        // RuleFor(x => x.MaintenanceCategoryId)
+        //     .NotEmpty()
+        //     .WithMessage("Maintenance category ID is required.");
 
         RuleFor(x => x.Description)
             // .NotEmpty()
@@ -22,4 +22,3 @@ public class MaintenanceRequestUpsertDtoValidator : AbstractValidator<Maintenanc
             .WithMessage("Description must not exceed 500 characters.");
     }
 }
-

@@ -15,7 +15,7 @@ public class EnumController : BaseApiController
 
     [HttpGet("category")]
     public ActionResult<List<EnumResponseDto>> GetCategory() =>
-        Ok(EnumHelper.GetEnumValues<Categorty>());
+        Ok(EnumHelper.GetEnumValues<MaintenanceCategory>());
 
     [HttpGet("maintenance-type")]
     public ActionResult<List<EnumResponseDto>> GetMaintenanceType() =>

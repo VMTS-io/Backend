@@ -1,9 +1,8 @@
 ﻿namespace VMTS.Core.Entities.Maintenace;
 
-public class MaintenaceCategory : BaseEntity
+public class MaintenaceCategories : BaseEntity
 {
-    public Categorty Categorty { get; set; }
+    public MaintenanceCategory Categorty { get; set; }
 
     public string Description { get; set; } = default!;
 }
-

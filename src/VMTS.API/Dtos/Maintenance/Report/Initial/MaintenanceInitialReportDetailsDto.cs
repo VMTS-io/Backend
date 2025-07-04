@@ -1,5 +1,3 @@
-using VMTS.API.Dtos.Maintenance.Request;
-using VMTS.API.Dtos.Part;
 using VMTS.Core.Entities.Maintenace;
 
 namespace VMTS.API.Dtos.Maintenance.Report.Initial;
@@ -16,7 +14,7 @@ public class MaintenanceInitialReportDetailsDto
 
     public DateOnly ExpectedFinishDate { get; set; }
 
-    public string MaintenanceCategory { get; set; } = default!;
+    public MaintenanceCategory MaintenanceCategory { get; set; } = default!;
 
     public BussinessUserDto Mechanic { get; set; } = default!;
 

@@ -32,6 +32,7 @@ public class MappingProfile : Profile
         CreateMap<BusinessUser, BusinessUserGetAllResponse>();
 
         CreateMap<VehicleWithDueParts, VehicleWithDuePartsDto>();
+        CreateMap<VehicleWithDueParts, VehicleTrackingDto>();
         CreateMap<DuePart, DuePartDto>();
         CreateMap<TripReport, DriverReportItemDto>()
             .ForMember(dest => dest.ReportType, opt => opt.MapFrom(_ => "Trip"))
@@ -77,8 +78,10 @@ public class MappingProfile : Profile
             .ForMember(dest => dest.DateOfBirth, opt => opt.MapFrom(src => src.DateOfBirth))
             .ForMember(dest => dest.NationalId, opt => opt.MapFrom(src => src.NationalId));
 
-        CreateMap<MaintenanceRequestUpsertDto, MaintenaceRequest>();
+        CreateMap<MaintenanceRequestUpsertDto, MaintenaceRequest>()
+            .ForMember(dest => dest.Parts, opts => opts.Ignore());
         CreateMap<MaintenaceRequest, MaintenanceRequestResponseDto>();
+
         CreateMap<VehicleUpsertDto, Vehicle>()
             .ForMember(
                 dest => dest.ModelYear,
@@ -148,10 +151,6 @@ public class MappingProfile : Profile
                 opt => opt.MapFrom(src => src.MaintenanceRequest.Description)
             )
             .ForMember(
-                dest => dest.MaintenanceCategory,
-                opt => opt.MapFrom(src => $"{src.MaintenanceCategory.Categorty} Maintenance")
-            )
-            .ForMember(
                 dest => dest.MissingParts,
                 opt => opt.MapFrom(src => src.MissingParts!.Select(p => p.Name))
             )
@@ -185,10 +184,6 @@ public class MappingProfile : Profile
                 opt => opt.MapFrom(src => src.InitialReport.Notes)
             )
             .ForMember(
-                dest => dest.MaintenanceCategory,
-                opt => opt.MapFrom(src => $"{src.MaintenanceCategory.Categorty} Maintenance")
-            )
-            .ForMember(
                 dest => dest.ChangedParts,
                 opt => opt.MapFrom(src => src.ChangedParts.Select(p => p.Part.Name))
             )
@@ -201,8 +196,8 @@ public class MappingProfile : Profile
         //     opt => opt.MapFrom(src => src.ExpectedChangedParts!.Select(p => p.Name))
         // );
 
-        CreateMap<MaintenaceCategoryCreateUpdateDto, MaintenaceCategory>();
-        CreateMap<MaintenaceCategory, MaintenaceCategoryResponseDto>();
+        CreateMap<MaintenaceCategoryCreateUpdateDto, MaintenaceCategories>();
+        CreateMap<MaintenaceCategories, MaintenaceCategoryResponseDto>();
         CreateMap<Part, PartDto>();
         CreateMap<Brand, BrandDto>();
         CreateMap<CreateOrUpdateBrandDto, Brand>();
@@ -217,31 +212,16 @@ public class MappingProfile : Profile
         CreateMap<MaintenaceRequest, MaintenanceRequestForReportDto>();
         CreateMap<MaintenanceInitialReportParts, MaintenanceReportPartResponseDto>();
         CreateMap<MaintenanceFinalReportParts, MaintenanceReportPartResponseDto>();
-        CreateMap<MaintenanceInitialReport, MaintenanceInitialReportDetailsDto>()
-            .ForMember(
-                dest => dest.MaintenanceCategory,
-                opts => opts.MapFrom(src => $"{src.MaintenanceCategory.Categorty} Maintenance")
-            );
-        CreateMap<MaintenanceFinalReport, MaintenanceFinalReportDetailsDto>()
-            .ForMember(
-                dest => dest.MaintenanceCategory,
-                opts => opts.MapFrom(src => $"{src.MaintenanceCategory.Categorty} Maintenance")
-            );
-        CreateMap<MaintenanceInitialReport, MaintenanceInitialReportSummaryDto>()
-            .ForMember(
-                dest => dest.MaintenanceCategory,
-                opt => opt.MapFrom(src => $"{src.MaintenanceCategory.Categorty} Mantenance")
-            );
-        CreateMap<MaintenanceFinalReport, MaintenanceFinalReportSummaryDto>()
-            .ForMember(
-                dest => dest.MaintenanceCategory,
-                opt => opt.MapFrom(src => $"{src.MaintenanceCategory.Categorty} Mantenance")
-            );
+        CreateMap<MaintenanceInitialReport, MaintenanceInitialReportDetailsDto>();
+        CreateMap<MaintenanceFinalReport, MaintenanceFinalReportDetailsDto>();
+        CreateMap<MaintenanceInitialReport, MaintenanceInitialReportSummaryDto>();
+        CreateMap<MaintenanceFinalReport, MaintenanceFinalReportSummaryDto>();
         CreateMap<Brand, BrandDto>();
-        CreateMap<MaintenaceRequest, MaintenanceRequestResponseDto>()
-            .ForMember(
-                dest => dest.MaintenaceCategory,
-                opts => opts.MapFrom(src => $"{src.MaintenanceCategory.Categorty} Maintenance")
-            );
+        CreateMap<MaintenaceRequest, MaintenanceRequestResponseDto>();
+
+        // .ForMember(
+        //     dest => dest.MaintenaceCategory,
+        //     opts => opts.MapFrom(src => $"{src.MaintenanceCategory.Categorty} Maintenance")
+        // );
     }
 }

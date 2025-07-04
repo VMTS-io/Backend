@@ -1,7 +1,5 @@
 using VMTS.Core.Entities.Maintenace;
 using VMTS.Core.Entities.Parts;
-using VMTS.Core.Entities.User_Business;
-using VMTS.Core.Entities.Vehicle_Aggregate;
 using VMTS.Core.Interfaces.Repositories;
 using VMTS.Core.Interfaces.Services;
 using VMTS.Core.Interfaces.UnitOfWork;
@@ -69,7 +67,7 @@ public class MaintenanceInitialReportServices : IMaintenanceInitialReportService
 
         updatedReport.MechanicId = existingReport.MechanicId;
         updatedReport.MaintenanceRequestId = existingReport.MaintenanceRequestId;
-        updatedReport.MaintenanceCategoryId = existingReport.MaintenanceCategoryId;
+        updatedReport.MaintenanceCategory = existingReport.MaintenanceCategory;
         await ValidateAndApplyUpdateAsync(existingReport, updatedReport);
         _reportRepo.Update(existingReport);
         await _unitOfWork.SaveChanges();
@@ -157,7 +155,7 @@ public class MaintenanceInitialReportServices : IMaintenanceInitialReportService
 
         report.MaintenanceRequest = maintenanceRequest;
         report.VehicleId = maintenanceRequest.VehicleId;
-        report.MaintenanceCategoryId = maintenanceRequest.MaintenanceCategoryId;
+        report.MaintenanceCategory = maintenanceRequest.MaintenanceCategory;
 
         var partIds = report.ExpectedChangedParts.Select(cp => cp.PartId).ToHashSet();
         var foundParts = await _partRepo.GetByIdsAsync(partIds);
