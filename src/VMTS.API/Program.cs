@@ -31,6 +31,7 @@ namespace VMTS.API
                     Cron.Daily(21, 30)
                 );
             }
+
             await app.ApplyMigrationAsync();
             await app.ApplySeedAsync();
 
@@ -69,7 +70,11 @@ namespace VMTS.API
                         }
                     );
             });
-            app.UseHangfireDashboard();
+            app.UseHangfireDashboard(
+                "/hangfire",
+                new DashboardOptions { Authorization = new[] { new HangfireDashboardAuthFilter() } }
+            );
+
             app.UseHttpsRedirection();
             app.UseMiddleware<ExceptionMiddleware>();
             // app.UseExceptionHandler();

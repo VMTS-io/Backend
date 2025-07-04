@@ -23,7 +23,15 @@ public class TripLocationService : ITripLocationService
 
         await _redis.StringSetAsync(key, json, TimeSpan.FromHours(5));
 
-        await _broadcaster.BroadcastAsync(model.TripId, model.Lat, model.Lng);
+        await _broadcaster.BroadcastAsync(
+            model.TripId,
+            model.Lat,
+            model.Lng,
+            model.StartLat,
+            model.StartLng,
+            model.DestinationLat,
+            model.DestinationLng
+        );
     }
 
     public async Task<TripLocation?> GetLocationAsync(string tripId)
