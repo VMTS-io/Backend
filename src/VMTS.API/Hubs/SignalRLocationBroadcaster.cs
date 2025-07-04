@@ -12,7 +12,15 @@ public class SignalRLocationBroadcaster : ILocationBroadcaster
         _hub = hub;
     }
 
-    public Task BroadcastAsync(string tripId, double lat, double lng)
+    public Task BroadcastAsync(
+        string tripId,
+        double lat,
+        double lng,
+        double startLat,
+        double startLng,
+        double destLat,
+        double destLng
+    )
     {
         return _hub.Clients.All.SendAsync("ReceiveLocation", tripId, lat, lng);
     }
