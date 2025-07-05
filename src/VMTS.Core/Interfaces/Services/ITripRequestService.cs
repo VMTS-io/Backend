@@ -15,7 +15,8 @@ public interface ITripRequestService
         DateTime date,
         string details,
         string pickupLocation,
-        string destination
+        string destination,
+        bool isDaily
     );
 
     Task UpdateTripRequestAsync(
@@ -30,6 +31,9 @@ public interface ITripRequestService
         string pickupLocation,
         string destination
     );
+
+    Task GenerateDailyTripsFromTemplatesAsync();
+    Task RemoveDailyTripAsync(string templateId, string managerId);
 
     Task DeleteTripRequestAsync(string tripId, string managerId);
 
