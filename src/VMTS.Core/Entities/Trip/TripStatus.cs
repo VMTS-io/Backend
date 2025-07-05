@@ -12,4 +12,7 @@ public enum TripStatus
 
     [EnumMember(Value = "Completed")]
     Completed,
+
+    [EnumMember(Value = "Canceled")]
+    Canceled,
 }
