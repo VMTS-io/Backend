@@ -10,7 +10,7 @@ public class MaintenanceRequestUpsertDto
 
     public MaintenanceCategory MaintenanceCategory { get; set; } = default!;
 
-    public List<string> Parts { get; set; } = default!;
+    public List<string> Parts { get; set; } = [];
 
     public string Description { get; set; } = default!;
 }

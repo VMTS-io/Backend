@@ -43,7 +43,7 @@ public class MaintenanceInitialReportController : BaseApiController
     #endregion
 
     #region Update
-    [ServiceFilter<ValidateModelActionFilter<MaintenanceInitialReportRequestDto>>]
+    [ServiceFilter<ValidateModelActionFilter<MaintenanceInitialReportUpdateDto>>]
     [Authorize(Roles = Roles.Mechanic)]
     [HttpPut("{id}")]
     public async Task<IActionResult> Update(
