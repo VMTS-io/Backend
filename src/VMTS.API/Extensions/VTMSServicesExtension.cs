@@ -69,6 +69,7 @@ public static class VTMSServicesExtension
         // });
 
         services.AddScoped<RecalculateJob>();
+        services.AddScoped<AssignDailyTrip>();
 
         services.AddScoped<IMaintenanceTrackingService, MaintenanceTrackingService>();
         services.AddSignalR();
