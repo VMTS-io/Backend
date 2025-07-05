@@ -16,26 +16,20 @@ public class MaintenanceInitialReportServices : IMaintenanceInitialReportService
     private readonly IGenericRepository<MaintenanceInitialReport> _reportRepo;
     private readonly IGenericRepository<MaintenaceRequest> _requestRepo;
     private readonly IGenericRepository<Part> _partRepo;
+    private readonly IPartService _partServices;
 
-    public MaintenanceInitialReportServices(IUnitOfWork unitOfWork)
+    public MaintenanceInitialReportServices(IUnitOfWork unitOfWork, IPartService partServices)
     {
         _unitOfWork = unitOfWork;
         _reportRepo = _unitOfWork.GetRepo<MaintenanceInitialReport>();
         _requestRepo = _unitOfWork.GetRepo<MaintenaceRequest>();
         _partRepo = _unitOfWork.GetRepo<Part>();
+        _partServices = partServices;
     }
 
     #region Create
     public async Task CreateInitialReportAsync(MaintenanceInitialReport report)
     {
-        // var initialReportSepc = new MaintenanceIntialReportSpecification(mir =>
-        //     mir.MaintenanceRequestId == report.MaintenanceRequestId
-        // );
-        // var initialReport = await _reportRepo.GetAllWithSpecificationAsync(initialReportSepc);
-        // if (initialReport.Count != 0)
-        //     throw new ConflictException(
-        //         "There is already Initial report for this maintenance Request"
-        //     );
         var validatedReport = await ValidateAndResolveAsync(report);
 
         if (validatedReport.MissingParts is null || validatedReport.MissingParts.Count == 0)
@@ -157,20 +151,9 @@ public class MaintenanceInitialReportServices : IMaintenanceInitialReportService
         report.VehicleId = maintenanceRequest.VehicleId;
         report.MaintenanceCategory = maintenanceRequest.MaintenanceCategory;
 
-        var partIds = report.ExpectedChangedParts.Select(cp => cp.PartId).ToHashSet();
-        var foundParts = await _partRepo.GetByIdsAsync(partIds);
-        var foundPartsDict = foundParts.ToDictionary(p => p.Id);
-
-        // Validate missing parts
-        var missingIds = partIds.Except(foundPartsDict.Keys).ToList();
-        if (missingIds.Count != 0)
-        {
-            throw new NotFoundException(
-                $"The following part IDs do not exist: {string.Join(", ", missingIds)}"
-            );
-        }
-
         // Check stock availability
+        var partIds = report.ExpectedChangedParts.Select(cp => cp.PartId).ToHashSet();
+        var foundPartsDict = await _partServices.ValidatePartIdsExistAsync(partIds);
         var outOfStockParts = new List<Part>();
         decimal totalExpectedCost = 0;
 
@@ -198,21 +181,10 @@ public class MaintenanceInitialReportServices : IMaintenanceInitialReportService
         MaintenanceInitialReport updated
     )
     {
-        // if (maintenanceRequest.MechanicId != updated.MechanicId)
-        //     throw new BadRequestException("Mechanic mismatch.");
-        //
-
-        // Validate and synchronize parts
         var incomingParts = updated.ExpectedChangedParts;
 
         var partIds = incomingParts.Select(p => p.PartId).ToHashSet();
-
-        var foundParts = await _partRepo.GetByIdsAsync(partIds);
-        var foundDict = foundParts.ToDictionary(p => p.Id);
-
-        var missingIds = partIds.Except(foundDict.Keys).ToList();
-        if (missingIds.Count > 0)
-            throw new NotFoundException($"Missing part IDs: {string.Join(", ", missingIds)}");
+        var foundDict = await _partServices.ValidatePartIdsExistAsync(partIds);
 
         var outOfStockParts = new List<Part>();
         var newPartMap = incomingParts.ToDictionary(p => p.PartId, p => p.Quantity);
