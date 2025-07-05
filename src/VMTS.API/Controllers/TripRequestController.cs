@@ -53,7 +53,8 @@ public class TripRequestController : BaseApiController
             request.Date,
             request.Details,
             request.PickupLocation,
-            request.Destination
+            request.Destination,
+            request.IsDaily
         );
 
         var status = HttpContext.Response.StatusCode;
