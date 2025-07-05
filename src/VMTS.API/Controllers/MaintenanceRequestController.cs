@@ -42,7 +42,7 @@ public class MaintenanceRequestController : BaseApiController
     #region Edit
     [ServiceFilter<ValidateModelActionFilter<MaintenanceRequestUpsertDto>>]
     [Authorize(Roles = Roles.Manager)]
-    [HttpPut("id")]
+    [HttpPut("{id}")]
     public async Task<ActionResult> Edit(
         [FromBody] MaintenanceRequestUpsertDto model,
         [FromRoute] string id
@@ -57,7 +57,7 @@ public class MaintenanceRequestController : BaseApiController
 
     #region Delete
     [Authorize(Roles = Roles.Manager)]
-    [HttpDelete("id")]
+    [HttpDelete("{id}")]
     public async Task<ActionResult> Delete([FromRoute] string id)
     {
         await _services.DeleteAsync(id);

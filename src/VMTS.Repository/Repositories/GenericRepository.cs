@@ -80,4 +80,9 @@ public class GenericRepository<T> : IGenericRepository<T>
     {
         await _dbContext.AddRangeAsync(range);
     }
+
+    public void UpdateRange(IEnumerable<T> range)
+    {
+        _dbContext.UpdateRange(range);
+    }
 }
