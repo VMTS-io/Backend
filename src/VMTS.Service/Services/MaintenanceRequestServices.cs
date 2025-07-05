@@ -73,7 +73,7 @@ public class MaintenanceRequestServices : IMaintenanceRequestServices
             await _vehicleRepo.GetByIdAsync(model.VehicleId)
             ?? throw new Exception("Vechile Not Found");
 
-        vehicle.Status = VehicleStatus.UnderMaintenance;
+        vehicle.Status = VehicleStatus.OutOfService;
 
         _vehicleRepo.Update(vehicle);
         await _repo.CreateAsync(model);

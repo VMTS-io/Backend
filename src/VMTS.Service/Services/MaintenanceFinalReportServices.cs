@@ -21,8 +21,9 @@ public class MaintenanceFinalReportServices : IMaintenanceFinalReportServices
     private readonly IGenericRepository<Vehicle> _vehicleRepo;
     private readonly IGenericRepository<MaintenaceRequest> _requestRepo;
     private readonly IGenericRepository<Part> _partRepo;
+    private readonly IPartService _partService;
 
-    public MaintenanceFinalReportServices(IUnitOfWork unitOfWork)
+    public MaintenanceFinalReportServices(IUnitOfWork unitOfWork, IPartService partService)
     {
         _unitOfWork = unitOfWork;
         _initialReportRepo = _unitOfWork.GetRepo<MaintenanceInitialReport>();
@@ -31,6 +32,7 @@ public class MaintenanceFinalReportServices : IMaintenanceFinalReportServices
         _requestRepo = _unitOfWork.GetRepo<MaintenaceRequest>();
         _partRepo = _unitOfWork.GetRepo<Part>();
         _finalReportRepo = _unitOfWork.GetRepo<MaintenanceFinalReport>();
+        _partService = partService;
     }
 
     #region Create
@@ -161,12 +163,7 @@ public class MaintenanceFinalReportServices : IMaintenanceFinalReportServices
         report.Vehicle = maintenanceRequest.Vehicle;
 
         var partIds = report.ChangedParts.Select(p => p.PartId).ToHashSet();
-        var foundParts = await _partRepo.GetByIdsAsync(partIds);
-        var partDict = foundParts.ToDictionary(p => p.Id);
-
-        var missingIds = partIds.Except(partDict.Keys).ToList();
-        if (missingIds.Count > 0)
-            throw new NotFoundException($"Missing part IDs: {string.Join(", ", missingIds)}");
+        var partDict = await _partService.ValidatePartIdsExistAsync(partIds);
 
         decimal totalCost = 0;
 
@@ -199,14 +196,7 @@ public class MaintenanceFinalReportServices : IMaintenanceFinalReportServices
         var newParts = updated.ChangedParts;
         var partIds = newParts.Select(p => p.PartId).ToHashSet();
 
-        var foundParts = await _partRepo.GetByIdsAsync(
-            partIds.Union(existing.ChangedParts.Select(p => p.PartId))
-        );
-        var partDict = foundParts.ToDictionary(p => p.Id);
-
-        var missing = partIds.Except(partDict.Keys).ToList();
-        if (missing.Count > 0)
-            throw new NotFoundException($"Missing parts: {string.Join(", ", missing)}");
+        var partDict = await _partService.ValidatePartIdsExistAsync(partIds);
 
         // Step 1: Rollback old quantities
         foreach (var old in existing.ChangedParts)
