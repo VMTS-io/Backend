@@ -28,4 +28,7 @@ public class MaintenanceRequestResponseDto
 
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public MaintenanceInitialReportSummaryDto? InitialReport { get; set; } = default!;
+
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public MaintenanceFinalReportSummaryDto FinalReport { get; set; } = default!;
 }

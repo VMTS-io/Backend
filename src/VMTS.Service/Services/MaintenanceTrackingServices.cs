@@ -4,7 +4,6 @@ using VMTS.Core.Entities.Vehicle_Aggregate;
 using VMTS.Core.Interfaces.Repositories;
 using VMTS.Core.Interfaces.Services;
 using VMTS.Core.Interfaces.UnitOfWork;
-using VMTS.Core.Specifications.Maintenance.Tracking;
 using VMTS.Service.Exceptions;
 
 namespace VMTS.Service.Services;
@@ -13,20 +12,19 @@ public class MaintenanceTrackingServices : IMaintenanceTrackingServices
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly IGenericRepository<MaintenanceTracking> _trackingRepo;
+    private readonly IGenericRepository<Vehicle> _vehicleRepo;
 
-    public MaintenanceTrackingServices(
-        IUnitOfWork unitOfWork,
-        IGenericRepository<MaintenanceTracking> trackingRepo
-    )
+    public MaintenanceTrackingServices(IUnitOfWork unitOfWork)
     {
         _unitOfWork = unitOfWork;
         _trackingRepo = _unitOfWork.GetRepo<MaintenanceTracking>();
+        _vehicleRepo = _unitOfWork.GetRepo<Vehicle>();
     }
 
     public async Task Create(MaintenanceTracking entity)
     {
         var vehicle =
-            await _unitOfWork.GetRepo<Vehicle>().GetByIdAsync(entity.VehicleId)
+            await _vehicleRepo.GetByIdAsync(entity.VehicleId)
             ?? throw new NotFoundException($"There is no Vehicle with id {entity.VehicleId}");
         var part =
             await _unitOfWork.GetRepo<Part>().GetByIdAsync(entity.PartId)
@@ -39,9 +37,10 @@ public class MaintenanceTrackingServices : IMaintenanceTrackingServices
         entity.IsAlmostDue =
             (entity.NextChangeDate.HasValue && entity.NextChangeDate <= DateTime.Today.AddDays(15))
             || (vehicle.CurrentOdometerKM >= entity.NextChangeKM - 500);
-        entity.NextChangeKM = part.LifeSpanKM.Value + vehicle.CurrentOdometerKM;
-        entity.NextChangeDate = DateTime.Now.AddDays(part.LifeSpanDays.Value);
-        await _unitOfWork.GetRepo<MaintenanceTracking>().CreateAsync(entity);
+        entity.NextChangeKM = part.LifeSpanKM!.Value + vehicle.CurrentOdometerKM;
+        entity.NextChangeDate = DateTime.Now.AddDays(part.LifeSpanDays!.Value);
+
+        await _trackingRepo.CreateAsync(entity);
         await _unitOfWork.SaveChanges();
     }
 
@@ -51,7 +50,7 @@ public class MaintenanceTrackingServices : IMaintenanceTrackingServices
             await _unitOfWork.GetRepo<MaintenanceTracking>().GetByIdAsync(entity.Id)
             ?? throw new NotFoundException($"There is no Part Traking  with id {entity.Id}");
         var vehicle =
-            await _unitOfWork.GetRepo<Vehicle>().GetByIdAsync(entity.VehicleId)
+            await _vehicleRepo.GetByIdAsync(entity.VehicleId)
             ?? throw new NotFoundException($"There is no Vehicle with id {entity.VehicleId}");
         var part =
             await _unitOfWork.GetRepo<Part>().GetByIdAsync(entity.PartId)
@@ -59,8 +58,8 @@ public class MaintenanceTrackingServices : IMaintenanceTrackingServices
 
         existedEntity.VehicleId = entity.VehicleId;
         existedEntity.PartId = entity.PartId;
-        existedEntity.NextChangeKM = part.LifeSpanKM.Value + vehicle.CurrentOdometerKM;
-        entity.NextChangeDate = DateTime.Now.AddDays(part.LifeSpanDays.Value);
+        existedEntity.NextChangeKM = part.LifeSpanKM!.Value + vehicle.CurrentOdometerKM;
+        entity.NextChangeDate = DateTime.Now.AddDays(part.LifeSpanDays!.Value);
         #region propably will replaced with omar's methods
         existedEntity.IsDue =
             (
@@ -75,23 +74,7 @@ public class MaintenanceTrackingServices : IMaintenanceTrackingServices
             ) || (vehicle.CurrentOdometerKM >= existedEntity.NextChangeKM - 500);
 
         #endregion
-        _unitOfWork.GetRepo<MaintenanceTracking>().Update(existedEntity);
+        _trackingRepo.Update(existedEntity);
         await _unitOfWork.SaveChanges();
-    }
-
-    public async Task GetVehiclePatsHistory(string vehicleId)
-    {
-        var specs = new MaintenanceTrackingSpecification()
-        {
-            Criteria = mt => mt.VehicleId == vehicleId,
-            Includes = [mt => mt.Part, mt => mt.Vehicle],
-        };
-        var tracking = await _unitOfWork
-            .GetRepo<MaintenanceTracking>()
-            .GetAllWithSpecificationAsync(specs);
-        // var obj = new {
-        //     Vehicle = tracking.
-        //
-        // };
     }
 }
