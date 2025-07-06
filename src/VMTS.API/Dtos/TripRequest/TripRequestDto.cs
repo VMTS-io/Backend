@@ -8,6 +8,7 @@ public class TripRequestDto
 
     public string VehicleId { get; set; }
 
+    public string DriverName { get; set; }
     public TripType TripType { get; set; }
 
     public DateTime Date { get; set; }

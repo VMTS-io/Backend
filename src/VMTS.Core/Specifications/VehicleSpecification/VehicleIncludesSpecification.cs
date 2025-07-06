@@ -59,11 +59,11 @@ public class VehicleIncludesSpecification : BaseSpecification<Vehicle>
 
     private void ApplyAllIncludes()
     {
-        Includes.Add(v => v.TripRequests);
+        IncludeStrings.Add("TripRequests.Driver");
         Includes.Add(v => v.TripReports);
         Includes.Add(v => v.MaintenaceInitialReports);
         Includes.Add(v => v.MaintenaceFinalReports);
-        Includes.Add(v => v.MaintenaceRequests);
+        IncludeStrings.Add("MaintenaceRequests.Mechanic");
         Includes.Add(v => v.VehicleModel.Category);
         Includes.Add(v => v.VehicleModel.Brand);
     }
