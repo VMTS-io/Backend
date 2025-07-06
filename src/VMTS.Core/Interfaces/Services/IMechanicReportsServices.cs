@@ -5,8 +5,5 @@ namespace VMTS.Core.Interfaces.Services;
 
 public interface IMechanicReportsServices
 {
-    Task<MechanicReportsResult> GetMechanicReportsAsync(
-        string managerId,
-        MaintenanceReportSpecParams specParams
-    );
+    Task<MechanicReportsResult> GetMechanicReportsAsync(MaintenanceReportSpecParams specParams);
 }

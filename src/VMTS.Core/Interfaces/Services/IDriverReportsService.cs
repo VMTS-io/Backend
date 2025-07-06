@@ -5,8 +5,5 @@ namespace VMTS.Core.Interfaces.Services;
 
 public interface IDriverReportsService
 {
-    Task<DriverReportsResult> GetDriverReportsAsync(
-        string managerId,
-        DriverReportsSpecParams specParams
-    );
+    Task<DriverReportsResult> GetDriverReportsAsync(DriverReportsSpecParams specParams);
 }

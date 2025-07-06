@@ -21,20 +21,21 @@ public class MaintenanceReportController : BaseApiController
     }
 
     [ProducesResponseType(typeof(MaintenanceReportsDto), StatusCodes.Status200OK)]
-    [Authorize(Roles = Roles.Manager)]
+    [Authorize(Roles = $"{Roles.Manager},{Roles.Mechanic}")]
     [HttpGet("reports")]
     public async Task<ActionResult<MaintenanceReportsDto>> GetAllReports(
         [FromQuery] MaintenanceReportSpecParams specParams
     )
     {
-        var managerId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        var role = User.FindFirstValue(ClaimTypes.Role);
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-        var result = await _mechanicReportsServices.GetMechanicReportsAsync(managerId!, specParams);
+        if (role!.Equals(Roles.Mechanic, StringComparison.CurrentCultureIgnoreCase))
+            specParams.MechanicId = userId;
 
-        var initialReports = await _mechanicReportsServices.GetMechanicReportsAsync(
-            managerId!,
-            specParams
-        );
+        var result = await _mechanicReportsServices.GetMechanicReportsAsync(specParams);
+
+        var initialReports = await _mechanicReportsServices.GetMechanicReportsAsync(specParams);
 
         var mappedInitialReports = result
             .InitialReports.Select(ir => new MaintenanceReportResponseDto
@@ -58,10 +59,7 @@ public class MaintenanceReportController : BaseApiController
             })
             .ToList();
 
-        var finalReports = await _mechanicReportsServices.GetMechanicReportsAsync(
-            managerId!,
-            specParams
-        );
+        var finalReports = await _mechanicReportsServices.GetMechanicReportsAsync(specParams);
         var mappedFinalReports = result
             .FinalReports.Select(fr => new MaintenanceReportResponseDto
             {

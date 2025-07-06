@@ -21,12 +21,11 @@ public class MechaincReportsServices : IMechanicReportsServices
     }
 
     public async Task<MechanicReportsResult> GetMechanicReportsAsync(
-        string managerId,
         MaintenanceReportSpecParams specParams
     )
     {
-        if (string.IsNullOrWhiteSpace(managerId))
-            throw new UnauthorizedAccessException("You are not authorized.");
+        // if (string.IsNullOrWhiteSpace(managerId))
+        //     throw new UnauthorizedAccessException("You are not authorized.");
 
         var result = new MechanicReportsResult();
 
