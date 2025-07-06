@@ -5,6 +5,7 @@ using VMTS.API.Extensions;
 using VMTS.API.Hubs;
 using VMTS.API.Middlewares;
 using VMTS.Repository.Data.Jobs;
+using VMTS.Service.Jobs;
 
 namespace VMTS.API
 {
@@ -22,9 +23,9 @@ namespace VMTS.API
             await using (var scope = app.Services.CreateAsyncScope())
             {
                 var recalculatejob = scope.ServiceProvider.GetRequiredService<RecalculateJob>();
+
                 var recurringJobManager =
                     scope.ServiceProvider.GetRequiredService<IRecurringJobManager>();
-
                 recurringJobManager.AddOrUpdate(
                     "RecalculateAllJob",
                     () => recalculatejob.RunRecalculateAll(),
@@ -32,13 +33,18 @@ namespace VMTS.API
                 );
 
                 var assignDailyTrip = scope.ServiceProvider.GetRequiredService<AssignDailyTrip>();
-                var recurringJobManager2 =
-                    scope.ServiceProvider.GetRequiredService<IRecurringJobManager>();
-
                 recurringJobManager.AddOrUpdate(
                     "GenerateDailyTripsJob",
                     () => assignDailyTrip.RunAssignDailyTrip(),
                     Cron.Daily(21, 30)
+                );
+
+                var UpdateNextMaintenanceDate =
+                    scope.ServiceProvider.GetRequiredService<UpdateNextMaintenanceDateJob>();
+                recurringJobManager.AddOrUpdate(
+                    "UpdateNextMaintenanceDate",
+                    () => UpdateNextMaintenanceDate.SetNextMaintenanceDate(),
+                    Cron.Weekly()
                 );
             }
 

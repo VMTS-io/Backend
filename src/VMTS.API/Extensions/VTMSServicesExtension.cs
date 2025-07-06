@@ -5,6 +5,7 @@ using Hangfire.MemoryStorage;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 using StackExchange.Redis;
 using VMTS.API.ActionFilters;
 using VMTS.API.Errors;
@@ -14,6 +15,7 @@ using VMTS.API.Hubs;
 using VMTS.API.Middlewares;
 using VMTS.Core.Entities.Identity;
 using VMTS.Core.Interfaces;
+using VMTS.Core.Interfaces.Integrations;
 using VMTS.Core.Interfaces.Repositories;
 using VMTS.Core.Interfaces.Services;
 using VMTS.Core.Interfaces.UnitOfWork;
@@ -22,6 +24,8 @@ using VMTS.Repository;
 using VMTS.Repository.Data;
 using VMTS.Repository.Data.Jobs;
 using VMTS.Repository.Repositories;
+using VMTS.Service.Integrations;
+using VMTS.Service.Jobs;
 using VMTS.Service.Services;
 
 namespace VMTS.API.Extensions;
@@ -155,6 +159,12 @@ public static class VTMSServicesExtension
         services.AddScoped<IMaintenanceCategoryServices, MaintenanceCategoryServices>();
         services.AddScoped<IMaintenanceTrackingServices, MaintenanceTrackingServices>();
         services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
+        services.AddScoped<UpdateNextMaintenanceDateJob>();
+        services.AddHttpClient<
+            IAiPredictNextMaintenanceDateClient,
+            AiPredictNextMaintenanceDateClient
+        >();
+        services.AddScoped<INextMaintenanceDateServices, NextMaintenanceDateServices>();
 
         return services;
     }

@@ -789,6 +789,9 @@ namespace VMTS.Repository.Data.Migrations
                     b.Property<int>("CurrentOdometerKM")
                         .HasColumnType("int");
 
+                    b.Property<int?>("DrivingCondition")
+                        .HasColumnType("int");
+
                     b.Property<string>("EngineSize")
                         .HasColumnType("nvarchar(max)");
 

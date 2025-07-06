@@ -26,16 +26,20 @@ public class DriverReportController : BaseApiController
     }
 
     #region GetAll
-    [Authorize(Roles = Roles.Manager)]
+    [Authorize(Roles = $"{Roles.Manager},{Roles.Driver}")]
     [ProducesResponseType(typeof(DriverReportsResponse), StatusCodes.Status200OK)]
     [HttpGet("reports")]
     public async Task<ActionResult<DriverReportsResponse>> GetAll(
         [FromQuery] DriverReportsSpecParams spec
     )
     {
-        var managerId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        var role = User.FindFirstValue(ClaimTypes.Role);
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-        var result = await _driverReportsService.GetDriverReportsAsync(managerId, spec);
+        if (role!.Equals(Roles.Driver, StringComparison.CurrentCultureIgnoreCase))
+            spec.DriverId = userId;
+
+        var result = await _driverReportsService.GetDriverReportsAsync(spec);
 
         var mappedtrips = result.TripReports.Select(tr => new DriverReportItemDto
         {

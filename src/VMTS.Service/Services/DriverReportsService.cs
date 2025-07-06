@@ -21,13 +21,10 @@ public class DriverReportsService : IDriverReportsService
         _faultReportRepo = faultReportRepo;
     }
 
-    public async Task<DriverReportsResult> GetDriverReportsAsync(
-        string managerId,
-        DriverReportsSpecParams specParams
-    )
+    public async Task<DriverReportsResult> GetDriverReportsAsync(DriverReportsSpecParams specParams)
     {
-        if (string.IsNullOrWhiteSpace(managerId))
-            throw new UnauthorizedAccessException("You are not authorized.");
+        // if (string.IsNullOrWhiteSpace(managerId))
+        //     throw new UnauthorizedAccessException("You are not authorized.");
 
         var result = new DriverReportsResult();
 
