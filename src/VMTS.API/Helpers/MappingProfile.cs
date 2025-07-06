@@ -125,10 +125,12 @@ public class MappingProfile : Profile
             .ForMember(dest => dest.Brand, opt => opt.MapFrom(src => src.Brand.Name))
             .ForMember(dest => dest.Category, opt => opt.MapFrom(src => src.Category.Name));
         CreateMap<VehicleModelUpsertDto, VehicleModel>();
-        CreateMap<TripRequest, TripRequestDto>();
+        CreateMap<TripRequest, TripRequestDto>()
+            .ForMember(tr => tr.DriverName, opt => opt.MapFrom(src => src.Driver.DisplayName));
         CreateMap<TripReport, TripReportDto>();
         // CreateMap<MaintenaceReport, MaintenanceReportDto>();
-        CreateMap<MaintenaceRequest, VehicleMaintenanceRequestDto>();
+        CreateMap<MaintenaceRequest, VehicleMaintenanceRequestDto>()
+            .ForMember(mr => mr.MechanicName, opt => opt.MapFrom(src => src.Mechanic.DisplayName));
 
         CreateMap<MaintenanceInitialReportRequestDto, MaintenanceInitialReport>();
 
