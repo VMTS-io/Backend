@@ -17,4 +17,6 @@ public class TripRequestDto
     public string PickupLocation { get; set; }
 
     public string Destination { get; set; }
+
+    public bool IsDaily { get; set; }
 }

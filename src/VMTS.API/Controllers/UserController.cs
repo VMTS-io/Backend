@@ -50,7 +50,6 @@ public class UserController : BaseApiController
     [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<RegisterResponse>> Create(RegisterRequest model)
     {
-        var email = await _authService.GenerateUniqueEmailAsync(model.FirstName, model.LastName);
         var password = "Pa$$w0rd";
 
         if (await _userManager.Users.AnyAsync(u => u.PhoneNumber == model.PhoneNumber))
@@ -64,10 +63,10 @@ public class UserController : BaseApiController
 
         var user = new AppUser
         {
+            Email = model.Email,
             FirstName = model.FirstName,
             LastName = model.LastName,
-            Email = email,
-            UserName = email.Split('@')[0],
+            UserName = model.Email.Split('@')[0],
             PhoneNumber = model.PhoneNumber,
             DateOfBirth = model.DateOfBirth,
             NationalId = model.NationalId,
@@ -105,7 +104,7 @@ public class UserController : BaseApiController
         await _iunitOfWork.GetRepo<BusinessUser>().CreateAsync(businessUser);
         await _iunitOfWork.SaveChanges();
 
-        return Ok(new RegisterResponse { Email = email });
+        return Ok(new RegisterResponse { Email = model.Email });
     }
 
     #endregion

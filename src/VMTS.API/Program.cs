@@ -21,13 +21,23 @@ namespace VMTS.API
             var app = builder.Build();
             await using (var scope = app.Services.CreateAsyncScope())
             {
-                var job = scope.ServiceProvider.GetRequiredService<RecalculateJob>();
+                var recalculatejob = scope.ServiceProvider.GetRequiredService<RecalculateJob>();
                 var recurringJobManager =
                     scope.ServiceProvider.GetRequiredService<IRecurringJobManager>();
 
                 recurringJobManager.AddOrUpdate(
                     "RecalculateAllJob",
-                    () => job.RunRecalculateAll(),
+                    () => recalculatejob.RunRecalculateAll(),
+                    Cron.Daily(21, 30)
+                );
+
+                var assignDailyTrip = scope.ServiceProvider.GetRequiredService<AssignDailyTrip>();
+                var recurringJobManager2 =
+                    scope.ServiceProvider.GetRequiredService<IRecurringJobManager>();
+
+                recurringJobManager.AddOrUpdate(
+                    "GenerateDailyTripsJob",
+                    () => assignDailyTrip.RunAssignDailyTrip(),
                     Cron.Daily(21, 30)
                 );
             }

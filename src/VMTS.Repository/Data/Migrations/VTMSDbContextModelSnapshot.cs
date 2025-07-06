@@ -141,6 +141,9 @@ namespace VMTS.Repository.Data.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
+                    b.Property<bool>("IsDaily")
+                        .HasColumnType("bit");
+
                     b.Property<string>("ManagerId")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
@@ -604,6 +607,75 @@ namespace VMTS.Repository.Data.Migrations
                     b.ToTable("PartCategories");
                 });
 
+            modelBuilder.Entity("VMTS.Core.Entities.Trip.RecurringTripTemplate", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Destination")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<double>("DestinationLatitude")
+                        .HasColumnType("float");
+
+                    b.Property<string>("DestinationLocationNominatimLink")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<double>("DestinationLongitude")
+                        .HasColumnType("float");
+
+                    b.Property<string>("Details")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("DriverId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("ManagerId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("PickupLocation")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<double>("PickupLocationLatitude")
+                        .HasColumnType("float");
+
+                    b.Property<double>("PickupLocationLongitude")
+                        .HasColumnType("float");
+
+                    b.Property<string>("PickupLocationNominatimLink")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Type")
+                        .HasColumnType("int");
+
+                    b.Property<string>("VehicleId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("DriverId");
+
+                    b.HasIndex("ManagerId");
+
+                    b.HasIndex("VehicleId");
+
+                    b.ToTable("RecurringTripTemplate");
+                });
+
             modelBuilder.Entity("VMTS.Core.Entities.Trip.TripReport", b =>
                 {
                     b.Property<string>("Id")
@@ -1051,6 +1123,33 @@ namespace VMTS.Repository.Data.Migrations
                         .IsRequired();
 
                     b.Navigation("Part");
+
+                    b.Navigation("Vehicle");
+                });
+
+            modelBuilder.Entity("VMTS.Core.Entities.Trip.RecurringTripTemplate", b =>
+                {
+                    b.HasOne("VMTS.Core.Entities.User_Business.BusinessUser", "Driver")
+                        .WithMany()
+                        .HasForeignKey("DriverId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("VMTS.Core.Entities.User_Business.BusinessUser", "Manager")
+                        .WithMany()
+                        .HasForeignKey("ManagerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("VMTS.Core.Entities.Vehicle_Aggregate.Vehicle", "Vehicle")
+                        .WithMany()
+                        .HasForeignKey("VehicleId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Driver");
+
+                    b.Navigation("Manager");
 
                     b.Navigation("Vehicle");
                 });

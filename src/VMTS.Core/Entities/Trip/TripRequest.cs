@@ -43,6 +43,8 @@ public class TripRequest : BaseEntity
     public DateTime Date { get; set; }
     public TripStatus Status { get; set; }
 
+    public bool IsDaily { get; set; } = false;
+
     public FaultReport FaultReports { get; set; }
 
     public TripReport TripReports { get; set; }

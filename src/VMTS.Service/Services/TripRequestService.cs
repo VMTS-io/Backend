@@ -6,6 +6,7 @@ using VMTS.Core.Entities.Vehicle_Aggregate;
 using VMTS.Core.Helpers;
 using VMTS.Core.Interfaces.UnitOfWork;
 using VMTS.Core.ServicesContract;
+using VMTS.Core.Specifications.RecurringTripTemplateIncludesSpecification;
 using VMTS.Core.Specifications.TripRequestSpecification;
 using VMTS.Core.Specifications.VehicleSpecification;
 using VMTS.Service.Exceptions;
@@ -32,7 +33,8 @@ public class TripRequestService : ITripRequestService
         DateTime date,
         string details,
         string pickupLocation,
-        string destination
+        string destination,
+        bool isDaily
     )
     {
         /// Get manager
@@ -118,9 +120,31 @@ public class TripRequestService : ITripRequestService
             PickupLocationNominatimLink = GenerateNominatimLink(pickupLocation),
             Destination = destination,
             DestinationLocationNominatimLink = GenerateNominatimLink(destination),
+            IsDaily = isDaily,
         };
 
         await _unitOfWork.GetRepo<TripRequest>().CreateAsync(tripRequest);
+
+        if (isDaily)
+            await _unitOfWork
+                .GetRepo<RecurringTripTemplate>()
+                .CreateAsync(
+                    new RecurringTripTemplate
+                    {
+                        Id = Guid.NewGuid().ToString(),
+                        Type = tripRequest.Type,
+                        Details = tripRequest.Details,
+                        PickupLocation = tripRequest.PickupLocation,
+                        PickupLocationNominatimLink = tripRequest.PickupLocationNominatimLink,
+                        Destination = tripRequest.Destination,
+                        DestinationLocationNominatimLink =
+                            tripRequest.DestinationLocationNominatimLink,
+                        VehicleId = tripRequest.VehicleId,
+                        DriverId = tripRequest.DriverId,
+                        ManagerId = tripRequest.ManagerId,
+                        IsActive = true,
+                    }
+                );
 
         var result = await _unitOfWork.SaveChanges();
         if (result <= 0)
@@ -254,6 +278,82 @@ public class TripRequestService : ITripRequestService
             tripRequest.Status = TripStatus.Approved;
 
         _unitOfWork.GetRepo<TripRequest>().Update(tripRequest);
+        await _unitOfWork.SaveChanges();
+    }
+
+    #endregion
+
+    #region Create Daily Method
+    public async Task GenerateDailyTripsFromTemplatesAsync()
+    {
+        var today = DateTime.UtcNow.Date;
+
+        var spec = new RecurringTripTemplateIncludesSpecification();
+        var templates = await _unitOfWork
+            .GetRepo<RecurringTripTemplate>()
+            .GetAllWithSpecificationAsync(spec);
+
+        foreach (var template in templates)
+        {
+            // Skip invalid or retired vehicles
+            if (
+                template.Vehicle?.Status
+                is VehicleStatus.Retired
+                    or VehicleStatus.OutOfService
+                    or VehicleStatus.UnderMaintenance
+            )
+                continue;
+
+            var tripExistsSpec = new TripRequestExistsForRecurringTemplateSpecification(
+                template.DriverId,
+                template.VehicleId,
+                today
+            );
+
+            var exists = await _unitOfWork
+                .GetRepo<TripRequest>()
+                .GetAllWithSpecificationAsync(tripExistsSpec);
+
+            if (exists.Any())
+                continue;
+
+            var trip = new TripRequest
+            {
+                Id = Guid.NewGuid().ToString(),
+                Type = template.Type,
+                Details = template.Details,
+                DriverId = template.DriverId,
+                ManagerId = template.ManagerId,
+                VehicleId = template.VehicleId,
+                PickupLocation = template.PickupLocation,
+                PickupLocationNominatimLink = template.PickupLocationNominatimLink,
+                Destination = template.Destination,
+                DestinationLocationNominatimLink = template.DestinationLocationNominatimLink,
+                Status = TripStatus.Pending,
+                Date = today,
+                IsDaily = true,
+            };
+
+            await _unitOfWork.GetRepo<TripRequest>().CreateAsync(trip);
+        }
+
+        await _unitOfWork.SaveChanges();
+    }
+
+    #endregion
+
+    #region Remove Daily Method
+
+    public async Task RemoveDailyTripAsync(string templateId, string managerId)
+    {
+        var template = await _unitOfWork.GetRepo<RecurringTripTemplate>().GetByIdAsync(templateId);
+        if (template == null)
+            throw new NotFoundException("Recurring trip template not found");
+
+        if (template.ManagerId != managerId)
+            throw new ForbbidenException("You are not allowed to delete this template");
+
+        template.IsActive = false;
         await _unitOfWork.SaveChanges();
     }
 
