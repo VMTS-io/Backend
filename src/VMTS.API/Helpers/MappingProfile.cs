@@ -28,6 +28,9 @@ public class MappingProfile : Profile
 {
     public MappingProfile()
     {
+        CreateMap<TripRequest, TripRequestForVehicles>()
+            .ForMember(tr => tr.DriverName, opt => opt.MapFrom(src => src.Driver.DisplayName));
+
         CreateMap<TripLocationDto, TripLocation>().ReverseMap();
         CreateMap<BusinessUser, BusinessUserGetAllResponse>();
 
@@ -125,8 +128,7 @@ public class MappingProfile : Profile
             .ForMember(dest => dest.Brand, opt => opt.MapFrom(src => src.Brand.Name))
             .ForMember(dest => dest.Category, opt => opt.MapFrom(src => src.Category.Name));
         CreateMap<VehicleModelUpsertDto, VehicleModel>();
-        CreateMap<TripRequest, TripRequestDto>()
-            .ForMember(tr => tr.DriverName, opt => opt.MapFrom(src => src.Driver.DisplayName));
+        CreateMap<TripRequest, TripRequestDto>();
         CreateMap<TripReport, TripReportDto>();
         // CreateMap<MaintenaceReport, MaintenanceReportDto>();
         CreateMap<MaintenaceRequest, VehicleMaintenanceRequestDto>()
