@@ -14,7 +14,7 @@ public class MaintenanceRequestResponseDto
 
     public DateTime Date { get; set; }
 
-    public MaintenanceCategory MaintenaceCategory { get; set; } = default!;
+    public MaintenanceCategory MaintenanceCategory { get; set; } = default!;
 
     public MaintenanceStatus Status { get; set; }
 

@@ -132,7 +132,16 @@ public class MappingProfile : Profile
         CreateMap<TripReport, TripReportDto>();
         // CreateMap<MaintenaceReport, MaintenanceReportDto>();
         CreateMap<MaintenaceRequest, VehicleMaintenanceRequestDto>()
-            .ForMember(mr => mr.MechanicName, opt => opt.MapFrom(src => src.Mechanic.DisplayName));
+            .ForMember(mr => mr.MechanicName, opt => opt.MapFrom(src => src.Mechanic.DisplayName))
+            .ForMember(
+                mr => mr.ChangedParts,
+                opt =>
+                    opt.MapFrom(src =>
+                        src.FinalReport.ChangedParts.Select(cp => cp.Part)
+                            .Concat(src.Parts)
+                            .Distinct()
+                    )
+            );
 
         CreateMap<MaintenanceInitialReportRequestDto, MaintenanceInitialReport>();
 

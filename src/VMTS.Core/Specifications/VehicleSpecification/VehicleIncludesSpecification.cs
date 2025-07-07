@@ -64,6 +64,7 @@ public class VehicleIncludesSpecification : BaseSpecification<Vehicle>
         Includes.Add(v => v.MaintenaceInitialReports);
         Includes.Add(v => v.MaintenaceFinalReports);
         IncludeStrings.Add("MaintenaceRequests.Mechanic");
+        IncludeStrings.Add("MaintenaceRequests.FinalReport.ChangedParts.Part");
         Includes.Add(v => v.VehicleModel.Category);
         Includes.Add(v => v.VehicleModel.Brand);
     }
