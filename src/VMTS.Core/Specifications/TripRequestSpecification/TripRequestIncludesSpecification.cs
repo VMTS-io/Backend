@@ -1,9 +1,13 @@
-﻿using VMTS.Core.Entities.Trip;
+﻿using System.Linq.Expressions;
+using VMTS.Core.Entities.Trip;
 
 namespace VMTS.Core.Specifications.TripRequestSpecification;
 
 public class TripRequestIncludesSpecification : BaseSpecification<TripRequest>
 {
+    public TripRequestIncludesSpecification(Expression<Func<TripRequest, bool>> criteria)
+        : base(criteria) { }
+
     public TripRequestIncludesSpecification(TripRequestSpecParams specParams)
         : base(tr =>
             (specParams.TripId == null || tr.Id == specParams.TripId)
