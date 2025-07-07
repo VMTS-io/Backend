@@ -1,9 +1,12 @@
-﻿using VMTS.Core.Entities.Report;
+﻿using System.Linq.Expressions;
+using VMTS.Core.Entities.Report;
 using VMTS.Core.Specifications;
 using VMTS.Core.Specifications.FaultReportSepcification;
 
 public class FaultReportIncludesSpecification : BaseSpecification<FaultReport>
 {
+    public FaultReportIncludesSpecification(Expression<Func<FaultReport, bool>> criteria) { }
+
     public FaultReportIncludesSpecification(FaultReportSpecParams specParams)
         : base(fr =>
             (string.IsNullOrEmpty(specParams.TripId) || fr.TripId == specParams.TripId)

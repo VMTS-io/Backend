@@ -1,9 +1,12 @@
+using System.Linq.Expressions;
 using VMTS.Core.Entities.Trip;
 
 namespace VMTS.Core.Specifications;
 
 public class TripReportIncludesSpecification : BaseSpecification<TripReport>
 {
+    public TripReportIncludesSpecification(Expression<Func<TripReport, bool>> criteria) { }
+
     public TripReportIncludesSpecification(TripReportSpecParams specParams)
         : base(tr =>
             (string.IsNullOrEmpty(specParams.TripId) || tr.TripId == specParams.TripId)

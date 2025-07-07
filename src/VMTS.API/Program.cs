@@ -48,8 +48,8 @@ namespace VMTS.API
                 );
             }
 
-            await app.ApplyMigrationAsync();
-            await app.ApplySeedAsync();
+            // await app.ApplyMigrationAsync();
+            // await app.ApplySeedAsync();
 
             app.MapOpenApi();
 

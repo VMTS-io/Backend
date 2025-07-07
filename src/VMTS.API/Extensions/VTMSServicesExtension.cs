@@ -72,6 +72,7 @@ public static class VTMSServicesExtension
         //     };
         // });
 
+        services.AddScoped<IDashboardServices, DashboardServices>();
         services.AddScoped<RecalculateJob>();
         services.AddScoped<AssignDailyTrip>();
 
