@@ -105,7 +105,7 @@ public class VehicleController : BaseApiController
         var mappedVehicle = _mapper.Map<VehicleUpsertDto, Vehicle>(vehicle);
         var (list, errors) = await ExcelFile.ParseExcelAsync(file, _partServices, mappedVehicle.Id);
 
-        if (errors.Any())
+        if (errors.Count != 0)
             return BadRequest(new { Message = "Validation failed.", Errors = errors });
 
         await _services.CreateVehicleWithHistoryAsync(mappedVehicle, list);
@@ -163,5 +163,20 @@ public class VehicleController : BaseApiController
     {
         return Ok(await _services.DeleteVehicleAsync(id));
     }
+    #endregion
+
+    #region Download template
+    [HttpGet("download-template")]
+    public async Task<IActionResult> DownloadVehicleTemplate()
+    {
+        var bytes = await ExcelFile.GenerateVehicleTemplate(_partServices);
+
+        return File(
+            bytes,
+            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            "VehicleTemplate.xlsx"
+        );
+    }
+
     #endregion
 }
