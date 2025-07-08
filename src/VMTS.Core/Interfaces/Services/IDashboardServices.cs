@@ -2,15 +2,15 @@ namespace VMTS.Core.Interfaces.Services;
 
 public interface IDashboardServices
 {
-    Task<int> GetCountTripsWithFaultsAsync();
+    Task<int> GetCountTripsWithFaultsAsync(int? month);
 
-    Task<int> GetCountTripsWithoutFaultsAsync();
+    Task<int> GetCountTripsWithoutFaultsAsync(int? month);
 
-    Task<decimal> GetTotalMaintenanceCostAsync();
+    Task<decimal> GetTotalMaintenanceCostAsync(int? month);
 
-    Task<decimal> GetTotalFuelCostAsync();
+    Task<decimal> GetTotalFuelCostAsync(int? month);
 
-    Task<int> GetTotalTripsAsync();
+    Task<int> GetTotalTripsAsync(int? month);
 
     Task<int> GetTotalVehicleCount();
 

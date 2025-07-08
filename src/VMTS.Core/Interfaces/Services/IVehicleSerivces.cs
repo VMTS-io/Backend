@@ -15,4 +15,7 @@ public interface IVehicleSerivces
     );
     Task<Vehicle> UpdateVehicleAsync(Vehicle vehicle);
     Task<bool> DeleteVehicleAsync(string id);
+
+    Task<decimal> GetTotalFuelCostAsync(string vehicleId);
+    Task<decimal> GetTotalMaintenanceCostAsync(string vehicleId);
 }

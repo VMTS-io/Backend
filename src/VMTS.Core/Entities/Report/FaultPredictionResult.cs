@@ -1,5 +1,3 @@
-using Newtonsoft.Json;
-
 namespace VMTS.Core.Entities.Report;
 
 public class FaultPredictionResult : BaseEntity

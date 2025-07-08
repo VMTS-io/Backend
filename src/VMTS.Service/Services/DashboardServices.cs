@@ -7,7 +7,6 @@ using VMTS.Core.Specifications;
 using VMTS.Core.Specifications.Maintenance.Report.Final;
 using VMTS.Core.Specifications.TripRequestSpecification;
 using VMTS.Core.Specifications.VehicleSpecification;
-using VMTS.Core.Specifications.VehicleSpecification.VehicleModelSpecification;
 
 namespace VMTS.Service.Services;
 
@@ -20,59 +19,88 @@ public class DashboardServices : IDashboardServices
         _unitOfWork = unitOfWork;
     }
 
-    public async Task<int> GetCountTripsWithFaultsAsync()
+    public async Task<int> GetCountTripsWithFaultsAsync(int? month)
     {
-        var specs = new TripRequestIncludesSpecification(tr => tr.FaultReports != null);
-        ;
-        var tripsWithoutFault = await _unitOfWork.GetRepo<TripRequest>().GetCountAsync(specs);
-        return tripsWithoutFault;
-    }
+        if (month is null)
+            month = DateTime.UtcNow.Month;
 
-    public async Task<int> GetCountTripsWithoutFaultsAsync()
-    {
+        var year = DateTime.UtcNow.Year;
+
         var specs = new TripRequestIncludesSpecification(tr =>
-            tr.FaultReports == null && tr.TripReports != null
+            tr.FaultReports != null && tr.Date.Month == month && tr.Date.Year == year
         );
         ;
         var tripsWithoutFault = await _unitOfWork.GetRepo<TripRequest>().GetCountAsync(specs);
         return tripsWithoutFault;
     }
 
-    public async Task<decimal> GetTotalMaintenanceCostAsync()
+    public async Task<int> GetCountTripsWithoutFaultsAsync(int? month)
     {
-        var specs = new MaintenanceFinalReportSpecification(tr =>
-            tr.FinishedDate > DateTime.UtcNow.AddMonths(-1)
+        if (month is null)
+            month = DateTime.UtcNow.Month;
+
+        var year = DateTime.UtcNow.Year;
+        var specs = new TripRequestIncludesSpecification(tr =>
+            tr.FaultReports == null
+            && tr.TripReports != null
+            && tr.Date.Month == month
+            && tr.Date.Year == year
         );
-        var cost = await _unitOfWork
+        ;
+        var tripsWithoutFault = await _unitOfWork.GetRepo<TripRequest>().GetCountAsync(specs);
+        return tripsWithoutFault;
+    }
+
+    public async Task<decimal> GetTotalMaintenanceCostAsync(int? month)
+    {
+        if (month is null)
+            month = DateTime.UtcNow.Month;
+
+        var year = DateTime.UtcNow.Year;
+
+        var specs = new MaintenanceFinalReportSpecification(tr =>
+            tr.FinishedDate.Year == year && tr.FinishedDate.Month == month
+        );
+
+        var totalCost = await _unitOfWork
             .GetRepo<MaintenanceFinalReport>()
-            .GetAllWithSpecificationAsync(specs);
-        var totalCost = cost.Sum(c => c.TotalCost);
+            .SumWithSpecificationAsync(specs, c => c.TotalCost);
+
         return totalCost;
     }
 
-    public async Task<decimal> GetTotalFuelCostAsync()
+    public async Task<decimal> GetTotalFuelCostAsync(int? month)
     {
-        var oneMonthAgo = DateTime.UtcNow.AddMonths(-1);
+        if (month is null)
+            month = DateTime.UtcNow.Month;
 
-        var tripSpecs = new TripReportIncludesSpecification(tr => tr.ReportedAt > oneMonthAgo);
-        var tripReports = await _unitOfWork
+        var year = DateTime.UtcNow.Year;
+        // var oneMonthAgo = DateTime.UtcNow.AddMonths(-1);
+
+        var tripSpecs = new TripReportIncludesSpecification(tr =>
+            tr.ReportedAt.Year == year && tr.ReportedAt.Month == month
+        );
+        var tripFuelCost = await _unitOfWork
             .GetRepo<TripReport>()
-            .GetAllWithSpecificationAsync(tripSpecs);
+            .SumWithSpecificationAsync(tripSpecs, tr => tr.FuelCost);
 
-        var faultSpecs = new FaultReportIncludesSpecification(fr => fr.ReportedAt > oneMonthAgo);
-        var faultReports = await _unitOfWork
+        var faultSpecs = new FaultReportIncludesSpecification(fr =>
+            fr.ReportedAt.Year == year && fr.ReportedAt.Month == month
+        );
+        var faultFuelCost = await _unitOfWork
             .GetRepo<FaultReport>()
-            .GetAllWithSpecificationAsync(faultSpecs);
+            .SumWithSpecificationAsync(faultSpecs, fr => fr.Cost);
 
-        var tripFuelCost = tripReports.Sum(tr => tr.FuelCost);
-        var faultFuelCost = faultReports.Sum(fr => fr.Cost);
+        // var tripFuelCost = tripReports.Sum(tr => tr.FuelCost);
+        // var faultFuelCost = faultReports.Sum(fr => fr.Cost);
 
         return tripFuelCost + faultFuelCost;
     }
 
-    public Task<int> GetTotalTripsAsync()
+    public async Task<int> GetTotalTripsAsync(int? month)
     {
-        throw new NotImplementedException();
+        return await GetCountTripsWithFaultsAsync(month)
+            + await GetCountTripsWithoutFaultsAsync(month);
     }
 
     public async Task<int> GetTotalVehicleCount()

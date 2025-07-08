@@ -1,4 +1,6 @@
+using System.Linq.Expressions;
 using VMTS.Core.Entities;
+using VMTS.Core.Entities.Maintenace;
 using VMTS.Core.Interfaces.Specifications;
 
 namespace VMTS.Core.Interfaces.Repositories;
@@ -19,4 +21,9 @@ public interface IGenericRepository<T>
     IQueryable<T> AsQueryable();
     Task AddRangeAsync(IEnumerable<T> range);
     void UpdateRange(IEnumerable<T> range);
+
+    Task<decimal> SumWithSpecificationAsync(
+        ISpecification<T> specification,
+        Expression<Func<T, decimal>> selector
+    );
 }

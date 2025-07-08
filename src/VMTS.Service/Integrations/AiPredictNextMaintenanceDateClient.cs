@@ -1,5 +1,6 @@
 using System.Text;
-using Newtonsoft.Json;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using VMTS.Core.Interfaces.Integrations;
 
 namespace VMTS.Service.Integrations;
@@ -25,7 +26,7 @@ public class AiPredictNextMaintenanceDateClient : IAiPredictNextMaintenanceDateC
 
         var responseBody = await response.Content.ReadAsStringAsync();
 
-        var result = JsonConvert.DeserializeObject<MaintenancePrediction>(responseBody);
+        var result = JsonSerializer.Deserialize<MaintenancePrediction>(responseBody);
 
         return result is null ? null : (int)Math.Round(result.PredictedDaysToNextMaintenance);
     }
@@ -33,6 +34,6 @@ public class AiPredictNextMaintenanceDateClient : IAiPredictNextMaintenanceDateC
 
 public class MaintenancePrediction
 {
-    [JsonProperty("predicted_days_to_next_maintenance")]
+    [JsonPropertyName("predicted_days_to_next_maintenance")]
     public double PredictedDaysToNextMaintenance { get; set; }
 }

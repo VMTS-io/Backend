@@ -7,6 +7,8 @@ using VMTS.API.Helpers;
 using VMTS.Core.Entities.Maintenace;
 using VMTS.Core.Entities.Vehicle_Aggregate;
 using VMTS.Core.Interfaces.Services;
+using VMTS.Core.Interfaces.UnitOfWork;
+using VMTS.Core.Specifications.Maintenance.Report.Final;
 using VMTS.Core.Specifications.VehicleSpecification;
 
 namespace VMTS.API.Controllers;
@@ -16,12 +18,19 @@ public class VehicleController : BaseApiController
     private readonly IVehicleSerivces _services;
     private readonly IPartService _partServices;
     private readonly IMapper _mapper;
+    private readonly IUnitOfWork _unitOfWork;
 
-    public VehicleController(IVehicleSerivces services, IPartService partServices, IMapper mapper)
+    public VehicleController(
+        IVehicleSerivces services,
+        IPartService partServices,
+        IMapper mapper,
+        IUnitOfWork unitOfWork
+    )
     {
         _services = services;
         _mapper = mapper;
         _partServices = partServices;
+        _unitOfWork = unitOfWork;
     }
 
     #region Get All
@@ -47,6 +56,9 @@ public class VehicleController : BaseApiController
     {
         var vehicle = await _services.GetVehicleByIdAsync(id);
         var mappedVehicle = _mapper.Map<Vehicle, VehicleDetailsDto>(vehicle);
+        mappedVehicle.TotalMaintenanceCost = await _services.GetTotalMaintenanceCostAsync(id);
+        mappedVehicle.ToatalFuleCost = await _services.GetTotalFuelCostAsync(id);
+
         return Ok(mappedVehicle);
     }
     #endregion
