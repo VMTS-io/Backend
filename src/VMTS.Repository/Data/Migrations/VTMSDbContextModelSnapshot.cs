@@ -646,11 +646,11 @@ namespace VMTS.Repository.Data.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("PredictedType")
+                    b.Property<string>("predicted_issue")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("Priority")
+                    b.Property<int>("predicted_urgency")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
