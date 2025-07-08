@@ -20,6 +20,11 @@ public class FaultReport : BaseEntity
 
     public bool Seen { get; set; } = false;
 
+    public FaultPriority? Priority { get; set; } // enum like Low, Medium, High (based on AI)
+    public string? AiPredictedFaultType { get; set; } // Store AI-predicted label if different from driver input
+
+    public bool? IsAiPredictionSuccessful { get; set; }
+
     // FKs
     public string TripId { get; set; }
     public string VehicleId { get; set; }
