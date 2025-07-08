@@ -48,4 +48,12 @@ public class EnumController : BaseApiController
     [HttpGet("vehicle-status")]
     public ActionResult<List<EnumResponseDto>> GetVehicleStatus() =>
         Ok(EnumHelper.GetEnumValues<VehicleStatus>());
+
+    [HttpGet("Driving-Condition")]
+    public ActionResult<List<EnumResponseDto>> GetDrivingConditions() =>
+        Ok(EnumHelper.GetEnumValues<DrivingCondition>());
+
+    [HttpGet("Part-Condtion")]
+    public ActionResult<List<EnumResponseDto>> GetPartCondition() =>
+        Ok(EnumHelper.GetEnumValues<PartCondition>());
 }
