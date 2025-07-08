@@ -20,20 +20,15 @@ public class VehicleModelServices : IVehicleModelServices
         _categoryrepo = _unitOfWork.GetRepo<VehicleCategory>();
     }
 
-    public async Task<VehicleModel> CreateVehicleModelAsync(VehicleModel entity)
+    public async Task CreateVehicleModelAsync(VehicleModel entity)
     {
         if (!await _categoryrepo.ExistAsync(entity.CategoryId))
             throw new NotFoundException("Category Not Found");
         await _modelrepo.CreateAsync(entity);
         await _unitOfWork.SaveChanges();
-
-        var eturnVehicleModel =
-            await _modelrepo.GetByIdAsync(entity.Id)
-            ?? throw new NotFoundException("Model Not Found");
-        return eturnVehicleModel;
     }
 
-    public async Task<VehicleModel> UpdateVehicleModelAsync(VehicleModel entity)
+    public async Task UpdateVehicleModelAsync(VehicleModel entity)
     {
         if (!await _categoryrepo.ExistAsync(entity.CategoryId))
             throw new NotFoundException("Category Not Found");
@@ -42,10 +37,6 @@ public class VehicleModelServices : IVehicleModelServices
             throw new NotFoundException("Model Not Found");
         _modelrepo.Update(entity);
         await _unitOfWork.SaveChanges();
-        var vehicleModel =
-            await _modelrepo.GetByIdAsync(entity.Id)
-            ?? throw new NotFoundException("Model Not Found");
-        return vehicleModel;
     }
 
     public async Task DeleteVehicleModelAsync(string id)
@@ -56,12 +47,9 @@ public class VehicleModelServices : IVehicleModelServices
         await _unitOfWork.SaveChanges();
     }
 
-    public async Task<IReadOnlyList<VehicleModel>> GetAllVehicleModelsAsync(
-        string? categoryId,
-        string? brandId
-    )
+    public async Task<IReadOnlyList<VehicleModel>> GetAllVehicleModelsAsync(string? categoryId)
     {
-        var spec = new VehicleModelSpecification(categoryId, brandId);
+        var spec = new VehicleModelSpecification(categoryId);
         var vehicleModelList = await _modelrepo.GetAllWithSpecificationAsync(spec);
         return vehicleModelList;
     }

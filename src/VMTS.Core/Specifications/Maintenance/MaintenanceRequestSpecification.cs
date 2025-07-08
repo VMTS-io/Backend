@@ -19,7 +19,6 @@ public class MaintenanceRequestSpecification : BaseSpecification<MaintenaceReque
         Includes.Add(MR => MR.Manager);
         Includes.Add(MR => MR.Mechanic);
         Includes.Add(MR => MR.Parts);
-        Includes.Add(MR => MR.Vehicle.VehicleModel.Brand);
         Includes.Add(MR => MR.Vehicle.VehicleModel.Category);
     }
 
@@ -40,7 +39,6 @@ public class MaintenanceRequestSpecification : BaseSpecification<MaintenaceReque
         Includes.Add(MR => MR.InitialReport);
         Includes.Add(MR => MR.FinalReport);
         Includes.Add(MR => MR.Vehicle.VehicleModel.Category);
-        Includes.Add(MR => MR.Vehicle.VehicleModel.Brand);
         if (!string.IsNullOrEmpty(specParams.OrderBy))
         {
             switch (specParams.OrderBy)
@@ -75,7 +73,6 @@ public class MaintenanceRequestSpecification : BaseSpecification<MaintenaceReque
         Includes.Add(MR => MR.Mechanic);
         Includes.Add(MR => MR.Parts);
         Includes.Add(MR => MR.InitialReport);
-        Includes.Add(MR => MR.Vehicle.VehicleModel.Brand);
         Includes.Add(MR => MR.Vehicle.VehicleModel.Category);
         if (!string.IsNullOrEmpty(specParams.OrderBy))
         {

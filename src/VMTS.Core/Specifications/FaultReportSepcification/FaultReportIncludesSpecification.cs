@@ -38,7 +38,6 @@ public class FaultReportIncludesSpecification : BaseSpecification<FaultReport>
     {
         Includes.Add(fr => fr.Driver);
         Includes.Add(fr => fr.Vehicle.VehicleModel.Category);
-        Includes.Add(fr => fr.Vehicle.VehicleModel.Brand);
         Includes.Add(fr => fr.Trip);
     }
 

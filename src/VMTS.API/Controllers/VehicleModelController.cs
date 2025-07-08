@@ -40,9 +40,8 @@ public class VehicleModelController : BaseApiController
         //     return BadRequest(ValidationProblemDetails(validationResult.ToDictionary()));
 
         var vehicleModel = _mapper.Map<VehicleModelUpsertDto, VehicleModel>(createDto);
-        vehicleModel = await _services.CreateVehicleModelAsync(vehicleModel);
-        var vehilceModelDto = _mapper.Map<VehicleModel, VehicleModelDto>(vehicleModel);
-        return Ok(vehilceModelDto);
+        await _services.CreateVehicleModelAsync(vehicleModel);
+        return NoContent();
     }
     #endregion
 
@@ -51,7 +50,7 @@ public class VehicleModelController : BaseApiController
     [ServiceFilter<ValidateModelActionFilter<VehicleModelUpsertDto>>]
     [ProducesResponseType<VehicleModelDto>(StatusCodes.Status200OK)]
     [ProducesResponseType<ApiErrorResponse>(StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<VehicleModelDto>> Update(
+    public async Task<ActionResult> Update(
         [FromRoute] string id,
         [FromBody] VehicleModelUpsertDto UpdateDto
     )
@@ -62,9 +61,8 @@ public class VehicleModelController : BaseApiController
 
         var vehicleModel = _mapper.Map<VehicleModelUpsertDto, VehicleModel>(UpdateDto);
         vehicleModel.Id = id;
-        vehicleModel = await _services.UpdateVehicleModelAsync(vehicleModel);
-        var returnVehicleModel = _mapper.Map<VehicleModel, VehicleModelDto>(vehicleModel!);
-        return Ok(returnVehicleModel!);
+        await _services.UpdateVehicleModelAsync(vehicleModel);
+        return NoContent();
     }
     #endregion
 
@@ -83,11 +81,10 @@ public class VehicleModelController : BaseApiController
     [ProducesResponseType<IReadOnlyList<VehicleModelDto>>(StatusCodes.Status200OK)]
     [HttpGet]
     public async Task<ActionResult<IReadOnlyList<VehicleModelDto>>> GetAll(
-        [FromQuery] string? categroyId,
-        [FromQuery] string? brandId
+        [FromQuery] string? categroyId
     )
     {
-        var vehicleModelsList = await _services.GetAllVehicleModelsAsync(categroyId, brandId);
+        var vehicleModelsList = await _services.GetAllVehicleModelsAsync(categroyId);
         var VehicleModelDtoList = _mapper.Map<
             IReadOnlyList<VehicleModel>,
             IReadOnlyList<VehicleModelDto>

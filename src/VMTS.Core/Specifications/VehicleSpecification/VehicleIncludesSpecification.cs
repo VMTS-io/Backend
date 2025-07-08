@@ -58,7 +58,6 @@ public class VehicleIncludesSpecification : BaseSpecification<Vehicle>
     private void ApplyIncludes()
     {
         Includes.Add(v => v.VehicleModel.Category);
-        Includes.Add(v => v.VehicleModel.Brand);
     }
 
     private void ApplyAllIncludes()
@@ -70,7 +69,6 @@ public class VehicleIncludesSpecification : BaseSpecification<Vehicle>
         IncludeStrings.Add("MaintenaceRequests.Mechanic");
         IncludeStrings.Add("MaintenaceRequests.FinalReport.ChangedParts.Part");
         Includes.Add(v => v.VehicleModel.Category);
-        Includes.Add(v => v.VehicleModel.Brand);
     }
 
     private void ApplaySort(string? sort)

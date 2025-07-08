@@ -22,7 +22,6 @@ public class MechanicFinalReportSpecification : BaseSpecification<MaintenanceFin
 
     private void AddIncludes()
     {
-        Includes.Add(r => r.Vehicle.VehicleModel.Brand);
         Includes.Add(r => r.Vehicle.VehicleModel.Category);
         Includes.Add(r => r.Mechanic);
         Includes.Add(r => r.InitialReport);

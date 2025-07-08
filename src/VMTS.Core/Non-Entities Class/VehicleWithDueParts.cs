@@ -9,7 +9,7 @@ public class VehicleWithDueParts
     public string PlateNumber { get; set; } = null!;
 
     public string ModelName => VehicleModel.Name;
-    public string BrandName => VehicleModel.Brand.Name;
+    public string BrandName => VehicleModel.Brand;
     public string CategoryName => VehicleCategory.Name;
 
     public List<DuePart> DueParts { get; set; } = [];

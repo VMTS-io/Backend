@@ -12,10 +12,10 @@ public class VehicleModelConfig : IEntityTypeConfiguration<VehicleModel>
             .HasOne(vm => vm.Category)
             .WithMany(vc => vc.VehicleModels)
             .HasForeignKey(vm => vm.CategoryId);
-        builder
-            .HasOne(vm => vm.Brand)
-            .WithMany(b => b.VehicleModels)
-            .HasForeignKey(vm => vm.BrandId)
-            .IsRequired(false);
+        // builder
+        //     .HasOne(vm => vm.Brand)
+        //     .WithMany(b => b.VehicleModels)
+        //     .HasForeignKey(vm => vm.BrandId)
+        //     .IsRequired(false);
     }
 }
