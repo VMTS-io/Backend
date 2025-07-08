@@ -39,4 +39,25 @@ public class DashboardController : BaseApiController
         var cost = await _dashboardServices.GetTotalFuelCostAsync();
         return Ok(cost);
     }
+
+    [HttpGet("Total-Vehicle")]
+    public async Task<ActionResult<decimal>> GetTotalVehicle()
+    {
+        var cost = await _dashboardServices.GetTotalVehicleCount();
+        return Ok(cost);
+    }
+
+    [HttpGet("Total-Vehicle-UnderMaintencance")]
+    public async Task<ActionResult<decimal>> GetTotalVehicleUnderMaintenance()
+    {
+        var cost = await _dashboardServices.GetVehicleUnderMaintenanceCount();
+        return Ok(cost);
+    }
+
+    [HttpGet("Total-Vehicle=Available")]
+    public async Task<ActionResult<decimal>> GetAvailable()
+    {
+        var cost = await _dashboardServices.GetVehicleAvailableCount();
+        return Ok(cost);
+    }
 }
