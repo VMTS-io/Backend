@@ -21,6 +21,7 @@ public class VehicleUpsertDto
     public TransmissionType? TransmissionType { get; set; } = default!;
 
     public string? EngineSize { get; set; } = default!;
+    public string? FuelEfficiency { get; set; } = default!;
 
     public PartCondition? TireCondition { get; set; } = default!;
     public PartCondition? BrakeCondition { get; set; } = default!;

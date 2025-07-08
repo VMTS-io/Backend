@@ -7,5 +7,5 @@ public interface IVehicleModelServices
     Task<VehicleModel> CreateVehicleModelAsync(VehicleModel entity);
     Task<VehicleModel> UpdateVehicleModelAsync(VehicleModel entity);
     Task DeleteVehicleModelAsync(string id);
-    Task<IReadOnlyList<VehicleModel>> GetAllVehicleModelsAsync();
+    Task<IReadOnlyList<VehicleModel>> GetAllVehicleModelsAsync(string? categoryId, string? brandId);
 }

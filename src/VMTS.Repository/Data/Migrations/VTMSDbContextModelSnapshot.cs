@@ -598,6 +598,9 @@ namespace VMTS.Repository.Data.Migrations
                     b.Property<decimal>("Cost")
                         .HasColumnType("decimal(18,2)");
 
+                    b.Property<bool?>("IsTracked")
+                        .HasColumnType("bit");
+
                     b.Property<int?>("LifeSpanDays")
                         .HasColumnType("int");
 
@@ -849,6 +852,9 @@ namespace VMTS.Repository.Data.Migrations
                     b.Property<DateTime?>("ExpectedNextMaintenanceDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<string>("FuelEfficiency")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int>("FuelType")
                         .HasColumnType("int");
 
@@ -920,10 +926,6 @@ namespace VMTS.Repository.Data.Migrations
                     b.Property<string>("CategoryId")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("FuelEfficiency")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Name")
                         .IsRequired()

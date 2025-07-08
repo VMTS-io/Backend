@@ -82,9 +82,12 @@ public class VehicleModelController : BaseApiController
     #region GetAll
     [ProducesResponseType<IReadOnlyList<VehicleModelDto>>(StatusCodes.Status200OK)]
     [HttpGet]
-    public async Task<ActionResult<IReadOnlyList<VehicleModelDto>>> GetAll()
+    public async Task<ActionResult<IReadOnlyList<VehicleModelDto>>> GetAll(
+        [FromQuery] string? categroyId,
+        [FromQuery] string? brandId
+    )
     {
-        var vehicleModelsList = await _services.GetAllVehicleModelsAsync();
+        var vehicleModelsList = await _services.GetAllVehicleModelsAsync(categroyId, brandId);
         var VehicleModelDtoList = _mapper.Map<
             IReadOnlyList<VehicleModel>,
             IReadOnlyList<VehicleModelDto>

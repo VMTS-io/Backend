@@ -153,9 +153,10 @@ public static class ExcelFile
     public static async Task<byte[]> GenerateVehicleTemplate(IPartService partServices)
     {
         var parts = await partServices.GetAllAsync();
+        ;
         try
         {
-            if (!parts.Any())
+            if (parts.Count == 0)
             {
                 throw new InvalidOperationException("No parts provided.");
             }
