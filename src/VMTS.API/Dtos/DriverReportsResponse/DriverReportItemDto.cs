@@ -30,7 +30,7 @@ public class DriverReportItemDto
     public string? FaultDetails { get; set; }
 
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public MaintenanceType? FaultType { get; set; }
+    public string? FaultType { get; set; }
 
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public decimal? Cost { get; set; }

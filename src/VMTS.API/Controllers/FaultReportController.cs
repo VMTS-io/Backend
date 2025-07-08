@@ -48,7 +48,6 @@ public class FaultReportController : BaseApiController
         var faultReport = await _ireportService.CreateFaultReportAsync(
             userId,
             request.Details,
-            request.FaultType,
             request.Cost,
             request.FuelRefile,
             request.Address

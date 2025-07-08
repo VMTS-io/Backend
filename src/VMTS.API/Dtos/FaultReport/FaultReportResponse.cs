@@ -12,10 +12,13 @@ public class FaultReportResponse
 
     public string FaultAddress { get; set; }
     public string Details { get; set; }
-    public MaintenanceType FaultType { get; set; }
     public FaultReportStatus Status { get; set; }
     public decimal Cost { get; set; }
     public int FuelRefile { get; set; }
+
+    public string Priority { get; set; } // enum like Low, Medium, High (based on AI)
+    public string? AiPredictedFaultType { get; set; } // Store AI-predicted label if different from driver input
+
     public DateTime CreatedAt { get; set; }
 
     public bool Seen { get; set; }

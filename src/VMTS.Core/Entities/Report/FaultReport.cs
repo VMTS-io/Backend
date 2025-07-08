@@ -14,12 +14,12 @@ public class FaultReport : BaseEntity
 
     public int FuelRefile { get; set; }
     public string FaultAddress { get; set; } = default!;
-    public MaintenanceType FaultType { get; set; }
+
     public FaultReportStatus Status { get; set; } = FaultReportStatus.Reported;
 
     public bool Seen { get; set; } = false;
 
-    public FaultPriority? Priority { get; set; } // enum like Low, Medium, High (based on AI)
+    public string? Priority { get; set; }
     public string? AiPredictedFaultType { get; set; } // Store AI-predicted label if different from driver input
 
     public bool? IsAiPredictionSuccessful { get; set; }

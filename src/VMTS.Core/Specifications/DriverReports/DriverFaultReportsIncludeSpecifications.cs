@@ -7,7 +7,7 @@ public class DriverFaultReportsIncludeSpecifications : BaseSpecification<FaultRe
             (string.IsNullOrEmpty(spec.TripId) || fr.TripId == spec.TripId)
             && (string.IsNullOrEmpty(spec.VehicleId) || fr.VehicleId == spec.VehicleId)
             && (string.IsNullOrEmpty(spec.DriverId) || fr.DriverId == spec.DriverId)
-            && (!spec.FaultType.HasValue || fr.FaultType == spec.FaultType)
+            && (string.IsNullOrEmpty(spec.FaultType) || fr.AiPredictedFaultType == spec.FaultType)
             && (!spec.From.HasValue || fr.ReportedAt >= spec.From)
             && (!spec.To.HasValue || fr.ReportedAt <= spec.To)
         )

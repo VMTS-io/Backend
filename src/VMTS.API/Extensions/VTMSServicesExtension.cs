@@ -71,7 +71,7 @@ public static class VTMSServicesExtension
         //         };
         //     };
         // });
-
+        services.AddHttpClient<IFaultPredictionService, FaultPredictionService>();
         services.AddScoped<IDashboardServices, DashboardServices>();
         services.AddScoped<RecalculateJob>();
         services.AddScoped<AssignDailyTrip>();

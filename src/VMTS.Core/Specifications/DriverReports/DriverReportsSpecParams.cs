@@ -10,7 +10,7 @@ public class DriverReportsSpecParams
     public DateTime? From { get; set; }
     public DateTime? To { get; set; }
 
-    public MaintenanceType? FaultType { get; set; }
+    public string? FaultType { get; set; }
 
     private int pageSize = 10;
     private const int maxPageSize = 20;

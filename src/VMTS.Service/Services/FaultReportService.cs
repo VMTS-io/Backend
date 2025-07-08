@@ -1,10 +1,12 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using VMTS.Core.Entities.Ai;
 using VMTS.Core.Entities.Identity;
 using VMTS.Core.Entities.Maintenace;
 using VMTS.Core.Entities.Report;
 using VMTS.Core.Entities.Trip;
 using VMTS.Core.Entities.User_Business;
 using VMTS.Core.Entities.Vehicle_Aggregate;
+using VMTS.Core.Interfaces;
 using VMTS.Core.Interfaces.Repositories;
 using VMTS.Core.Interfaces.UnitOfWork;
 using VMTS.Core.ServicesContract;
@@ -19,11 +21,17 @@ public class FaultReportService : IFaultReportService
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly UserManager<AppUser> _userManager;
+    private readonly IFaultPredictionService _faultPredictionService;
 
-    public FaultReportService(IUnitOfWork unitOfWork, UserManager<AppUser> userManager)
+    public FaultReportService(
+        IUnitOfWork unitOfWork,
+        UserManager<AppUser> userManager,
+        IFaultPredictionService faultPredictionService
+    )
     {
         _unitOfWork = unitOfWork;
         _userManager = userManager;
+        _faultPredictionService = faultPredictionService;
     }
 
     #region Create
@@ -31,7 +39,6 @@ public class FaultReportService : IFaultReportService
     public async Task<FaultReport> CreateFaultReportAsync(
         string userId,
         string details,
-        MaintenanceType faultType,
         decimal cost,
         int fuelRefile,
         string address
@@ -83,7 +90,6 @@ public class FaultReportService : IFaultReportService
         {
             Details = details,
             ReportedAt = DateTime.UtcNow,
-            FaultType = faultType,
             TripId = tripRequest.Id,
             VehicleId = tripRequest.Vehicle.Id,
             DriverId = userId,
@@ -98,6 +104,28 @@ public class FaultReportService : IFaultReportService
         businessUser.DriverFaultReport.Add(faultReport);
 
         tripRequest.Status = TripStatus.Completed;
+
+        // Call AI model
+        var aiEndpointConfigId = (await _unitOfWork.GetRepo<AiEndpointConfig>().GetAllAsync())
+            .Where(ac => ac.Name == "FaultPriviledge")
+            .First()
+            .Id;
+        var aiPrediction = await _faultPredictionService.PredictAsync(details, aiEndpointConfigId);
+
+        if (aiPrediction.IsSuccess)
+        {
+            // Assign priority and AI-derived fault type
+            faultReport.Priority = aiPrediction.predicted_urgency;
+
+            faultReport.AiPredictedFaultType = aiPrediction.predicted_issue;
+            faultReport.IsAiPredictionSuccessful = true;
+        }
+        else
+        {
+            // Optional: mark as failed prediction
+            faultReport.IsAiPredictionSuccessful = false;
+        }
+
         await _unitOfWork.GetRepo<FaultReport>().CreateAsync(faultReport);
         var result = await _unitOfWork.SaveChanges();
 

@@ -6,8 +6,6 @@ namespace VMTS.API.Dtos;
 
 public class FaultReportRequest
 {
-    public MaintenanceType FaultType { get; set; }
-
     public string Address { get; set; }
 
     public decimal Cost { get; set; }
