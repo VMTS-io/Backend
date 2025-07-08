@@ -105,9 +105,10 @@ public static class VTMSServicesExtension
             .AddControllers()
             .AddJsonOptions(options =>
             {
-                options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()); // Convert enums to strings
+                options.JsonSerializerOptions.Converters.Add(
+                    new JsonStringEnumConverterWithAttributeSupport()
+                ); // Convert enums to strings
                 options.JsonSerializerOptions.Converters.Add(new DateOnlyJsonConverter()); // Custom DateOnly converter
-
                 options.JsonSerializerOptions.MaxDepth = 256;
             });
         services.AddValidatorsFromAssemblyContaining<Program>();

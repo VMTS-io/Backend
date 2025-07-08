@@ -7,7 +7,7 @@ public enum VehicleStatus
     [EnumMember(Value = "Available")]
     Available, // The vehicle is functional and not currently in use
 
-    [EnumMember(Value = "on a Trip")]
+    [EnumMember(Value = "On a Trip")]
     OnTrip, // Currently on a trip or reserved
 
     [EnumMember(Value = "Under Maintenance")]
