@@ -10,7 +10,6 @@ public interface IFaultReportService
     Task<FaultReport> CreateFaultReportAsync(
         string userId,
         string details,
-        MaintenanceType faultType,
         decimal cost,
         int fuelRefile,
         string address

@@ -5,11 +5,11 @@ namespace VMTS.Core.Entities.Report;
 public enum FaultPriority
 {
     [EnumMember(Value = "Low")]
-    Low = 1,
+    Low,
 
     [EnumMember(Value = "Medium")]
-    Medium = 2,
+    Medium,
 
     [EnumMember(Value = "High")]
-    High = 3,
+    High,
 }

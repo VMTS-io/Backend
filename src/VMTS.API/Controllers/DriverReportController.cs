@@ -63,7 +63,7 @@ public class DriverReportController : BaseApiController
             Destination = fr.Trip.Destination,
             FaultAddress = fr.FaultAddress,
             FaultDetails = fr.Details,
-            FaultType = fr.FaultType,
+            FaultType = fr.AiPredictedFaultType,
             Cost = fr.Cost,
             Status = fr.Trip.Status,
             Seen = fr.Seen,

@@ -27,7 +27,7 @@ public class VehicleDetailsDto
 
     // public VehicleCategoryDto VehicleCategory { get; set; }
 
-    public ICollection<TripRequestDto> TripRequests { get; set; } = [];
+    public ICollection<TripRequestForVehicles> TripRequests { get; set; } = [];
 
     public ICollection<TripReportDto> TripReports { get; set; } = [];
 

@@ -11,6 +11,5 @@ public class FaultReportDtoValidator : AbstractValidator<FaultReportRequest>
         RuleFor(fr => fr.FuelRefile).NotEmpty().WithMessage("FuelRefile Required");
         RuleFor(fr => fr.Cost).NotEmpty().WithMessage("Cost Required");
         RuleFor(fr => fr.Address).NotEmpty().WithMessage("Address Required");
-        RuleFor(fr => fr.FaultType).NotEmpty().WithMessage("FaultType Required");
     }
 }

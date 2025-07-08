@@ -49,17 +49,14 @@ namespace VMTS.Repository.Data.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("FaultType")
-                        .HasColumnType("int");
-
                     b.Property<int>("FuelRefile")
                         .HasColumnType("int");
 
                     b.Property<bool?>("IsAiPredictionSuccessful")
                         .HasColumnType("bit");
 
-                    b.Property<int?>("Priority")
-                        .HasColumnType("int");
+                    b.Property<string>("Priority")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("ReportedAt")
                         .HasColumnType("datetime2");
@@ -635,30 +632,6 @@ namespace VMTS.Repository.Data.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("PartCategories");
-                });
-
-            modelBuilder.Entity("VMTS.Core.Entities.Report.FaultPredictionResult", b =>
-                {
-                    b.Property<string>("Id")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<bool>("IsSuccess")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("ModelVersion")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("predicted_issue")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("predicted_urgency")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("FaultPredictionResults");
                 });
 
             modelBuilder.Entity("VMTS.Core.Entities.Trip.RecurringTripTemplate", b =>

@@ -17,7 +17,10 @@ public class FaultReportIncludesSpecification : BaseSpecification<FaultReport>
                 !specParams.ReportDate.HasValue
                 || fr.ReportedAt.Date == specParams.ReportDate.Value.Date
             )
-            && (!specParams.FaultType.HasValue || fr.FaultType == specParams.FaultType)
+            && (
+                string.IsNullOrEmpty(specParams.FaultType)
+                || fr.AiPredictedFaultType == specParams.FaultType
+            )
         )
     {
         ApplyIncludes();
@@ -53,10 +56,10 @@ public class FaultReportIncludesSpecification : BaseSpecification<FaultReport>
                 AddOrderByDesc(fr => fr.ReportedAt);
                 break;
             case "FaultTypeAsc":
-                AddOrderBy(fr => fr.FaultType);
+                AddOrderBy(fr => fr.AiPredictedFaultType);
                 break;
             case "FaultTypeDesc":
-                AddOrderByDesc(fr => fr.FaultType);
+                AddOrderByDesc(fr => fr.AiPredictedFaultType);
                 break;
         }
     }

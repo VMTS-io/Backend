@@ -56,8 +56,6 @@ public class VTMSDbContext : DbContext
 
     public DbSet<AiEndpointConfig> AiEndpoints { get; set; }
 
-    public DbSet<FaultPredictionResult> FaultPredictionResults { get; set; }
-
     public VTMSDbContext(DbContextOptions<VTMSDbContext> options)
         : base(options) { }
 

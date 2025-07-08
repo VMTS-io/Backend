@@ -52,7 +52,7 @@ public class MappingProfile : Profile
             .ForMember(dest => dest.Vehicle, opt => opt.MapFrom(src => src.Vehicle))
             .ForMember(dest => dest.ReportedAt, opt => opt.MapFrom(src => src.ReportedAt))
             .ForMember(dest => dest.FaultDetails, opt => opt.MapFrom(src => src.Details))
-            .ForMember(dest => dest.FaultType, opt => opt.MapFrom(src => src.FaultType))
+            .ForMember(dest => dest.FaultType, opt => opt.MapFrom(src => src.AiPredictedFaultType))
             .ForMember(dest => dest.Cost, opt => opt.MapFrom(src => src.Cost));
 
         // Map nested objects

@@ -8,7 +8,7 @@ public class FaultReportSpecParams
     public string? DriverId { get; set; }
     public string? VehicleId { get; set; }
     public string? TripId { get; set; }
-    public MaintenanceType? FaultType { get; set; }
+    public string? FaultType { get; set; }
     public DateTime? ReportDate { get; set; }
 
     private int pagesize = 10;
