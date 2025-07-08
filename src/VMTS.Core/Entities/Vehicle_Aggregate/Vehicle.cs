@@ -22,6 +22,7 @@ public class Vehicle : BaseEntity
     public PartCondition? BatteryStatus { get; set; } = default!;
     public DrivingCondition? DrivingCondition { get; set; } = default!;
     public DateTime? LastAssignedDate { get; set; }
+    public string? FuelEfficiency { get; set; } = default!;
 
     public DateTime? LastMaintenanceDate { get; set; }
     public DateTime? ExpectedNextMaintenanceDate { get; set; }

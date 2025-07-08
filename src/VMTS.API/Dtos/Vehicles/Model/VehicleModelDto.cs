@@ -9,8 +9,6 @@ public class VehicleModelDto
 
     public string Name { get; set; } = default!;
 
-    public string FuelEfficiency { get; set; } = default!;
-
     public BrandDto Brand { get; set; } = default!;
 
     public VehicleCategoryDto Category { get; set; } = default!;

@@ -2,7 +2,7 @@ using VMTS.Core.Entities.Vehicle_Aggregate;
 using VMTS.Core.Interfaces.Repositories;
 using VMTS.Core.Interfaces.Services;
 using VMTS.Core.Interfaces.UnitOfWork;
-using VMTS.Core.Specifications.VehicleSpecification.VehicleModelSpecification;
+using VMTS.Core.Specifications.VehicleSpecification.VehicleModelSpecifications;
 using VMTS.Service.Exceptions;
 
 namespace VMTS.Service.Services;
@@ -56,9 +56,12 @@ public class VehicleModelServices : IVehicleModelServices
         await _unitOfWork.SaveChanges();
     }
 
-    public async Task<IReadOnlyList<VehicleModel>> GetAllVehicleModelsAsync()
+    public async Task<IReadOnlyList<VehicleModel>> GetAllVehicleModelsAsync(
+        string? categoryId,
+        string? brandId
+    )
     {
-        var spec = new VehicleModelSpecification();
+        var spec = new VehicleModelSpecification(categoryId, brandId);
         var vehicleModelList = await _modelrepo.GetAllWithSpecificationAsync(spec);
         return vehicleModelList;
     }
