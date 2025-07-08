@@ -1,7 +1,9 @@
 ﻿using System.Reflection;
 using Microsoft.EntityFrameworkCore;
+using VMTS.Core.Entities.Ai;
 using VMTS.Core.Entities.Maintenace;
 using VMTS.Core.Entities.Parts;
+using VMTS.Core.Entities.Report;
 using VMTS.Core.Entities.Trip;
 using VMTS.Core.Entities.User_Business;
 using VMTS.Core.Entities.Vehicle_Aggregate;
@@ -51,6 +53,10 @@ public class VTMSDbContext : DbContext
     public DbSet<BusinessUser> BusinessUsers { get; set; }
 
     #endregion
+
+    public DbSet<AiEndpointConfig> AiEndpoints { get; set; }
+
+    public DbSet<FaultPredictionResult> FaultPredictionResults { get; set; }
 
     public VTMSDbContext(DbContextOptions<VTMSDbContext> options)
         : base(options) { }
