@@ -54,7 +54,7 @@ public class DashboardController : BaseApiController
         return Ok(cost);
     }
 
-    [HttpGet("Total-Vehicle=Available")]
+    [HttpGet("Total-Vehicle-Available")]
     public async Task<ActionResult<decimal>> GetAvailable()
     {
         var cost = await _dashboardServices.GetVehicleAvailableCount();
