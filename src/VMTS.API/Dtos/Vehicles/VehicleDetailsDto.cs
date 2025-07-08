@@ -13,6 +13,10 @@ public class VehicleDetailsDto
 
     public short ModelYear { get; set; }
 
+    public decimal TotalMaintenanceCost { get; set; }
+
+    public decimal ToatalFuleCost { get; set; }
+
     public FuelType FuelType { get; set; }
 
     public int KMDriven { get; set; }

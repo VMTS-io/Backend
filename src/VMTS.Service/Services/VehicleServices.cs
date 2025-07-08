@@ -1,8 +1,11 @@
 using VMTS.Core.Entities.Maintenace;
+using VMTS.Core.Entities.Trip;
 using VMTS.Core.Entities.Vehicle_Aggregate;
 using VMTS.Core.Interfaces.Repositories;
 using VMTS.Core.Interfaces.Services;
 using VMTS.Core.Interfaces.UnitOfWork;
+using VMTS.Core.Specifications;
+using VMTS.Core.Specifications.Maintenance.Report.Final;
 using VMTS.Core.Specifications.VehicleSpecification;
 using VMTS.Service.Exceptions;
 
@@ -108,4 +111,39 @@ public class VehicleServices : IVehicleSerivces
         return returnVehicle!;
     }
     #endregion
+    public async Task<decimal> GetTotalFuelCostAsync(string vehicleId)
+    {
+        var oneMonthAgo = DateTime.UtcNow.AddMonths(-1);
+
+        var tripSpecs = new TripReportIncludesSpecification(tr =>
+            tr.ReportedAt > oneMonthAgo && tr.VehicleId == vehicleId
+        );
+        var tripFuelCost = await _unitOfWork
+            .GetRepo<TripReport>()
+            .SumWithSpecificationAsync(tripSpecs, tr => tr.FuelCost);
+
+        var faultSpecs = new FaultReportIncludesSpecification(fr =>
+            fr.ReportedAt > oneMonthAgo && fr.VehicleId == vehicleId
+        );
+        var faultFuelCost = await _unitOfWork
+            .GetRepo<FaultReport>()
+            .SumWithSpecificationAsync(faultSpecs, tr => tr.Cost);
+
+        // var tripFuelCost = tripReports.Sum(tr => tr.FuelCost);
+        // var faultFuelCost = faultReports.Sum(fr => fr.Cost);
+
+        return tripFuelCost + faultFuelCost;
+    }
+
+    public async Task<decimal> GetTotalMaintenanceCostAsync(string vehicleId)
+    {
+        var specs = new MaintenanceFinalReportSpecification(tr =>
+            tr.FinishedDate > DateTime.UtcNow.AddMonths(-1) && tr.VehicleId == vehicleId
+        );
+        var cost = await _unitOfWork
+            .GetRepo<MaintenanceFinalReport>()
+            .GetAllWithSpecificationAsync(specs);
+        var totalCost = cost.Sum(c => c.TotalCost);
+        return totalCost;
+    }
 }

@@ -1,3 +1,4 @@
+using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore;
 using VMTS.Core.Entities;
 using VMTS.Core.Interfaces.Repositories;
@@ -84,5 +85,13 @@ public class GenericRepository<T> : IGenericRepository<T>
     public void UpdateRange(IEnumerable<T> range)
     {
         _dbContext.UpdateRange(range);
+    }
+
+    public async Task<decimal> SumWithSpecificationAsync(
+        ISpecification<T> specification,
+        Expression<Func<T, decimal>> selector
+    )
+    {
+        return await GetQuery(specification).SumAsync(selector);
     }
 }
