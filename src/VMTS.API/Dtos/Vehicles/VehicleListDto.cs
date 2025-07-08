@@ -14,6 +14,8 @@ public class VehicleListDto
 
     public short ModelYear { get; set; }
 
+    public string FuelEfficiency { get; set; } = default!;
+
     public VehicleStatus Status { get; set; }
     public DateTime LastAssignedDate { get; set; }
     public string Category { get; set; } = default!;

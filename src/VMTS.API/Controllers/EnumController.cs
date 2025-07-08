@@ -56,4 +56,8 @@ public class EnumController : BaseApiController
     [HttpGet("Part-Condtion")]
     public ActionResult<List<EnumResponseDto>> GetPartCondition() =>
         Ok(EnumHelper.GetEnumValues<PartCondition>());
+
+    [HttpGet("Transmission-Type")]
+    public ActionResult<List<EnumResponseDto>> GetPartCondition() =>
+        Ok(EnumHelper.GetEnumValues<TransmissionType>());
 }
