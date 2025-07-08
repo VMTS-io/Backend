@@ -27,7 +27,6 @@ public class Vehicle : BaseEntity
     public DateTime? ExpectedNextMaintenanceDate { get; set; }
     public string ModelId { get; set; } = default!;
     public VehicleModel VehicleModel { get; set; } = default!;
-
     public ICollection<TripRequest> TripRequests { get; set; } = [];
     public ICollection<TripReport> TripReports { get; set; } = [];
     public ICollection<FaultReport> FaultReports { get; set; } = [];
@@ -35,7 +34,8 @@ public class Vehicle : BaseEntity
     public ICollection<MaintenanceFinalReport> MaintenaceFinalReports { get; set; } = [];
     public ICollection<MaintenaceRequest> MaintenaceRequests { get; set; } = [];
     public ICollection<MaintenanceTracking> MaintenanceTrackings { get; set; } = default!;
-
     public ICollection<MaintenanceFinalReportParts> MaintenanceFinalReportParts { get; set; } =
         default!;
+
+    public int? NeedMaintenanceInDays { get; set; }
 }
