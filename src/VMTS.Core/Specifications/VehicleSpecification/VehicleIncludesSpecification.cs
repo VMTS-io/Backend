@@ -1,4 +1,5 @@
-﻿using VMTS.Core.Entities.Vehicle_Aggregate;
+﻿using System.Linq.Expressions;
+using VMTS.Core.Entities.Vehicle_Aggregate;
 
 namespace VMTS.Core.Specifications.VehicleSpecification;
 
@@ -9,6 +10,9 @@ public class VehicleIncludesSpecification : BaseSpecification<Vehicle>
     {
         ApplyAllIncludes();
     }
+
+    public VehicleIncludesSpecification(Expression<Func<Vehicle, bool>> criteria)
+        : base(criteria) { }
 
     public VehicleIncludesSpecification(VehicleSpecParams specParams)
         : base(v =>
