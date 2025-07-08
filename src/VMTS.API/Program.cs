@@ -1,5 +1,5 @@
 using Hangfire;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
+using OfficeOpenXml;
 using Scalar.AspNetCore;
 using VMTS.API.Extensions;
 using VMTS.API.Hubs;
@@ -18,7 +18,7 @@ namespace VMTS.API
             // Add services to the container.
             builder.Services.AddAppServices(builder.Configuration);
             builder.Services.AddIdentityServices(builder.Configuration);
-
+            ExcelPackage.License.SetNonCommercialPersonal("Bassel Raafat");
             var app = builder.Build();
             await using (var scope = app.Services.CreateAsyncScope())
             {
@@ -88,7 +88,7 @@ namespace VMTS.API
             });
             app.UseHangfireDashboard(
                 "/hangfire",
-                new DashboardOptions { Authorization = new[] { new HangfireDashboardAuthFilter() } }
+                new DashboardOptions { Authorization = [new HangfireDashboardAuthFilter()] }
             );
 
             app.UseHttpsRedirection();

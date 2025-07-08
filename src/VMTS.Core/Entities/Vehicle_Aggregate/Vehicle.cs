@@ -15,11 +15,11 @@ public class Vehicle : BaseEntity
 
     public VehicleStatus Status { get; set; } = VehicleStatus.Available;
     public DateOnly ModelYear { get; set; }
-    public string? TransmissionType { get; set; } = default!;
+    public TransmissionType? TransmissionType { get; set; } = default!;
     public string? EngineSize { get; set; } = default!;
-    public string? TireCondition { get; set; } = default!;
-    public string? BrakeCondition { get; set; } = default!;
-    public string? BatteryStatus { get; set; } = default!;
+    public PartCondition? TireCondition { get; set; } = default!;
+    public PartCondition? BrakeCondition { get; set; } = default!;
+    public PartCondition? BatteryStatus { get; set; } = default!;
     public DrivingCondition? DrivingCondition { get; set; } = default!;
     public DateTime? LastAssignedDate { get; set; }
 

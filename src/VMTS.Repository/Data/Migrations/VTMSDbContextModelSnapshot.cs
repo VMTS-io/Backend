@@ -831,11 +831,11 @@ namespace VMTS.Repository.Data.Migrations
                     b.Property<string>("Id")
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("BatteryStatus")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int?>("BatteryStatus")
+                        .HasColumnType("int");
 
-                    b.Property<string>("BrakeCondition")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int?>("BrakeCondition")
+                        .HasColumnType("int");
 
                     b.Property<int>("CurrentOdometerKM")
                         .HasColumnType("int");
@@ -878,11 +878,11 @@ namespace VMTS.Repository.Data.Migrations
                     b.Property<int>("Status")
                         .HasColumnType("int");
 
-                    b.Property<string>("TireCondition")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int?>("TireCondition")
+                        .HasColumnType("int");
 
-                    b.Property<string>("TransmissionType")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int?>("TransmissionType")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
