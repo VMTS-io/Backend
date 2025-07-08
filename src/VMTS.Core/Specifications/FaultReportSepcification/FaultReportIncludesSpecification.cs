@@ -5,7 +5,8 @@ using VMTS.Core.Specifications.FaultReportSepcification;
 
 public class FaultReportIncludesSpecification : BaseSpecification<FaultReport>
 {
-    public FaultReportIncludesSpecification(Expression<Func<FaultReport, bool>> criteria) { }
+    public FaultReportIncludesSpecification(Expression<Func<FaultReport, bool>> criteria)
+        : base(criteria) { }
 
     public FaultReportIncludesSpecification(FaultReportSpecParams specParams)
         : base(fr =>

@@ -13,30 +13,37 @@ public class DashboardController : BaseApiController
     }
 
     [HttpGet("Trips-With-Faults")]
-    public async Task<ActionResult<int>> GetTripsWithFaults()
+    public async Task<ActionResult<int>> GetTripsWithFaults(int? month)
     {
-        var trips = await _dashboardServices.GetCountTripsWithFaultsAsync();
+        var trips = await _dashboardServices.GetCountTripsWithFaultsAsync(month);
         return Ok(trips);
     }
 
     [HttpGet("Trips-Without-Faults")]
-    public async Task<ActionResult<int>> GetTripsWithoutFaults()
+    public async Task<ActionResult<int>> GetTripsWithoutFaults(int? month)
     {
-        var trips = await _dashboardServices.GetCountTripsWithoutFaultsAsync();
+        var trips = await _dashboardServices.GetCountTripsWithoutFaultsAsync(month);
+        return Ok(trips);
+    }
+
+    [HttpGet("Toatl-Trips")]
+    public async Task<ActionResult<int>> GetTotalTrips(int? month)
+    {
+        var trips = await _dashboardServices.GetTotalTripsAsync(month);
         return Ok(trips);
     }
 
     [HttpGet("Total-Maintenance-Cost")]
-    public async Task<ActionResult<decimal>> GetTotalMaintenanceCost()
+    public async Task<ActionResult<decimal>> GetTotalMaintenanceCost([FromQuery] int? month)
     {
-        var cost = await _dashboardServices.GetTotalMaintenanceCostAsync();
+        var cost = await _dashboardServices.GetTotalMaintenanceCostAsync(month);
         return Ok(cost);
     }
 
     [HttpGet("Total-Fuel-Cost")]
-    public async Task<ActionResult<decimal>> GetTotalFuelCost()
+    public async Task<ActionResult<decimal>> GetTotalFuelCost(int? month)
     {
-        var cost = await _dashboardServices.GetTotalFuelCostAsync();
+        var cost = await _dashboardServices.GetTotalFuelCostAsync(month);
         return Ok(cost);
     }
 

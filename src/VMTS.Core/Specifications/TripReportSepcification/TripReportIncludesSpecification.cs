@@ -5,7 +5,8 @@ namespace VMTS.Core.Specifications;
 
 public class TripReportIncludesSpecification : BaseSpecification<TripReport>
 {
-    public TripReportIncludesSpecification(Expression<Func<TripReport, bool>> criteria) { }
+    public TripReportIncludesSpecification(Expression<Func<TripReport, bool>> criteria)
+        : base(criteria) { }
 
     public TripReportIncludesSpecification(TripReportSpecParams specParams)
         : base(tr =>
