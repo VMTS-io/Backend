@@ -29,10 +29,7 @@ public class VehicleIncludesSpecification : BaseSpecification<Vehicle>
             && (!specParams.MaxJoindYear.HasValue || v.JoinedYear <= specParams.MaxJoindYear)
             && (
                 string.IsNullOrEmpty(specParams.Search)
-                || v.PalletNumber.Contains(
-                    specParams.Search,
-                    StringComparison.CurrentCultureIgnoreCase
-                )
+                || v.PalletNumber.ToLower().Contains(specParams.Search.ToLower())
             )
             && (string.IsNullOrEmpty(specParams.ModelId) || v.ModelId == specParams.ModelId)
             && (
