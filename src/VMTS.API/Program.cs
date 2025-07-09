@@ -20,6 +20,7 @@ namespace VMTS.API
             builder.Services.AddIdentityServices(builder.Configuration);
             ExcelPackage.License.SetNonCommercialPersonal("Bassel Raafat");
             var app = builder.Build();
+
             await using (var scope = app.Services.CreateAsyncScope())
             {
                 var recalculatejob = scope.ServiceProvider.GetRequiredService<RecalculateJob>();
@@ -49,7 +50,7 @@ namespace VMTS.API
             }
 
             // await app.ApplyMigrationAsync();
-            // await app.ApplySeedAsync();
+            await app.ApplySeedAsync();
 
             app.MapOpenApi();
 

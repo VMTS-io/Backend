@@ -4,14 +4,10 @@ namespace VMTS.Core.Specifications.VehicleSpecification.VehicleModelSpecificatio
 
 public class VehicleModelSpecification : BaseSpecification<VehicleModel>
 {
-    public VehicleModelSpecification(string? categoryId, string? brandId)
-        : base(vm =>
-            string.IsNullOrEmpty(categoryId)
-            || vm.CategoryId == categoryId && string.IsNullOrEmpty(brandId)
-            || vm.BrandId == brandId
-        )
+    public VehicleModelSpecification(string? categoryId)
+        : base(vm => string.IsNullOrEmpty(categoryId) || vm.CategoryId == categoryId)
     {
         Includes.Add(vm => vm.Category);
-        Includes.Add(vm => vm.Brand);
+        // Includes.Add(vm => vm.Brand);
     }
 }

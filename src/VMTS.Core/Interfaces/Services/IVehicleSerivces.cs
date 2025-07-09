@@ -18,4 +18,5 @@ public interface IVehicleSerivces
 
     Task<decimal> GetTotalFuelCostAsync(string vehicleId);
     Task<decimal> GetTotalMaintenanceCostAsync(string vehicleId);
+    Task AddHistoryToVehicleAsync(List<MaintenanceTracking> maintenanceTracking);
 }

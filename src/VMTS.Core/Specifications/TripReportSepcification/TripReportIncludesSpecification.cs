@@ -34,7 +34,6 @@ public class TripReportIncludesSpecification : BaseSpecification<TripReport>
     {
         Includes.Add(tr => tr.Driver);
         Includes.Add(tr => tr.Vehicle.VehicleModel.Category);
-        Includes.Add(tr => tr.Vehicle.VehicleModel.Brand);
         Includes.Add(tr => tr.Trip);
     }
 

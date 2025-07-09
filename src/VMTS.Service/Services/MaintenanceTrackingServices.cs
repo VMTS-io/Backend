@@ -60,7 +60,6 @@ public class MaintenanceTrackingServices : IMaintenanceTrackingServices
         existedEntity.PartId = entity.PartId;
         existedEntity.NextChangeKM = part.LifeSpanKM!.Value + vehicle.CurrentOdometerKM;
         entity.NextChangeDate = DateTime.Now.AddDays(part.LifeSpanDays!.Value);
-        #region propably will replaced with omar's methods
         existedEntity.IsDue =
             (
                 existedEntity.NextChangeDate.HasValue
@@ -73,7 +72,6 @@ public class MaintenanceTrackingServices : IMaintenanceTrackingServices
                 && existedEntity.NextChangeDate <= DateTime.Today.AddDays(15)
             ) || (vehicle.CurrentOdometerKM >= existedEntity.NextChangeKM - 500);
 
-        #endregion
         _trackingRepo.Update(existedEntity);
         await _unitOfWork.SaveChanges();
     }

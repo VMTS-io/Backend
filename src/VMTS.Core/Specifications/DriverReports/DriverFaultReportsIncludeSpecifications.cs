@@ -21,7 +21,6 @@ public class DriverFaultReportsIncludeSpecifications : BaseSpecification<FaultRe
     {
         Includes.Add(fr => fr.Driver);
         Includes.Add(fr => fr.Vehicle.VehicleModel.Category);
-        Includes.Add(fr => fr.Vehicle.VehicleModel.Brand);
         Includes.Add(fr => fr.Trip);
     }
 

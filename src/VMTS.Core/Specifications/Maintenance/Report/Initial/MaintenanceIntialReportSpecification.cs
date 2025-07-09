@@ -89,7 +89,6 @@ public class MaintenanceIntialReportSpecification : BaseSpecification<Maintenanc
 
     private void ApplyIncludes()
     {
-        Includes.Add(mir => mir.Vehicle.VehicleModel.Brand);
         Includes.Add(mir => mir.Vehicle.VehicleModel.Category);
         Includes.Add(mir => mir.Mechanic);
         // Includes.Add(mir => mir.MaintenanceCategory);

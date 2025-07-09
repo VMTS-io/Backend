@@ -64,8 +64,8 @@ public class MaintenanceTrackingService : IMaintenanceTrackingService
                             IsDue = mt.IsDue,
                             IsAlmostDue = mt.IsAlmostDue,
                             LastReplacedAtKm = mt.KMAtLastChange,
-                            NextChangeKm = mt.NextChangeKM.Value,
-                            NextChangeDate = mt.NextChangeDate.Value,
+                            NextChangeKm = mt.NextChangeKM,
+                            NextChangeDate = mt.NextChangeDate,
                             CurrentKm = mt.Vehicle?.CurrentOdometerKM ?? 0,
                         })
                         .ToList(),

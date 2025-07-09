@@ -87,6 +87,7 @@ public class BusinessUserSpecification : BaseSpecification<BusinessUser>
                 AddOrderByDesc(u => u.DisplayName);
                 break;
         }
+        AddPaginaiton(specParams.PageIndex - 1, specParams.PageSize);
     }
 
     private void ApplyPagination(BusinessUserSpecParams spec)

@@ -4,8 +4,8 @@ namespace VMTS.Core.Interfaces.Services;
 
 public interface IVehicleModelServices
 {
-    Task<VehicleModel> CreateVehicleModelAsync(VehicleModel entity);
-    Task<VehicleModel> UpdateVehicleModelAsync(VehicleModel entity);
+    Task CreateVehicleModelAsync(VehicleModel entity);
+    Task UpdateVehicleModelAsync(VehicleModel entity);
     Task DeleteVehicleModelAsync(string id);
-    Task<IReadOnlyList<VehicleModel>> GetAllVehicleModelsAsync(string? categoryId, string? brandId);
+    Task<IReadOnlyList<VehicleModel>> GetAllVehicleModelsAsync(string? categoryId);
 }

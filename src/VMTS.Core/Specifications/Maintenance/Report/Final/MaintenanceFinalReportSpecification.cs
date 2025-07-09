@@ -118,7 +118,6 @@ public class MaintenanceFinalReportSpecification : BaseSpecification<Maintenance
 
     private void ApplyIncludes()
     {
-        Includes.Add(r => r.Vehicle.VehicleModel.Brand);
         Includes.Add(r => r.Vehicle.VehicleModel.Category);
         Includes.Add(r => r.Mechanic);
         Includes.Add(r => r.InitialReport);

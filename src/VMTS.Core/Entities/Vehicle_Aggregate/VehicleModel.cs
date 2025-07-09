@@ -6,8 +6,9 @@ public class VehicleModel : BaseEntity
 
     // public string Manufacturer { get; set; } = default!;
 
-    public Brand Brand { get; set; } = default!;
-    public string BrandId { get; set; } = default!;
+    // public Brand Brand { get; set; } = default!;
+
+    public string? Brand { get; set; } = default!;
 
     public string CategoryId { get; set; } = default!;
 

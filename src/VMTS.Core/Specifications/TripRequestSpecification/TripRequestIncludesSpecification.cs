@@ -26,7 +26,6 @@ public class TripRequestIncludesSpecification : BaseSpecification<TripRequest>
         Includes.Add(t => t.Vehicle);
         Includes.Add(t => t.Driver);
         Includes.Add(t => t.Vehicle.VehicleModel.Category);
-        Includes.Add(t => t.Vehicle.VehicleModel.Brand);
         Includes.Add(t => t.FaultReports);
     }
 

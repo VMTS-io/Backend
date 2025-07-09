@@ -70,7 +70,7 @@ public class NextMaintenanceDateServices : INextMaintenanceDateServices
         var dto = new MaintenanceTrackingAi
         {
             VehicleType = vehicle.VehicleModel.Category.Name,
-            Make = vehicle.VehicleModel.Brand.Name,
+            Make = vehicle.VehicleModel.Brand,
             DrivingCondition = vehicle.DrivingCondition!.Value,
             AvgDailyKm = vehicle.CurrentOdometerKM / daysSinceManufacture,
             VehicleAge = DateTime.UtcNow.Year - vehicle.ModelYear.Year, //model.Vehicle.Age,

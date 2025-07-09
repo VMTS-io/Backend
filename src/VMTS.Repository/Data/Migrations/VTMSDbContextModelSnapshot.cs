@@ -784,24 +784,6 @@ namespace VMTS.Repository.Data.Migrations
                     b.ToTable("BusinessUsers");
                 });
 
-            modelBuilder.Entity("VMTS.Core.Entities.Vehicle_Aggregate.Brand", b =>
-                {
-                    b.Property<string>("Id")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("Country")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Brand");
-                });
-
             modelBuilder.Entity("VMTS.Core.Entities.Vehicle_Aggregate.Vehicle", b =>
                 {
                     b.Property<string>("Id")
@@ -893,8 +875,8 @@ namespace VMTS.Repository.Data.Migrations
                     b.Property<string>("Id")
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("BrandId")
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<string>("Brand")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("CategoryId")
                         .IsRequired()
@@ -905,8 +887,6 @@ namespace VMTS.Repository.Data.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("BrandId");
 
                     b.HasIndex("CategoryId");
 
@@ -1226,17 +1206,11 @@ namespace VMTS.Repository.Data.Migrations
 
             modelBuilder.Entity("VMTS.Core.Entities.Vehicle_Aggregate.VehicleModel", b =>
                 {
-                    b.HasOne("VMTS.Core.Entities.Vehicle_Aggregate.Brand", "Brand")
-                        .WithMany("VehicleModels")
-                        .HasForeignKey("BrandId");
-
                     b.HasOne("VMTS.Core.Entities.Vehicle_Aggregate.VehicleCategory", "Category")
                         .WithMany("VehicleModels")
                         .HasForeignKey("CategoryId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("Brand");
 
                     b.Navigation("Category");
                 });
@@ -1299,11 +1273,6 @@ namespace VMTS.Repository.Data.Migrations
                     b.Navigation("MechanicMaintenaceInitialReports");
 
                     b.Navigation("MechanicMaintenaceRequests");
-                });
-
-            modelBuilder.Entity("VMTS.Core.Entities.Vehicle_Aggregate.Brand", b =>
-                {
-                    b.Navigation("VehicleModels");
                 });
 
             modelBuilder.Entity("VMTS.Core.Entities.Vehicle_Aggregate.Vehicle", b =>
