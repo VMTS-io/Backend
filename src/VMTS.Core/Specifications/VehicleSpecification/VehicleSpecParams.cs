@@ -31,8 +31,8 @@ public class VehicleSpecParams
     }
 
     public int PageIndex { get; set; } = 1;
-    private int pagesize = 5;
-    private const int maxsize = 10;
+    private int pagesize = 10;
+    private const int maxsize = 50;
 
     public int PageSize
     {

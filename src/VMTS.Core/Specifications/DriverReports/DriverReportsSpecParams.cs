@@ -13,7 +13,7 @@ public class DriverReportsSpecParams
     public string? FaultType { get; set; }
 
     private int pageSize = 10;
-    private const int maxPageSize = 20;
+    private const int maxPageSize = 50;
 
     public int PageIndex { get; set; } = 1;
 

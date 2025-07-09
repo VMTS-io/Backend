@@ -9,8 +9,8 @@ public class MaintenanceRequestSpecParamsForMechanic
     public MaintenanceStatus? Status { get; set; }
     public DateTime? Date { get; set; }
     public string? OrderBy { get; set; }
-    private int pageSize = 5;
-    private const int maxPageSize = 10;
+    private int pageSize = 10;
+    private const int maxPageSize = 50;
     public int PageIndex { set; get; } = 1;
     public int PageSize
     {

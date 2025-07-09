@@ -59,6 +59,7 @@ public class MaintenanceRequestSpecification : BaseSpecification<MaintenaceReque
         }
         else
             AddOrderByDesc(MR => MR.Date);
+        AddPaginaiton(specParams.PageIndex - 1, specParams.PageSize);
     }
 
     public MaintenanceRequestSpecification(MaintenanceRequestSpecParamsForMechanic specParams)
@@ -94,5 +95,6 @@ public class MaintenanceRequestSpecification : BaseSpecification<MaintenaceReque
         }
         else
             AddOrderByDesc(MR => MR.Date);
+        AddPaginaiton(specParams.PageIndex - 1, specParams.PageSize);
     }
 }

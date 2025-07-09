@@ -15,10 +15,9 @@ public class VehicleWithDuePartsSpecParams
     public bool? IsDue { get; set; } // updated by a background job or on query
 
     public bool? IsAlmostDue { get; set; } // optional for pre-warning
-
     public int PageIndex { get; set; } = 1;
-    private int pagesize = 5;
-    private const int maxsize = 10;
+    private int pagesize = 10;
+    private const int maxsize = 50;
 
     public int PageSize
     {
