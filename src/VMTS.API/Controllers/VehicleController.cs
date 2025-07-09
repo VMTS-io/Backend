@@ -160,12 +160,34 @@ public class VehicleController : BaseApiController
     )
     {
         var mappedVehicle = _mapper.Map<VehicleUpsertDto, Vehicle>(vehicle);
-        var (list, errors) = await ExcelFile.ParseExcelAsync(file, _partServices, mappedVehicle.Id);
+        var (list, errors) = await ExcelFile.ParseExcelAsync(file, _partServices, mappedVehicle);
 
         if (errors.Count != 0)
             return BadRequest(new { Message = "Validation failed.", Errors = errors });
 
         await _services.CreateVehicleWithHistoryAsync(mappedVehicle, list);
+        return NoContent();
+    }
+    #endregion
+
+    #region Add History with excel To existing Vehicle
+    [HttpPost("excel-history-to-vehicle")]
+    [Consumes("multipart/form-data")]
+    [ServiceFilter<ValidateModelActionFilter<VehicleUpsertDto>>]
+    [ProducesResponseType<VehicleDetailsDto>(StatusCodes.Status200OK)]
+    [ProducesResponseType<ApiErrorResponse>(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult> AddHistoryToVehicle(
+        [FromForm] string id,
+        [FromForm(Name = "File")] IFormFile file
+    )
+    {
+        var vehicle = await _services.GetVehicleByIdAsync(id);
+        var (list, errors) = await ExcelFile.ParseExcelAsync(file, _partServices, vehicle);
+
+        if (errors.Count != 0)
+            return BadRequest(new { Message = "Validation failed.", Errors = errors });
+
+        await _services.AddHistoryToVehicleAsync(list);
         return NoContent();
     }
     #endregion

@@ -2,6 +2,7 @@ using System.Drawing;
 using OfficeOpenXml;
 using OfficeOpenXml.Style;
 using VMTS.Core.Entities.Maintenace;
+using VMTS.Core.Entities.Vehicle_Aggregate;
 using VMTS.Core.Interfaces.Services;
 
 namespace VMTS.API.Helpers;
@@ -283,6 +284,172 @@ public static class ExcelFile
         {
             Console.WriteLine($"Error generating template: {ex.Message}");
             throw;
+        }
+    }
+
+    public static async Task<(
+        List<MaintenanceTracking> ValidItems,
+        List<string> Errors
+    )> ParseExcelAsync(IFormFile file, IPartService partService, Vehicle vehicle)
+    {
+        var results = new List<MaintenanceTracking>();
+        var errors = new List<string>();
+
+        if (file == null || file.Length == 0)
+        {
+            errors.Add("No file uploaded.");
+            return (results, errors);
+        }
+
+        try
+        {
+            using var stream = new MemoryStream();
+            await file.CopyToAsync(stream);
+
+            using var package = new ExcelPackage(stream);
+            var wsData = package.Workbook.Worksheets["MaintenanceData"];
+            var wsLookup = package.Workbook.Worksheets["Lookup"];
+
+            if (wsData == null)
+            {
+                errors.Add("Worksheet 'MaintenanceData' not found in Excel file.");
+                return (results, errors);
+            }
+
+            if (wsLookup == null)
+            {
+                errors.Add("Worksheet 'Lookup' not found in Excel file.");
+                return (results, errors);
+            }
+
+            // Validate headers (row 2)
+            var expectedHeaders = new[] { "Part", "Last Change Date", "Last Change KM" };
+            for (int i = 0; i < expectedHeaders.Length; i++)
+            {
+                var header = wsData.Cells[2, i + 1].Text?.Trim();
+                if (!string.Equals(header, expectedHeaders[i], StringComparison.OrdinalIgnoreCase))
+                {
+                    errors.Add(
+                        $"Expected column '{expectedHeaders[i]}' at position {i + 1}, but got '{header ?? "empty"}'"
+                    );
+                    return (results, errors);
+                }
+            }
+
+            // Get vehicle current odometer
+            var currentOdometerKM = vehicle.CurrentOdometerKM;
+
+            // Parse Maintenance History (starting at row 3)
+            for (int row = 3; row <= wsData.Dimension.End.Row; row++)
+            {
+                try
+                {
+                    var partName = wsData.Cells[row, 1].Text?.Trim();
+                    var dateStr = wsData.Cells[row, 2].Text?.Trim();
+                    var kmStr = wsData.Cells[row, 3].Text?.Trim();
+
+                    // Skip rows where both date and KM are empty
+                    if (string.IsNullOrWhiteSpace(dateStr) && string.IsNullOrWhiteSpace(kmStr))
+                    {
+                        continue;
+                    }
+
+                    // Map part name to PartId using Lookup sheet
+                    string? partId = null;
+                    if (!string.IsNullOrWhiteSpace(partName))
+                    {
+                        var partIdCell = wsLookup
+                            .Cells[2, 1, wsLookup.Dimension.End.Row, 1]
+                            .FirstOrDefault(c => c.Offset(0, 1).Text?.Trim() == partName);
+                        if (partIdCell != null)
+                        {
+                            partId = partIdCell.Text?.Trim();
+                        }
+                    }
+
+                    if (string.IsNullOrWhiteSpace(partId))
+                    {
+                        errors.Add(
+                            $"Row {row - 1}: Invalid or missing part name '{partName ?? "empty"}'."
+                        );
+                        continue;
+                    }
+
+                    // Verify part exists
+                    if (!await partService.IsExist(partId))
+                    {
+                        errors.Add($"Row {row - 1}: Part with ID '{partId}' does not exist.");
+                        continue;
+                    }
+
+                    // Fetch part details
+                    var part = await partService.GetByIdAsync(partId);
+                    if (part == null || !part.LifeSpanKM.HasValue || !part.LifeSpanDays.HasValue)
+                    {
+                        errors.Add(
+                            $"Row {row - 1}: Invalid or missing lifespan data for part ID '{partId}'."
+                        );
+                        continue;
+                    }
+
+                    // Parse date (required)
+                    if (
+                        string.IsNullOrWhiteSpace(dateStr)
+                        || !DateTime.TryParse(dateStr, out var lastChangedDate)
+                    )
+                    {
+                        errors.Add(
+                            $"Row {row - 1}: Invalid or missing date in 'Last Change Date'."
+                        );
+                        continue;
+                    }
+
+                    // Parse KM (default to 0 if empty)
+                    int kmAtLastChange = 0;
+                    if (
+                        !string.IsNullOrWhiteSpace(kmStr)
+                        && !int.TryParse(kmStr, out kmAtLastChange)
+                    )
+                    {
+                        errors.Add($"Row {row - 1}: Invalid number in 'Last Change KM'.");
+                        continue;
+                    }
+
+                    // Calculate additional properties
+                    var nextChangeKM = part.LifeSpanKM.Value + currentOdometerKM;
+                    var nextChangeDate = DateTime.Now.AddDays(part.LifeSpanDays.Value);
+                    var isDue =
+                        (nextChangeDate <= DateTime.Today) || (currentOdometerKM >= nextChangeKM);
+                    var isAlmostDue =
+                        !isDue && (nextChangeDate <= DateTime.Today.AddDays(15))
+                        || (currentOdometerKM >= nextChangeKM - 500);
+
+                    results.Add(
+                        new MaintenanceTracking
+                        {
+                            VehicleId = vehicle.Id,
+                            PartId = partId,
+                            LastChangedDate = lastChangedDate,
+                            KMAtLastChange = kmAtLastChange,
+                            NextChangeDate = nextChangeDate,
+                            NextChangeKM = nextChangeKM,
+                            IsDue = isDue,
+                            IsAlmostDue = isAlmostDue,
+                        }
+                    );
+                }
+                catch (Exception ex)
+                {
+                    errors.Add($"Row {row - 1}: Unexpected error - {ex.Message}");
+                }
+            }
+
+            return (results, errors);
+        }
+        catch (Exception ex)
+        {
+            errors.Add($"Error processing Excel file: {ex.Message}");
+            return (results, errors);
         }
     }
 }

@@ -25,6 +25,19 @@ public class VehicleDetailsDto
 
     public VehicleModelDto VehicleModel { get; set; } = default!;
 
+    public TransmissionType? TransmissionType { get; set; } = default!;
+    public string? EngineSize { get; set; } = default!;
+    public PartCondition? TireCondition { get; set; } = default!;
+    public PartCondition? BrakeCondition { get; set; } = default!;
+    public PartCondition? BatteryStatus { get; set; } = default!;
+    public DrivingCondition? DrivingCondition { get; set; } = default!;
+    public DateTime? LastAssignedDate { get; set; }
+    public string? FuelEfficiency { get; set; } = default!;
+
+    public DateTime? LastMaintenanceDate { get; set; }
+    public DateTime? ExpectedNextMaintenanceDate { get; set; }
+    public string ModelId { get; set; } = default!;
+
     // public VehicleCategoryDto VehicleCategory { get; set; }
 
     public ICollection<TripRequestForVehicles> TripRequests { get; set; } = [];

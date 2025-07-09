@@ -24,11 +24,9 @@ public class VMTSDataSeed
             try
             {
                 await SeedVehicleCategoriesAsync(dbContext, logger);
-                await SeedBrandsAsync(dbContext, logger);
                 await SeedVehicleModelsAsync(dbContext, logger);
                 await SeedVehiclesAsync(dbContext, logger);
                 await SeedPartsAsync(dbContext, logger);
-                await SeedMaintenanceCategoriesAsync(dbContext, logger);
                 await dbContext.SaveChangesAsync();
                 // await SeedMaintenanceRequestsAsync(dbContext, logger);
                 // await dbContext.SaveChangesAsync();
@@ -63,26 +61,6 @@ public class VMTSDataSeed
             {
                 await dbContext.AddRangeAsync(categories);
                 logger.LogInformation("Seeded {Count} vehicle categories", categories.Count);
-            }
-        }
-    }
-
-    private static async Task SeedBrandsAsync(VTMSDbContext dbContext, ILogger<VMTSDataSeed> logger)
-    {
-        if (!await dbContext.Set<Brand>().AnyAsync())
-        {
-            var filePath = Path.Combine(
-                Directory.GetCurrentDirectory(),
-                "..",
-                "VMTS.Repository",
-                "Data/DataSeed/brands.json"
-            );
-            var jsonText = await File.ReadAllTextAsync(filePath);
-            var brands = JsonSerializer.Deserialize<List<Brand>>(jsonText, _jsonOptions);
-            if (brands != null && brands.Count > 0)
-            {
-                await dbContext.AddRangeAsync(brands);
-                logger.LogInformation("Seeded {Count} brands", brands.Count);
             }
         }
     }
@@ -154,35 +132,6 @@ public class VMTSDataSeed
         }
     }
 
-    private static async Task SeedMaintenanceCategoriesAsync(
-        VTMSDbContext dbContext,
-        ILogger<VMTSDataSeed> logger
-    )
-    {
-        if (!await dbContext.Set<MaintenaceCategories>().AnyAsync())
-        {
-            var filePath = Path.Combine(
-                Directory.GetCurrentDirectory(),
-                "..",
-                "VMTS.Repository",
-                "Data/DataSeed/maintenance-categories.json"
-            );
-            var jsonText = await File.ReadAllTextAsync(filePath);
-            var maintenanceCategories = JsonSerializer.Deserialize<List<MaintenaceCategories>>(
-                jsonText,
-                _jsonOptions
-            );
-            if (maintenanceCategories != null && maintenanceCategories.Count > 0)
-            {
-                await dbContext.AddRangeAsync(maintenanceCategories);
-                logger.LogInformation(
-                    "Seeded {Count} maintenance categories",
-                    maintenanceCategories.Count
-                );
-            }
-        }
-    }
-
     private static async Task SeedMaintenanceRequestsAsync(
         VTMSDbContext dbContext,
         ILogger<VMTSDataSeed> logger
@@ -233,20 +182,6 @@ public class VMTSDataSeed
                         );
                         continue;
                     }
-                    // if (
-                    //     !await dbContext.MaintenanceCategories.AnyAsync(c =>
-                    //         c.Id == request.MaintenanceCategoryId
-                    //
-                    //     )
-                    // )
-                    // {
-                    //     logger.LogWarning(
-                    //         "Invalid MaintenanceCategoryId {MaintenanceCategoryId} for maintenance request {Description}",
-                    //         request.MaintenanceCategoryId,
-                    //         request.Description
-                    //     );
-                    //     continue;
-                    // }
                     await dbContext.AddAsync(request);
                     logger.LogInformation(
                         "Seeded MaintenanceRequest: {Description}",

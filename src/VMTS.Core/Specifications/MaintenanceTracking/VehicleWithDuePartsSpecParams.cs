@@ -15,4 +15,14 @@ public class VehicleWithDuePartsSpecParams
     public bool? IsDue { get; set; } // updated by a background job or on query
 
     public bool? IsAlmostDue { get; set; } // optional for pre-warning
+
+    public int PageIndex { get; set; } = 1;
+    private int pagesize = 5;
+    private const int maxsize = 10;
+
+    public int PageSize
+    {
+        get { return pagesize; }
+        set { pagesize = value > maxsize ? maxsize : value; }
+    }
 }

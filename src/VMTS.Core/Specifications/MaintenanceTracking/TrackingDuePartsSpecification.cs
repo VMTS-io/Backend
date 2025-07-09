@@ -40,5 +40,6 @@ public class TrackingDuePartsSpecification
         Includes.Add(mt => mt.Vehicle);
         Includes.Add(mt => mt.Vehicle.VehicleModel);
         Includes.Add(mt => mt.Vehicle.VehicleModel.Category);
+        AddPaginaiton(specParams.PageIndex - 1, specParams.PageSize);
     }
 }

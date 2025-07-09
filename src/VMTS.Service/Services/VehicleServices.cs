@@ -146,4 +146,14 @@ public class VehicleServices : IVehicleSerivces
         var totalCost = cost.Sum(c => c.TotalCost);
         return totalCost;
     }
+
+    #region Create With histoy
+    public async Task AddHistoryToVehicleAsync(List<MaintenanceTracking> maintenanceTracking)
+    {
+        var partIds = maintenanceTracking.Select(mt => mt.PartId);
+        await _partService.ValidatePartIdsExistAsync(partIds);
+        await _trackingRepo.AddRangeAsync(maintenanceTracking);
+        await _unitOfWork.SaveChanges();
+    }
+    #endregion
 }

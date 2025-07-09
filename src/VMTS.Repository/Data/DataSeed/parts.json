@@ -1,32 +1,147 @@
 [
-    {
-        "Id": "1",
-        "Name": "Brake Pads",
-        "Quantity": 20,
-        "Cost": 50.00
-    },
-    {
-        "Id": "2",
-        "Name": "Oil Filter",
-        "Quantity": 30,
-        "Cost": 15.00
-    },
-    {
-        "Id": "3",
-        "Name": "Battery",
-        "Quantity": 10,
-        "Cost": 100.00
-    },
-    {
-        "Id": "4",
-        "Name": "Air Filter",
-        "Quantity": 25,
-        "Cost": 20.00
-    },
-    {
-        "Id": "5",
-        "Name": "Spark Plugs",
-        "Quantity": 40,
-        "Cost": 10.00
-    }
+  {
+    "Id": "1",
+    "Name": "Air filter",
+    "Quantity": 10,
+    "Cost": 15.99,
+    "LifeSpanKM": 15000,
+    "LifeSpanDays": 180,
+    "IsTracked": true
+  },
+  {
+    "Id": "2",
+    "Name": "Oil",
+    "Quantity": 20,
+    "Cost": 29.99,
+    "LifeSpanKM": 10000,
+    "LifeSpanDays": 180,
+    "IsTracked": true
+  },
+  {
+    "Id": "3",
+    "Name": "Oil filter",
+    "Quantity": 15,
+    "Cost": 12.5,
+    "LifeSpanKM": 10000,
+    "LifeSpanDays": 180,
+    "IsTracked": true
+  },
+  {
+    "Id": "4",
+    "Name": "Fuel filter",
+    "Quantity": 8,
+    "Cost": 18.75,
+    "LifeSpanKM": 30000,
+    "LifeSpanDays": 360,
+    "IsTracked": true
+  },
+  {
+    "Id": "5",
+    "Name": "Fuel pump",
+    "Quantity": 5,
+    "Cost": 89.99,
+    "LifeSpanKM": 100000,
+    "LifeSpanDays": 730,
+    "IsTracked": true
+  },
+  {
+    "Id": "6",
+    "Name": "Battery",
+    "Quantity": 6,
+    "Cost": 99.99,
+    "LifeSpanKM": 80000,
+    "LifeSpanDays": 1095,
+    "IsTracked": true
+  },
+  {
+    "Id": "7",
+    "Name": "Spark plugs",
+    "Quantity": 12,
+    "Cost": 7.99,
+    "LifeSpanKM": 30000,
+    "LifeSpanDays": 360,
+    "IsTracked": true
+  },
+  {
+    "Id": "8",
+    "Name": "Brake fluid",
+    "Quantity": 10,
+    "Cost": 14.99,
+    "LifeSpanKM": 40000,
+    "LifeSpanDays": 730,
+    "IsTracked": true
+  },
+  {
+    "Id": "9",
+    "Name": "Brake pads",
+    "Quantity": 8,
+    "Cost": 39.99,
+    "LifeSpanKM": 50000,
+    "LifeSpanDays": 540,
+    "IsTracked": true
+  },
+  {
+    "Id": "10",
+    "Name": "Tires",
+    "Quantity": 16,
+    "Cost": 119.99,
+    "LifeSpanKM": 60000,
+    "LifeSpanDays": 1095,
+    "IsTracked": true
+  },
+  {
+    "Id": "11",
+    "Name": "Radiator fluid (coolant)",
+    "Quantity": 15,
+    "Cost": 19.99,
+    "LifeSpanKM": 50000,
+    "LifeSpanDays": 730,
+    "IsTracked": true
+  },
+  {
+    "Id": "12",
+    "Name": "Water pump",
+    "Quantity": 4,
+    "Cost": 79.99,
+    "LifeSpanKM": 100000,
+    "LifeSpanDays": 1460,
+    "IsTracked": true
+  },
+  {
+    "Id": "13",
+    "Name": "Radiator",
+    "Quantity": 3,
+    "Cost": 149.99,
+    "LifeSpanKM": 120000,
+    "LifeSpanDays": 1825,
+    "IsTracked": true
+  },
+  {
+    "Id": "14",
+    "Name": "Transmission oil",
+    "Quantity": 10,
+    "Cost": 24.99,
+    "LifeSpanKM": 60000,
+    "LifeSpanDays": 730,
+    "IsTracked": true
+  },
+  {
+    "Id": "15",
+    "Name": "Headlights",
+    "Quantity": 12,
+    "Cost": 29.99,
+    "LifeSpanKM": 80000,
+    "LifeSpanDays": 1095,
+    "IsTracked": true
+  },
+  {
+    "Id": "16",
+    "Name": "Air conditioning",
+    "Quantity": 2,
+    "Cost": 199.99,
+    "LifeSpanKM": 150000,
+    "LifeSpanDays": 1825,
+    "IsTracked": true
+  }
 ]
+
