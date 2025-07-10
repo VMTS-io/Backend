@@ -1,6 +1,7 @@
 using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore;
 using VMTS.Core.Entities;
+using VMTS.Core.Entities.Maintenace;
 using VMTS.Core.Interfaces.Repositories;
 using VMTS.Core.Interfaces.Specifications;
 using VMTS.Repository.Data;
@@ -15,6 +16,11 @@ public class GenericRepository<T> : IGenericRepository<T>
     public GenericRepository(VTMSDbContext dbContext)
     {
         _dbContext = dbContext;
+    }
+
+    public void Attach(MaintenanceTracking entity)
+    {
+        _dbContext.MaintenanceTrackings.Attach(entity);
     }
 
     public async Task<IReadOnlyList<T>> GetAllAsync()

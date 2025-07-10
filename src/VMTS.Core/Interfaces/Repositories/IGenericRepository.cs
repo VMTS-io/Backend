@@ -8,6 +8,7 @@ namespace VMTS.Core.Interfaces.Repositories;
 public interface IGenericRepository<T>
     where T : BaseEntity
 {
+    void Attach(MaintenanceTracking entity);
     Task<IReadOnlyList<T>> GetAllAsync();
     Task<T?> GetByIdAsync(string id);
     Task CreateAsync(T entity);

@@ -24,6 +24,8 @@ public class Vehicle : BaseEntity
     public DateTime? LastAssignedDate { get; set; }
     public string? FuelEfficiency { get; set; } = default!;
 
+    public bool NeedMaintenancePrediction { get; set; } = false;
+
     public DateTime? LastMaintenanceDate { get; set; }
     public DateTime? ExpectedNextMaintenanceDate { get; set; }
     public string ModelId { get; set; } = default!;

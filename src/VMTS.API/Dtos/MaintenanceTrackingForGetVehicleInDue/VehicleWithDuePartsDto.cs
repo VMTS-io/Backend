@@ -12,4 +12,5 @@ public class VehicleWithDuePartsDto
     public string ModelName { get; set; } = default!;
     public string BrandName { get; set; } = default!;
     public List<DuePart> DueParts { get; set; } = default!;
+    public bool NeedMaintenancePrediction { get; set; }
 }

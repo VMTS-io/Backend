@@ -832,6 +832,9 @@ namespace VMTS.Repository.Data.Migrations
                     b.Property<int?>("NeedMaintenanceInDays")
                         .HasColumnType("int");
 
+                    b.Property<bool>("NeedMaintenancePrediction")
+                        .HasColumnType("bit");
+
                     b.Property<string>("PalletNumber")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");

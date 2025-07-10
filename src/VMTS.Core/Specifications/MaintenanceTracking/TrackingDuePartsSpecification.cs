@@ -18,7 +18,10 @@ public class TrackingDuePartsSpecification
                     && mt.VehicleId == specParams.VehicleId
                 )
                 // If VehicleId is not provided, use IsDue or IsAlmostDue
-                || (string.IsNullOrEmpty(specParams.VehicleId) && (mt.IsDue || mt.IsAlmostDue))
+                || (
+                    string.IsNullOrEmpty(specParams.VehicleId)
+                    && (mt.IsDue || mt.IsAlmostDue || mt.Vehicle.NeedMaintenancePrediction)
+                )
             )
             && (
                 string.IsNullOrEmpty(specParams.CategoryId)
@@ -34,6 +37,10 @@ public class TrackingDuePartsSpecification
             )
             && (!specParams.IsDue.HasValue || mt.IsDue == specParams.IsDue)
             && (!specParams.IsAlmostDue.HasValue || mt.IsAlmostDue == specParams.IsAlmostDue)
+            && (
+                !specParams.NeedMaintenancePrediction.HasValue
+                || mt.Vehicle.NeedMaintenancePrediction == specParams.NeedMaintenancePrediction
+            )
         )
     {
         Includes.Add(mt => mt.Part);
