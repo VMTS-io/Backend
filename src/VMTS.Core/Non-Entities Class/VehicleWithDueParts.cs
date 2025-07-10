@@ -14,6 +14,8 @@ public class VehicleWithDueParts
 
     public List<DuePart> DueParts { get; set; } = [];
 
+    public bool NeedMaintenancePrediction { get; set; }
+
     // Additional info
     public FuelType FuelType { get; set; }
     public VehicleStatus Status { get; set; }

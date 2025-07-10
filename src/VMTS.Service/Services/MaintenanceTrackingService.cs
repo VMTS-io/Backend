@@ -41,6 +41,25 @@ public class MaintenanceTrackingService : IMaintenanceTrackingService
                 if (vehicle == null || vehicle.VehicleModel == null)
                     return null; // skip broken data
 
+                var dueParts = group
+                    .Where(mt => mt.Part != null)
+                    .Select(mt => new DuePart
+                    {
+                        PartId = mt.PartId,
+                        PartName = mt.Part.Name ?? "Unknown",
+                        IsDue = mt.IsDue,
+                        IsAlmostDue = mt.IsAlmostDue,
+                        LastReplacedAtKm = mt.KMAtLastChange,
+                        NextChangeKm = mt.NextChangeKM,
+                        NextChangeDate = mt.NextChangeDate,
+                        CurrentKm = mt.Vehicle?.CurrentOdometerKM ?? 0,
+                    })
+                    .ToList();
+
+                bool hasNoDueParts =
+                    !dueParts.Any(p => p.IsDue || p.IsAlmostDue)
+                    && vehicle.NeedMaintenancePrediction == true;
+
                 return new VehicleWithDueParts
                 {
                     VehicleId = vehicle.Id ?? "N/A",
@@ -54,21 +73,9 @@ public class MaintenanceTrackingService : IMaintenanceTrackingService
                     VehicleModel = vehicle.VehicleModel,
                     VehicleCategory =
                         vehicle.VehicleModel.Category ?? new VehicleCategory { Name = "Unknown" },
+                    NeedMaintenancePrediction = vehicle.NeedMaintenancePrediction,
 
-                    DueParts = group
-                        .Where(mt => mt.Part != null) // protect against bad data
-                        .Select(mt => new DuePart
-                        {
-                            PartId = mt.PartId,
-                            PartName = mt.Part.Name ?? "Unknown",
-                            IsDue = mt.IsDue,
-                            IsAlmostDue = mt.IsAlmostDue,
-                            LastReplacedAtKm = mt.KMAtLastChange,
-                            NextChangeKm = mt.NextChangeKM,
-                            NextChangeDate = mt.NextChangeDate,
-                            CurrentKm = mt.Vehicle?.CurrentOdometerKM ?? 0,
-                        })
-                        .ToList(),
+                    DueParts = hasNoDueParts ? new List<DuePart>() : dueParts,
                 };
             })
             .Where(v => v != null)

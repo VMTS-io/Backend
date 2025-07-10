@@ -71,6 +71,14 @@ public static class VTMSServicesExtension
         //         };
         //     };
         // });
+
+        services.AddScoped<MaintenancePredictionJob>();
+
+        services.AddHttpClient<
+            IVehicleMaintenanceBulkPredictionService,
+            VehicleMaintenanceBulkPredictionService
+        >();
+
         services.AddHttpClient<IFaultPredictionService, FaultPredictionService>();
         services.AddScoped<IDashboardServices, DashboardServices>();
         services.AddScoped<RecalculateJob>();

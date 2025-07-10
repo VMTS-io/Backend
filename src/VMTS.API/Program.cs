@@ -47,6 +47,12 @@ namespace VMTS.API
                     () => UpdateNextMaintenanceDate.SetNextMaintenanceDate(),
                     Cron.Weekly()
                 );
+
+                RecurringJob.AddOrUpdate<MaintenancePredictionJob>(
+                    "predict-maintenance-job",
+                    job => job.ExecuteAsync(),
+                    Cron.Daily
+                );
             }
 
             // await app.ApplyMigrationAsync();
