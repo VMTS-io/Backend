@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using System.Text.Json;
+using Microsoft.AspNetCore.Identity;
 using VMTS.Core.Entities.Ai;
 using VMTS.Core.Entities.Identity;
 using VMTS.Core.Entities.Maintenace;
@@ -115,9 +116,14 @@ public class FaultReportService : IFaultReportService
         if (aiPrediction.IsSuccess)
         {
             // Assign priority and AI-derived fault type
-            faultReport.Priority = aiPrediction.predicted_urgency;
-
-            faultReport.AiPredictedFaultType = aiPrediction.predicted_issue;
+            faultReport.Priority = ExtractJsonProperty(
+                aiPrediction.predicted_urgency,
+                "predicted_urgency"
+            );
+            faultReport.AiPredictedFaultType = ExtractJsonProperty(
+                aiPrediction.predicted_issue,
+                "predicted_issue"
+            );
             faultReport.IsAiPredictionSuccessful = true;
         }
         else
@@ -270,4 +276,26 @@ public class FaultReportService : IFaultReportService
     }
 
     #endregion
+
+
+    public static string ExtractJsonProperty(string raw, string propertyName)
+    {
+        try
+        {
+            // Clean up edge characters like extra quotes or missing braces
+            raw = raw.Trim().Trim('"');
+
+            if (!raw.StartsWith("{"))
+                raw = "{" + raw;
+            if (!raw.EndsWith("}"))
+                raw = raw + "}";
+
+            using var doc = JsonDocument.Parse(raw);
+            return doc.RootElement.GetProperty(propertyName).GetString();
+        }
+        catch
+        {
+            return null; // or return "Unknown"
+        }
+    }
 }
