@@ -71,6 +71,7 @@ public static class VTMSServicesExtension
         //         };
         //     };
         // });
+        services.AddScoped<IAiClient, AiClient>();
 
         services.AddScoped<MaintenancePredictionJob>();
 

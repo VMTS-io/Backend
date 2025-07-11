@@ -9,7 +9,9 @@ using VMTS.Core.Entities.User_Business;
 using VMTS.Core.Entities.Vehicle_Aggregate;
 using VMTS.Core.Interfaces;
 using VMTS.Core.Interfaces.Repositories;
+using VMTS.Core.Interfaces.Services;
 using VMTS.Core.Interfaces.UnitOfWork;
+using VMTS.Core.Non_Entities_Class;
 using VMTS.Core.ServicesContract;
 using VMTS.Core.Specifications;
 using VMTS.Core.Specifications.FaultReportSepcification;
@@ -23,16 +25,19 @@ public class FaultReportService : IFaultReportService
     private readonly IUnitOfWork _unitOfWork;
     private readonly UserManager<AppUser> _userManager;
     private readonly IFaultPredictionService _faultPredictionService;
+    private readonly IAiClient _aiClient;
 
     public FaultReportService(
         IUnitOfWork unitOfWork,
         UserManager<AppUser> userManager,
-        IFaultPredictionService faultPredictionService
+        IFaultPredictionService faultPredictionService,
+        IAiClient aiClient
     )
     {
         _unitOfWork = unitOfWork;
         _userManager = userManager;
         _faultPredictionService = faultPredictionService;
+        _aiClient = aiClient;
     }
 
     #region Create
@@ -302,6 +307,22 @@ public class FaultReportService : IFaultReportService
             _unitOfWork.GetRepo<FaultReport>().Update(faultReport);
             await _unitOfWork.SaveChanges();
         }
+    }
+
+    public async Task<ChartDto> GetPriorityChartAsync()
+    {
+        var faultReports = await _unitOfWork.GetRepo<FaultReport>().GetAllAsync();
+
+        var priorityList = faultReports
+            .Where(fr => !string.IsNullOrWhiteSpace(fr.Priority))
+            .Select(fr => fr.Priority.Trim())
+            .ToList();
+
+        var result = new ChartDto { Priority = priorityList.ToArray() };
+
+        var chartImageBase64 = await _aiClient.SendPrioritiesAndGetChartAsync(result);
+
+        return new ChartDto { Priority = priorityList.ToArray(), ChartBase64 = chartImageBase64 };
     }
 
     #endregion
