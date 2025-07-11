@@ -86,7 +86,6 @@ public class FaultReportService : IFaultReportService
         if (tripRequest.Vehicle == null || string.IsNullOrEmpty(tripRequest.Vehicle.Id))
             throw new InvalidOperationException("Trip does not have an assigned vehicle.");
 
-        // Create the fault report
         var faultReport = new FaultReport
         {
             Details = details,
@@ -100,41 +99,71 @@ public class FaultReportService : IFaultReportService
             Cost = cost,
         };
 
-        // Save fault report
+        // Call AI model
+        var aiEndpointConfigId = (await _unitOfWork.GetRepo<AiEndpointConfig>().GetAllAsync())
+            .First(ac => ac.Name == "FaultPriviledge")
+            .Id;
+
+        var aiPrediction = await _faultPredictionService.PredictAsync(details, aiEndpointConfigId);
+
+        if (aiPrediction.IsSuccess)
+        {
+            try
+            {
+                // Extract urgency value using string manipulation
+                string urgencyValue = aiPrediction.predicted_urgency;
+                if (urgencyValue.Contains("\"predicted_urgency\":"))
+                {
+                    var startIndex = urgencyValue.IndexOf("\":\"") + 3;
+                    var endIndex = urgencyValue.LastIndexOf("\"");
+                    if (startIndex < endIndex)
+                    {
+                        faultReport.Priority = urgencyValue.Substring(
+                            startIndex,
+                            endIndex - startIndex
+                        );
+                    }
+                }
+
+                // Extract issue value using string manipulation
+                string issueValue = aiPrediction.predicted_issue;
+                if (issueValue.Contains("\"predicted_issue\":"))
+                {
+                    var startIndex = issueValue.IndexOf("\":\"") + 3;
+                    var endIndex = issueValue.LastIndexOf("\"");
+                    if (startIndex < endIndex)
+                    {
+                        faultReport.AiPredictedFaultType = issueValue.Substring(
+                            startIndex,
+                            endIndex - startIndex
+                        );
+                    }
+                }
+
+                faultReport.IsAiPredictionSuccessful = true;
+            }
+            catch (Exception)
+            {
+                faultReport.IsAiPredictionSuccessful = false;
+                faultReport.Priority = "Unknown";
+                faultReport.AiPredictedFaultType = "Unknown";
+            }
+        }
+        else
+        {
+            faultReport.IsAiPredictionSuccessful = false;
+        }
+
+        // Add to repository
+        await _unitOfWork.GetRepo<FaultReport>().CreateAsync(faultReport);
+
+        // Update related entities
         businessUser.DriverFaultReport ??= new List<FaultReport>();
         businessUser.DriverFaultReport.Add(faultReport);
 
         tripRequest.Status = TripStatus.Completed;
 
-        // Call AI model
-        var aiEndpointConfigId = (await _unitOfWork.GetRepo<AiEndpointConfig>().GetAllAsync())
-            .Where(ac => ac.Name == "FaultPriviledge")
-            .First()
-            .Id;
-        var aiPrediction = await _faultPredictionService.PredictAsync(details, aiEndpointConfigId);
-
-        if (aiPrediction.IsSuccess)
-        {
-            // Assign priority and AI-derived fault type
-            faultReport.Priority = ExtractJsonProperty(
-                aiPrediction.predicted_urgency,
-                "predicted_urgency"
-            );
-            faultReport.AiPredictedFaultType = ExtractJsonProperty(
-                aiPrediction.predicted_issue,
-                "predicted_issue"
-            );
-            faultReport.IsAiPredictionSuccessful = true;
-        }
-        else
-        {
-            // Optional: mark as failed prediction
-            faultReport.IsAiPredictionSuccessful = false;
-        }
-
-        await _unitOfWork.GetRepo<FaultReport>().CreateAsync(faultReport);
         var result = await _unitOfWork.SaveChanges();
-
         if (result <= 0)
             throw new InvalidOperationException("Failed to save the fault report.");
 
@@ -276,26 +305,4 @@ public class FaultReportService : IFaultReportService
     }
 
     #endregion
-
-
-    public static string ExtractJsonProperty(string raw, string propertyName)
-    {
-        try
-        {
-            // Clean up edge characters like extra quotes or missing braces
-            raw = raw.Trim().Trim('"');
-
-            if (!raw.StartsWith("{"))
-                raw = "{" + raw;
-            if (!raw.EndsWith("}"))
-                raw = raw + "}";
-
-            using var doc = JsonDocument.Parse(raw);
-            return doc.RootElement.GetProperty(propertyName).GetString();
-        }
-        catch
-        {
-            return null; // or return "Unknown"
-        }
-    }
 }
