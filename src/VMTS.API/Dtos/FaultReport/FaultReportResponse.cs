@@ -16,7 +16,7 @@ public class FaultReportResponse
     public decimal Cost { get; set; }
     public int FuelRefile { get; set; }
 
-    public string Priority { get; set; } // enum like Low, Medium, High (based on AI)
+    public string? Priority { get; set; } // enum like Low, Medium, High (based on AI)
     public string? AiPredictedFaultType { get; set; } // Store AI-predicted label if different from driver input
 
     public DateTime CreatedAt { get; set; }

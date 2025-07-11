@@ -23,12 +23,18 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="9.0.6" />
-    <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.22.1" />
+    <PackageReference
+      Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets"
+      Version="1.22.1"
+    />
     <PackageReference Include="Scalar.AspNetCore" Version="2.5.3" />
     <PackageReference Include="AutoMapper" Version="14.0.0" />
     <PackageReference Include="StackExchange.Redis" Version="2.8.41" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\VMTS.Service\VMTS.Service.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Dtos\AI\" />
   </ItemGroup>
 </Project>
