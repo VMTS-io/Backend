@@ -64,6 +64,9 @@ namespace VMTS.Repository.Data.Migrations
                     b.Property<bool>("Seen")
                         .HasColumnType("bit");
 
+                    b.Property<bool>("SentToMechanic")
+                        .HasColumnType("bit");
+
                     b.Property<int>("Status")
                         .HasColumnType("int");
 

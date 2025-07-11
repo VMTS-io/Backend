@@ -9,6 +9,9 @@ public enum MaintenanceCategory
 
     [EnumMember(Value = "Regular")]
     Regular,
+
+    [EnumMember(Value = "Ai Predicted")]
+    AiPredicted,
     //
     // [EnumMember(Value = "Time Based")]
     // TimeBased,

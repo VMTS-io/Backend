@@ -52,6 +52,7 @@ public class DriverReportController : BaseApiController
             FuelCost = tr.FuelCost,
             Status = tr.Trip.Status,
             Seen = tr.Seen,
+            SentToMechanic = null,
         });
         var mappedfaults = result.FaultReports.Select(fr => new DriverReportItemDto
         {
@@ -66,6 +67,8 @@ public class DriverReportController : BaseApiController
             FaultType = fr.AiPredictedFaultType,
             Cost = fr.Cost,
             Status = fr.Trip.Status,
+            Priority = fr.Priority,
+            SentToMechanic = fr.SentToMechanic,
             Seen = fr.Seen,
         });
 
