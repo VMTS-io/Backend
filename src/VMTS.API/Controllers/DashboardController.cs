@@ -1,15 +1,21 @@
 using Microsoft.AspNetCore.Mvc;
 using VMTS.Core.Interfaces.Services;
+using VMTS.Core.ServicesContract;
 
 namespace VMTS.API.Controllers;
 
 public class DashboardController : BaseApiController
 {
     private readonly IDashboardServices _dashboardServices;
+    private readonly IFaultReportService _faultReportService;
 
-    public DashboardController(IDashboardServices dashboardServices)
+    public DashboardController(
+        IDashboardServices dashboardServices,
+        IFaultReportService faultReportService
+    )
     {
         _dashboardServices = dashboardServices;
+        _faultReportService = faultReportService;
     }
 
     [HttpGet("Trips-With-Faults")]
@@ -66,5 +72,13 @@ public class DashboardController : BaseApiController
     {
         var cost = await _dashboardServices.GetVehicleAvailableCount();
         return Ok(cost);
+    }
+
+    [HttpGet("priority-chart")]
+    public async Task<IActionResult> GetPriorityChart()
+    {
+        var base64Chart = await _faultReportService.GetPriorityChartAsync();
+
+        return Ok(new { chart = base64Chart });
     }
 }

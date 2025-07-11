@@ -1,6 +1,7 @@
 ﻿using System.Security.Claims;
 using VMTS.Core.Entities.Maintenace;
 using VMTS.Core.Entities.Report;
+using VMTS.Core.Non_Entities_Class;
 using VMTS.Core.Specifications.FaultReportSepcification;
 
 namespace VMTS.Core.ServicesContract;
@@ -39,4 +40,6 @@ public interface IFaultReportService
     Task DeleteFaultReportAsync(string reportId, string managerId);
 
     Task UpdateMarkAsSeen(string faultReportId);
+
+    Task<ChartDto> GetPriorityChartAsync();
 }
