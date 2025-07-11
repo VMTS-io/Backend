@@ -36,3 +36,9 @@ public class ConflictException : HttpErrorException
     public ConflictException(string message)
         : base(409, "Conflict", message) { }
 }
+
+public class UnprocessableEntityException : HttpErrorException
+{
+    public UnprocessableEntityException(string message)
+        : base(409, "Unprocessable Entity", message) { }
+}
