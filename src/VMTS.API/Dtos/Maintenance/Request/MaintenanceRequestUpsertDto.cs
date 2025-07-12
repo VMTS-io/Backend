@@ -13,4 +13,5 @@ public class MaintenanceRequestUpsertDto
     public List<string> Parts { get; set; } = [];
 
     public string Description { get; set; } = default!;
+    public string? falutReportId { get; set; } = default!;
 }

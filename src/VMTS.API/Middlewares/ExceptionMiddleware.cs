@@ -1,4 +1,5 @@
 using System.Text.Json;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
 using VMTS.API.Errors;
 using VMTS.Service.Exceptions;
@@ -49,6 +50,11 @@ public class ExceptionMiddleware : IMiddleware
             _logger.LogWarning(ex, "A concurrency conflict occurred.");
             await WriteErrorResponseAsync(context, 409, ex.Message);
         }
+        catch (ConflictException ex)
+        {
+            _logger.LogWarning(ex, "{title}", ex.Title);
+            await WriteErrorResponseAsync(context, 409, ex.Message);
+        }
         catch (DbUpdateException ex)
         {
             _logger.LogError(ex, "A database update error occurred.");
@@ -58,6 +64,11 @@ public class ExceptionMiddleware : IMiddleware
         {
             _logger.LogWarning(ex, "The operation was canceled.");
             await WriteErrorResponseAsync(context, 499, ex.Message);
+        }
+        catch (UnprocessableEntityException ex)
+        {
+            _logger.LogWarning(ex, "{title}", ex.Title);
+            await WriteErrorResponseAsync(context, 422, ex.Message);
         }
         catch (Exception ex)
         {

@@ -27,6 +27,7 @@ public class FaultReport : BaseEntity
     public string TripId { get; set; } = default!;
     public string VehicleId { get; set; } = default!;
     public string DriverId { get; set; } = default!;
+    public bool SentToMechanic { get; set; } = false;
 
     // Navigational Properties
     public TripRequest Trip { get; set; } = default!;

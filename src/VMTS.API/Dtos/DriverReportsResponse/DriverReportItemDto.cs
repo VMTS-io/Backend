@@ -6,12 +6,13 @@ namespace VMTS.API.Dtos.DriverReportsResponse;
 
 public class DriverReportItemDto
 {
-    public string Id { get; set; }
-    public string ReportType { get; set; } // "Trip" or "Fault"
+    public string Id { get; set; } = default!;
+    public string ReportType { get; set; } = default!; // "Trip" or "Fault"
 
-    public DriverDto Driver { get; set; }
-    public VehicleDto Vehicle { get; set; }
+    public DriverDto Driver { get; set; } = default!;
+    public VehicleDto Vehicle { get; set; } = default!;
     public DateTime ReportedAt { get; set; }
+    public bool Seen { get; set; }
 
     public TripStatus? Status { get; set; }
 
@@ -24,7 +25,7 @@ public class DriverReportItemDto
     // Fault-specific
 
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public string FaultAddress { get; set; }
+    public string? FaultAddress { get; set; }
 
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public string? FaultDetails { get; set; }
@@ -33,6 +34,11 @@ public class DriverReportItemDto
     public string? FaultType { get; set; }
 
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public string? Priority { get; set; } // enum like Low, Medium, High (based on AI)
+
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public decimal? Cost { get; set; }
-    public bool Seen { get; set; }
+
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public bool? SentToMechanic { get; set; } = false;
 }

@@ -1,6 +1,5 @@
-using System.Linq.Expressions;
-using System.Security.Claims;
 using VMTS.Core.Entities.Maintenace;
+using VMTS.Core.Entities.Report;
 using VMTS.Core.Entities.User_Business;
 using VMTS.Core.Entities.Vehicle_Aggregate;
 using VMTS.Core.Helpers;
@@ -33,7 +32,11 @@ public class MaintenanceRequestServices : IMaintenanceRequestServices
     }
 
     #region Create
-    public async Task CreateAsync(MaintenaceRequest model, List<string> parts)
+    public async Task CreateAsync(
+        MaintenaceRequest model,
+        List<string> parts,
+        string? faultReportId
+    )
     {
         if (model.MaintenanceCategory == MaintenanceCategory.Regular)
         {
@@ -58,6 +61,27 @@ public class MaintenanceRequestServices : IMaintenanceRequestServices
             }
 
             _trackingRepo.UpdateRange(trackings);
+        }
+
+        if (model.MaintenanceCategory == MaintenanceCategory.Faults)
+        {
+            if (faultReportId is null)
+                throw new BadRequestException(
+                    "falut report id cannot be null when maintenance category is fault"
+                );
+
+            var faultReport =
+                await _unitOfWork.GetRepo<FaultReport>().GetByIdAsync(faultReportId)
+                ?? throw new NotFoundException("not found falut report");
+
+            if (faultReport.SentToMechanic)
+                throw new ConflictException("this falut report is already sent to mechanic");
+
+            faultReport.SentToMechanic = true;
+
+            faultReport.Status = FaultReportStatus.UnderReview;
+
+            _unitOfWork.GetRepo<FaultReport>().Update(faultReport);
         }
 
         if (!await _userRepo.ExistAsync(model.ManagerId))
