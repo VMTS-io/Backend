@@ -1,8 +1,10 @@
+using System.Globalization;
 using VMTS.Core.Entities.Maintenace;
 using VMTS.Core.Entities.Trip;
 using VMTS.Core.Entities.Vehicle_Aggregate;
 using VMTS.Core.Interfaces.Services;
 using VMTS.Core.Interfaces.UnitOfWork;
+using VMTS.Core.Non_Entities_Class;
 using VMTS.Core.Specifications;
 using VMTS.Core.Specifications.Maintenance.Report.Final;
 using VMTS.Core.Specifications.TripRequestSpecification;
@@ -13,10 +15,12 @@ namespace VMTS.Service.Services;
 public class DashboardServices : IDashboardServices
 {
     private readonly IUnitOfWork _unitOfWork;
+    private readonly IAiClient _aiClient;
 
-    public DashboardServices(IUnitOfWork unitOfWork)
+    public DashboardServices(IUnitOfWork unitOfWork, IAiClient aiClient)
     {
         _unitOfWork = unitOfWork;
+        _aiClient = aiClient;
     }
 
     public async Task<int> GetCountTripsWithFaultsAsync(int? month)
@@ -124,5 +128,36 @@ public class DashboardServices : IDashboardServices
         var specs = new VehicleIncludesSpecification(v => v.Status == VehicleStatus.Available);
         var vehicles = await _unitOfWork.GetRepo<Vehicle>().GetCountAsync(specs);
         return vehicles;
+    }
+
+    public async Task<CostChartDto> GetTimeSeriesCostChartAsync()
+    {
+        var months = Enumerable
+            .Range(0, 6)
+            .Select(i => DateTime.Now.AddMonths(-i))
+            .OrderBy(d => d)
+            .ToArray();
+
+        var monthLabels = months
+            .Select(d => d.ToString("MMM", CultureInfo.InvariantCulture))
+            .ToArray();
+        var fuelCosts = new List<decimal>();
+        var maintenanceCosts = new List<decimal>();
+
+        foreach (var date in months)
+        {
+            int month = date.Month;
+            fuelCosts.Add(await GetTotalFuelCostAsync(month));
+            maintenanceCosts.Add(await GetTotalMaintenanceCostAsync(month));
+        }
+
+        var data = new MonthlyCostsChartDto
+        {
+            Months = monthLabels,
+            FuelCosts = fuelCosts.ToArray(),
+            MaintenanceCosts = maintenanceCosts.ToArray(),
+        };
+
+        return await _aiClient.SendMonthlyCostsAndGetChartAsync(data);
     }
 }

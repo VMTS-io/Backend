@@ -4,5 +4,7 @@ namespace VMTS.Core.Interfaces.Services;
 
 public interface IAiClient
 {
-    Task<string> SendPrioritiesAndGetChartAsync(ChartDto chartDto);
+    Task<byte[]> SendPrioritiesAndGetChartAsync(ChartRequestDto chartDto);
+
+    Task<CostChartDto> SendMonthlyCostsAndGetChartAsync(MonthlyCostsChartDto dto);
 }
