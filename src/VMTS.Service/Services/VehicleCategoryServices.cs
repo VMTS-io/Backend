@@ -20,7 +20,7 @@ public class VehicleCategoryServices : IVehicleCategoryServices
     public async Task<VehicleCategory> CreateVehicleCategoryAsync(VehicleCategory entity)
     {
         await _repo.CreateAsync(entity);
-        await _unitOfWork.SaveChanges();
+        await _unitOfWork.SaveChangesAsync();
         var vehicleCategory = await _repo.GetByIdAsync(entity.Id);
         return vehicleCategory is not null
             ? vehicleCategory
@@ -39,7 +39,7 @@ public class VehicleCategoryServices : IVehicleCategoryServices
             throw new NotFoundException("Vehicle Category Not Found");
 
         _repo.Update(model);
-        await _unitOfWork.SaveChanges();
+        await _unitOfWork.SaveChangesAsync();
 
         var vehicleCategory =
             await _repo.GetByIdAsync(model.Id)
@@ -54,6 +54,6 @@ public class VehicleCategoryServices : IVehicleCategoryServices
             await _repo.GetByIdAsync(id)
             ?? throw new NotFoundException("Vehicle Category Not Found");
         _repo.Delete(vehicleCategory);
-        await _unitOfWork.SaveChanges();
+        await _unitOfWork.SaveChangesAsync();
     }
 }

@@ -1,5 +1,6 @@
 using System.Net.Http.Headers;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using VMTS.Core.Entities.Ai;
 using VMTS.Core.Interfaces.Integrations;
 using VMTS.Core.Interfaces.UnitOfWork;
@@ -29,23 +30,24 @@ public class OdometerOcrClient : IOdometerOcrClient
         var url = (await _unitOfWork.GetRepo<AiEndpointConfig>().GetAllAsync())[0].Url;
 
         fileContent.Headers.ContentType = new MediaTypeHeaderValue(contentType);
-        content.Add(fileContent, "file", fileName);
+        content.Add(fileContent, "image", fileName);
 
-        var response = await _httpClient.PostAsync($"{url}/ocr/odometer", content);
+        var response = await _httpClient.PostAsync($"{url}/read-odometer", content);
 
         var json = await response.Content.ReadAsStringAsync();
         var result = JsonSerializer.Deserialize<OdometerOcrResponse>(json);
 
-        if (result == null || !result.Reading.HasValue || !response.IsSuccessStatusCode)
+        if (result == null ||string.IsNullOrEmpty( result.Reading )|| !response.IsSuccessStatusCode)
             throw new UnprocessableEntityException(
                 "Failed to extraxt the reding from the photo try to type it manully."
             );
-
-        return result.Reading.Value;
+        int.TryParse(result.Reading, out var reading);
+        return reading;
     }
 
     private class OdometerOcrResponse
     {
-        public int? Reading { get; set; }
+        [JsonPropertyName("odometer_text")]
+        public string? Reading { get; set; }
     }
 }

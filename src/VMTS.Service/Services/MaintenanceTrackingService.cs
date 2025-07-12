@@ -42,7 +42,7 @@ public class MaintenanceTrackingService : IMaintenanceTrackingService
                     return null; // skip broken data
 
                 var dueParts = group
-                    .Where(mt => mt.Part != null)
+                    .Where(mt => mt.Part != null && mt.IsAlmostDue || mt.IsDue)
                     .Select(mt => new DuePart
                     {
                         PartId = mt.PartId,
@@ -86,7 +86,6 @@ public class MaintenanceTrackingService : IMaintenanceTrackingService
 
     #endregion
 
-
     #region Recalculate
 
     public async Task RecalculateAllAsync()
@@ -101,7 +100,7 @@ public class MaintenanceTrackingService : IMaintenanceTrackingService
             _unitOfWork.GetRepo<MaintenanceTracking>().Update(tracking);
         }
 
-        await _unitOfWork.SaveChanges();
+        await _unitOfWork.SaveChangesAsync();
     }
 
     #endregion
@@ -118,7 +117,7 @@ public class MaintenanceTrackingService : IMaintenanceTrackingService
         {
             await RecalculateRowAsync(tracking);
         }
-        await _unitOfWork.SaveChanges();
+        await _unitOfWork.SaveChangesAsync();
     }
 
     #endregion

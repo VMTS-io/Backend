@@ -38,7 +38,7 @@ public class MaintenanceInitialReportServices : IMaintenanceInitialReportService
             _requestRepo.Update(validatedReport.MaintenanceRequest);
         }
         await _reportRepo.CreateAsync(validatedReport);
-        await _unitOfWork.SaveChanges();
+        await _unitOfWork.SaveChangesAsync();
     }
     #endregion
 
@@ -64,7 +64,7 @@ public class MaintenanceInitialReportServices : IMaintenanceInitialReportService
         updatedReport.MaintenanceCategory = existingReport.MaintenanceCategory;
         await ValidateAndApplyUpdateAsync(existingReport, updatedReport);
         _reportRepo.Update(existingReport);
-        await _unitOfWork.SaveChanges();
+        await _unitOfWork.SaveChangesAsync();
     }
     #endregion
 
@@ -101,7 +101,7 @@ public class MaintenanceInitialReportServices : IMaintenanceInitialReportService
     {
         var report = await GetReportOrThrowAsync(id);
         _reportRepo.Delete(report);
-        await _unitOfWork.SaveChanges();
+        await _unitOfWork.SaveChangesAsync();
     }
     #endregion
 
@@ -248,7 +248,7 @@ public class MaintenanceInitialReportServices : IMaintenanceInitialReportService
         {
             initialReport.Seen = true;
             _unitOfWork.GetRepo<MaintenanceInitialReport>().Update(initialReport);
-            await _unitOfWork.SaveChanges();
+            await _unitOfWork.SaveChangesAsync();
         }
     }
 

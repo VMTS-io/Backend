@@ -31,7 +31,7 @@ public class BrandService : IBrandService
     public async Task CreateAsync(Brand brand)
     {
         await _brandRepo.CreateAsync(brand);
-        await _unitOfWork.SaveChanges();
+        await _unitOfWork.SaveChangesAsync();
     }
 
     public async Task UpdateAsync(Brand brand)
@@ -40,13 +40,13 @@ public class BrandService : IBrandService
         existing.Name = brand.Name;
         existing.Country = brand.Country;
         _brandRepo.Update(existing);
-        await _unitOfWork.SaveChanges();
+        await _unitOfWork.SaveChangesAsync();
     }
 
     public async Task DeleteAsync(string id)
     {
         var brand = await GetByIdAsync(id);
         _brandRepo.Delete(brand);
-        await _unitOfWork.SaveChanges();
+        await _unitOfWork.SaveChangesAsync();
     }
 }
