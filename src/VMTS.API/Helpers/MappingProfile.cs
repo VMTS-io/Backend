@@ -27,6 +27,10 @@ public class MappingProfile : Profile
 {
     public MappingProfile()
     {
+        CreateMap<FaultReport, DriverReportItemDto>()
+            .ForMember(dest => dest.FuelCost, opt => opt.MapFrom(src => src.Cost))
+            .ForMember(dest => dest.ReportType, opt => opt.MapFrom(_ => "Fault")); // if needed
+
         CreateMap<TripRequest, TripRequestForVehicles>()
             .ForMember(tr => tr.DriverName, opt => opt.MapFrom(src => src.Driver.DisplayName));
 
@@ -52,7 +56,7 @@ public class MappingProfile : Profile
             .ForMember(dest => dest.ReportedAt, opt => opt.MapFrom(src => src.ReportedAt))
             .ForMember(dest => dest.FaultDetails, opt => opt.MapFrom(src => src.Details))
             .ForMember(dest => dest.FaultType, opt => opt.MapFrom(src => src.AiPredictedFaultType))
-            .ForMember(dest => dest.Cost, opt => opt.MapFrom(src => src.Cost));
+            .ForMember(dest => dest.FuelCost, opt => opt.MapFrom(src => src.Cost));
 
         // Map nested objects
 
@@ -68,7 +72,7 @@ public class MappingProfile : Profile
         CreateMap<AddressDto, Address>().ReverseMap();
 
         CreateMap<FaultReport, FaultReportResponse>()
-            .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(src => src.ReportedAt));
+            .ForMember(dest => dest.ReportedAt, opt => opt.MapFrom(src => src.ReportedAt));
 
         CreateMap<TripRequest, TripRequestResponse>();
 

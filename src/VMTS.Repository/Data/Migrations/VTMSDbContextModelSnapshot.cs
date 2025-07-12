@@ -798,6 +798,9 @@ namespace VMTS.Repository.Data.Migrations
                     b.Property<int?>("BrakeCondition")
                         .HasColumnType("int");
 
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
                     b.Property<int>("CurrentOdometerKM")
                         .HasColumnType("int");
 
