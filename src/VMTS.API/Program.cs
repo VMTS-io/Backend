@@ -23,7 +23,6 @@ namespace VMTS.API
 
             await using (var scope = app.Services.CreateAsyncScope())
             {
-                Console.Write;
                 var recalculatejob = scope.ServiceProvider.GetRequiredService<RecalculateJob>();
 
                 var recurringJobManager =
