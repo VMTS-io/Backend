@@ -54,7 +54,7 @@ public class MaintenancePredictionJob
         }
 
         // Save changes to the database
-        await _unitOfWork.SaveChanges();
+        await _unitOfWork.SaveChangesAsync();
 
         return predictions
             .Select(p => new MaintenancePredictionItem

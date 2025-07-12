@@ -25,7 +25,7 @@ public class VehicleModelServices : IVehicleModelServices
         if (!await _categoryrepo.ExistAsync(entity.CategoryId))
             throw new NotFoundException("Category Not Found");
         await _modelrepo.CreateAsync(entity);
-        await _unitOfWork.SaveChanges();
+        await _unitOfWork.SaveChangesAsync();
     }
 
     public async Task UpdateVehicleModelAsync(VehicleModel entity)
@@ -36,7 +36,7 @@ public class VehicleModelServices : IVehicleModelServices
         if (!await _modelrepo.ExistAsync(entity.Id))
             throw new NotFoundException("Model Not Found");
         _modelrepo.Update(entity);
-        await _unitOfWork.SaveChanges();
+        await _unitOfWork.SaveChangesAsync();
     }
 
     public async Task DeleteVehicleModelAsync(string id)
@@ -44,7 +44,7 @@ public class VehicleModelServices : IVehicleModelServices
         var vehicleModel =
             await _modelrepo.GetByIdAsync(id) ?? throw new NotFoundException("Model Not Found");
         _modelrepo.Delete(vehicleModel);
-        await _unitOfWork.SaveChanges();
+        await _unitOfWork.SaveChangesAsync();
     }
 
     public async Task<IReadOnlyList<VehicleModel>> GetAllVehicleModelsAsync(string? categoryId)

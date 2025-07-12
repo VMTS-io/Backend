@@ -41,7 +41,7 @@ public class MaintenanceTrackingServices : IMaintenanceTrackingServices
         entity.NextChangeDate = DateTime.Now.AddDays(part.LifeSpanDays!.Value);
 
         await _trackingRepo.CreateAsync(entity);
-        await _unitOfWork.SaveChanges();
+        await _unitOfWork.SaveChangesAsync();
     }
 
     public async Task UpdateAll(MaintenanceTracking entity)
@@ -73,6 +73,6 @@ public class MaintenanceTrackingServices : IMaintenanceTrackingServices
             ) || (vehicle.CurrentOdometerKM >= existedEntity.NextChangeKM - 500);
 
         _trackingRepo.Update(existedEntity);
-        await _unitOfWork.SaveChanges();
+        await _unitOfWork.SaveChangesAsync();
     }
 }

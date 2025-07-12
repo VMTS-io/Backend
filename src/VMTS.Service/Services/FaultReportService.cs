@@ -168,7 +168,7 @@ public class FaultReportService : IFaultReportService
 
         tripRequest.Status = TripStatus.Completed;
 
-        var result = await _unitOfWork.SaveChanges();
+        var result = await _unitOfWork.SaveChangesAsync();
         if (result <= 0)
             throw new InvalidOperationException("Failed to save the fault report.");
 
@@ -248,7 +248,7 @@ public class FaultReportService : IFaultReportService
         faultReport.FuelRefile = fuelRefile;
 
         _unitOfWork.GetRepo<FaultReport>().Update(faultReport);
-        await _unitOfWork.SaveChanges();
+        await _unitOfWork.SaveChangesAsync();
     }
 
     #endregion
@@ -269,7 +269,7 @@ public class FaultReportService : IFaultReportService
             throw new ForbbidenException("You are not allowed to delete this report.");
 
         _unitOfWork.GetRepo<FaultReport>().Delete(faultReport);
-        await _unitOfWork.SaveChanges();
+        await _unitOfWork.SaveChangesAsync();
     }
 
     #endregion
@@ -305,7 +305,7 @@ public class FaultReportService : IFaultReportService
         {
             faultReport.Seen = true;
             _unitOfWork.GetRepo<FaultReport>().Update(faultReport);
-            await _unitOfWork.SaveChanges();
+            await _unitOfWork.SaveChangesAsync();
         }
     }
 

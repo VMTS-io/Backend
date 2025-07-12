@@ -18,7 +18,7 @@ public class UnitOfWork : IUnitOfWork
         _repos = [];
     }
 
-    public async Task<int> SaveChanges() => await _dbContext.SaveChangesAsync();
+    public async Task<int> SaveChangesAsync() => await _dbContext.SaveChangesAsync();
 
     public async ValueTask DisposeAsync()
     {

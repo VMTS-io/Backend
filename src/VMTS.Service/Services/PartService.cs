@@ -20,7 +20,7 @@ public class PartService : IPartService
     public async Task CreateAsync(Part part)
     {
         await _partRepo.CreateAsync(part);
-        await _unitOfWork.SaveChanges();
+        await _unitOfWork.SaveChangesAsync();
     }
 
     public async Task UpdateAsync(Part part)
@@ -34,7 +34,7 @@ public class PartService : IPartService
         existing.Cost = part.Cost;
 
         _partRepo.Update(existing);
-        await _unitOfWork.SaveChanges();
+        await _unitOfWork.SaveChangesAsync();
     }
 
     public async Task DeleteAsync(string id)
@@ -44,7 +44,7 @@ public class PartService : IPartService
             ?? throw new NotFoundException($"Part with ID {id} not found");
 
         _partRepo.Delete(part);
-        await _unitOfWork.SaveChanges();
+        await _unitOfWork.SaveChangesAsync();
     }
 
     public async Task<Part> GetByIdAsync(string id)

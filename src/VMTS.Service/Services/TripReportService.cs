@@ -92,7 +92,7 @@ public class TripReportService : ITripReportService
         tripRequest.Status = TripStatus.Completed;
 
         await _unitOfWork.GetRepo<TripReport>().CreateAsync(tripReport);
-        var result = await _unitOfWork.SaveChanges();
+        var result = await _unitOfWork.SaveChangesAsync();
 
         if (result <= 0)
             throw new InvalidOperationException("Failed to save the trip report.");
@@ -123,7 +123,7 @@ public class TripReportService : ITripReportService
         tripReport.FuelCost = cost;
 
         _unitOfWork.GetRepo<TripReport>().Update(tripReport);
-        await _unitOfWork.SaveChanges();
+        await _unitOfWork.SaveChangesAsync();
     }
 
     #endregion
@@ -143,7 +143,7 @@ public class TripReportService : ITripReportService
             throw new ForbbidenException("You are not allowed to delete this report.");
 
         _unitOfWork.GetRepo<TripReport>().Delete(tripReport);
-        await _unitOfWork.SaveChanges();
+        await _unitOfWork.SaveChangesAsync();
     }
 
     #endregion
@@ -227,7 +227,7 @@ public class TripReportService : ITripReportService
         {
             tripReport.Seen = true;
             _unitOfWork.GetRepo<TripReport>().Update(tripReport);
-            await _unitOfWork.SaveChanges();
+            await _unitOfWork.SaveChangesAsync();
         }
     }
 
