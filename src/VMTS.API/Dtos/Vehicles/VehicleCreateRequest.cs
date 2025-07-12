@@ -10,11 +10,13 @@ public class VehicleUpsertDto
 
     public FuelType FuelType { get; set; }
 
-    public int KMDriven { get; set; }
+    public int CurrentOdometerKM { get; set; }
 
     public VehicleStatus Status { get; set; }
 
     public string ModelId { get; set; } = default!;
+
+    public DateTime CreatedAt { get; set; }
 
     public short ModelYear { get; set; }
 

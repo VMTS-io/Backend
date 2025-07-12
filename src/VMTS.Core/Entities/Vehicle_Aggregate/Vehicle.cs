@@ -13,6 +13,8 @@ public class Vehicle : BaseEntity
 
     public int CurrentOdometerKM { get; set; } //
 
+    public DateTime CreatedAt { get; set; }
+
     public VehicleStatus Status { get; set; } = VehicleStatus.Available;
     public DateOnly ModelYear { get; set; }
     public TransmissionType? TransmissionType { get; set; } = default!;

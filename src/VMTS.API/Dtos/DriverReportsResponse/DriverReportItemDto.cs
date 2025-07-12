@@ -19,7 +19,6 @@ public class DriverReportItemDto
     // Trip-specific
     public string? Destination { get; set; }
 
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public decimal? FuelCost { get; set; }
 
     // Fault-specific
@@ -35,9 +34,6 @@ public class DriverReportItemDto
 
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public string? Priority { get; set; } // enum like Low, Medium, High (based on AI)
-
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public decimal? Cost { get; set; }
 
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public bool? SentToMechanic { get; set; } = false;

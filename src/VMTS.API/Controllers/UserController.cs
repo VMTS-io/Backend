@@ -99,6 +99,7 @@ public class UserController : BaseApiController
             Email = user.Email,
             PhoneNumber = user.PhoneNumber,
             NormalizedEmail = user.NormalizedEmail,
+            Role = model.Role,
         };
 
         await _iunitOfWork.GetRepo<BusinessUser>().CreateAsync(businessUser);
@@ -169,7 +170,7 @@ public class UserController : BaseApiController
     [HttpGet("{userId}")]
     [Authorize(
         AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme,
-        Roles = $"{Roles.Driver},{Roles.Manager}"
+        Roles = $"{Roles.Admin},{Roles.Manager}"
     )]
     [ProducesResponseType(typeof(UserResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status400BadRequest)]

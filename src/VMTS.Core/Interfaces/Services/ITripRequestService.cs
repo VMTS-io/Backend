@@ -43,6 +43,7 @@ public interface ITripRequestService
     Task<IReadOnlyList<TripRequest>> GetAllTripsForUserAsync(TripRequestSpecParams specParams);
 
     Task UpdateTripRequestStatusAsync(string tripId);
+    Task RemoveOneTimeTripAsync(string templateId, string managerId);
 
     string GenerateNominatimLink(string address);
 }
