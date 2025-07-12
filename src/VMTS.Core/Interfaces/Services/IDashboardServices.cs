@@ -1,3 +1,5 @@
+using VMTS.Core.Non_Entities_Class;
+
 namespace VMTS.Core.Interfaces.Services;
 
 public interface IDashboardServices
@@ -17,4 +19,5 @@ public interface IDashboardServices
     Task<int> GetVehicleUnderMaintenanceCount();
 
     Task<int> GetVehicleAvailableCount();
+    Task<CostChartDto> GetTimeSeriesCostChartAsync();
 }

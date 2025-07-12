@@ -77,8 +77,15 @@ public class DashboardController : BaseApiController
     [HttpGet("priority-chart")]
     public async Task<IActionResult> GetPriorityChart()
     {
-        var base64Chart = await _faultReportService.GetPriorityChartAsync();
+        var chartDto = await _faultReportService.GetPriorityChartAsync();
 
-        return Ok(new { chart = base64Chart });
+        return File(chartDto.ChartBase64, "image/jpeg", "priority-chart.jpg");
+    }
+
+    [HttpGet("time-series-costs-chart")]
+    public async Task<IActionResult> GetTimeSeriesCostsChart()
+    {
+        var chartDto = await _dashboardServices.GetTimeSeriesCostChartAsync();
+        return File(chartDto.ChartBytes, "image/jpeg", "monthly-costs-chart.jpg");
     }
 }

@@ -316,13 +316,14 @@ public class FaultReportService : IFaultReportService
         var priorityList = faultReports
             .Where(fr => !string.IsNullOrWhiteSpace(fr.Priority))
             .Select(fr => fr.Priority.Trim())
-            .ToList();
+            .ToArray();
 
-        var result = new ChartDto { Priority = priorityList.ToArray() };
+        var chartRequest = new ChartRequestDto { Predictions = priorityList };
 
-        var chartImageBase64 = await _aiClient.SendPrioritiesAndGetChartAsync(result);
+        var chartBase64 = await _aiClient.SendPrioritiesAndGetChartAsync(chartRequest);
 
-        return new ChartDto { Priority = priorityList.ToArray(), ChartBase64 = chartImageBase64 };
+        // Return ChartDto with both Priority list and base64 chart image
+        return new ChartDto { Priority = priorityList, ChartBase64 = chartBase64 };
     }
 
     #endregion
