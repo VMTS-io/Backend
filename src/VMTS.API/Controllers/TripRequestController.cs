@@ -192,4 +192,28 @@ public class TripRequestController : BaseApiController
     }
 
     #endregion
+
+    [HttpPatch("Cancel-OneTime/{id}")]
+    public async Task<ActionResult> UpdateOneTimeStatus([FromRoute] string id)
+    {
+        var managerId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+        await _requestService.RemoveOneTimeTripAsync(id, managerId);
+        ;
+        var status = HttpContext.Response.StatusCode;
+        return Ok(new { StatusCode = status });
+        ;
+    }
+
+    [HttpPatch("Cancel-Daily/{id}")]
+    public async Task<ActionResult> UpdateDailyStatus([FromRoute] string id)
+    {
+        var managerId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+        await _requestService.RemoveDailyTripAsync(id, managerId);
+        ;
+        var status = HttpContext.Response.StatusCode;
+        return Ok(new { StatusCode = status });
+        ;
+    }
 }

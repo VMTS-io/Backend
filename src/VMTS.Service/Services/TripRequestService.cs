@@ -359,6 +359,19 @@ public class TripRequestService : ITripRequestService
 
     #endregion
 
+    public async Task RemoveOneTimeTripAsync(string templateId, string managerId)
+    {
+        var template = await _unitOfWork.GetRepo<TripRequest>().GetByIdAsync(templateId);
+        if (template == null)
+            throw new NotFoundException("Recurring trip template not found");
+
+        if (template.ManagerId != managerId)
+            throw new ForbbidenException("You are not allowed to delete this template");
+
+        template.Status = TripStatus.Canceled;
+        await _unitOfWork.SaveChangesAsync();
+    }
+
     #region NominatimLink
 
     public string GenerateNominatimLink(string address)

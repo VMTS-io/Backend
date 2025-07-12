@@ -19,7 +19,7 @@ public class VehicleDetailsDto
 
     public FuelType FuelType { get; set; }
 
-    public int KMDriven { get; set; }
+    public int CurrentOdometerKM { get; set; }
 
     public VehicleStatus Status { get; set; }
 

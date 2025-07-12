@@ -37,7 +37,7 @@ public class MaintenanceeTrackingController : BaseApiController
         [FromQuery] VehicleWithDuePartsSpecParams specParams
     )
     {
-        var result = await _maintenanceTrackingService.GetVehiclesWithDuePartsAsync(specParams);
+        var result = await _maintenanceTrackingService.GetVehiclesPartsAsync(specParams);
         var mappedResult = _mapper.Map<IReadOnlyList<VehicleTrackingDto>>(result).FirstOrDefault();
         return mappedResult;
     }

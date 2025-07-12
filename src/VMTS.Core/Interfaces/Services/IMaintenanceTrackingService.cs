@@ -11,6 +11,10 @@ public interface IMaintenanceTrackingService
         VehicleWithDuePartsSpecParams specParams
     );
 
+    Task<IReadOnlyList<VehicleWithDueParts>> GetVehiclesPartsAsync(
+        VehicleWithDuePartsSpecParams specParams
+    );
+
     Task RecalculateAllAsync();
     Task RecalculateForVehicleAsync(VehicleWithDuePartsSpecParams specParams);
     Task RecalculateRowAsync(MaintenanceTracking tracking);
