@@ -58,7 +58,7 @@ public class NextMaintenanceDateServices : INextMaintenanceDateServices
             vehicle.ExpectedNextMaintenanceDate = nextMaintenanceDate;
             _vehicleRepo.Update(vehicle);
         }
-        await _unitOfWork.SaveChanges();
+        await _unitOfWork.SaveChangesAsync();
     }
 
     private static string GetVehicleAiInputJson(List<MaintenanceTracking> model)

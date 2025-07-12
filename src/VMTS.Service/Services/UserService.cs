@@ -99,7 +99,7 @@ public class UserService : IUserService
             _unitOfWork.GetRepo<BusinessUser>().Update(businessUser); // Fix: use businessUser, not AppUser
         }
 
-        await _unitOfWork.SaveChanges();
+        await _unitOfWork.SaveChangesAsync();
     }
 
     #endregion
@@ -119,7 +119,7 @@ public class UserService : IUserService
         {
             _unitOfWork.GetRepo<BusinessUser>().Delete(businessUser);
         }
-        await _unitOfWork.SaveChanges();
+        await _unitOfWork.SaveChangesAsync();
     }
 
     #endregion

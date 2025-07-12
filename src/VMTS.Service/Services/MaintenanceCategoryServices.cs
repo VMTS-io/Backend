@@ -21,7 +21,7 @@ public class MaintenanceCategoryServices : IMaintenanceCategoryServices
     public async Task CreateCategoryAsync(MaintenaceCategories category)
     {
         await _categoryRepo.CreateAsync(category);
-        await _unitOfWork.SaveChanges();
+        await _unitOfWork.SaveChangesAsync();
     }
     #endregion
 
@@ -30,7 +30,7 @@ public class MaintenanceCategoryServices : IMaintenanceCategoryServices
     {
         await GetCategoryOrThrowAsync(category.Id);
         _categoryRepo.Update(category);
-        await _unitOfWork.SaveChanges();
+        await _unitOfWork.SaveChangesAsync();
     }
     #endregion
 
@@ -39,7 +39,7 @@ public class MaintenanceCategoryServices : IMaintenanceCategoryServices
     {
         var category = await GetCategoryOrThrowAsync(id);
         _categoryRepo.Delete(category);
-        await _unitOfWork.SaveChanges();
+        await _unitOfWork.SaveChangesAsync();
     }
     #endregion
 

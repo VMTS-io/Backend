@@ -102,7 +102,7 @@ public class UserController : BaseApiController
         };
 
         await _iunitOfWork.GetRepo<BusinessUser>().CreateAsync(businessUser);
-        await _iunitOfWork.SaveChanges();
+        await _iunitOfWork.SaveChangesAsync();
 
         return Ok(new RegisterResponse { Email = model.Email });
     }

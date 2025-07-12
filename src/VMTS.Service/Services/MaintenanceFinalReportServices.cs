@@ -48,7 +48,7 @@ public class MaintenanceFinalReportServices : IMaintenanceFinalReportServices
 
         await _finalReportRepo.CreateAsync(validatedReport);
 
-        await _unitOfWork.SaveChanges();
+        await _unitOfWork.SaveChangesAsync();
     }
     #endregion
 
@@ -72,7 +72,7 @@ public class MaintenanceFinalReportServices : IMaintenanceFinalReportServices
         await ValidateAndApplyUpdateAsync(existingReport, updatedReport);
 
         _finalReportRepo.Update(existingReport);
-        await _unitOfWork.SaveChanges();
+        await _unitOfWork.SaveChangesAsync();
     }
     #endregion
 
@@ -109,7 +109,7 @@ public class MaintenanceFinalReportServices : IMaintenanceFinalReportServices
     {
         var report = await GetReportOrThrowAsync(id);
         _finalReportRepo.Delete(report);
-        await _unitOfWork.SaveChanges();
+        await _unitOfWork.SaveChangesAsync();
     }
     #endregion
 
@@ -264,7 +264,7 @@ public class MaintenanceFinalReportServices : IMaintenanceFinalReportServices
         {
             finalReport.Seen = true;
             _unitOfWork.GetRepo<MaintenanceFinalReport>().Update(finalReport);
-            await _unitOfWork.SaveChanges();
+            await _unitOfWork.SaveChangesAsync();
         }
     }
 

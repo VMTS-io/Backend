@@ -37,7 +37,7 @@ public class OdometerService : IOdometerService
 
         vehicle.CurrentOdometerKM = extractedReading;
         _unitOfwork.GetRepo<Vehicle>().Update(vehicle);
-        await _unitOfwork.SaveChanges();
+        await _unitOfwork.SaveChangesAsync();
         return vehicle.CurrentOdometerKM;
     }
 }

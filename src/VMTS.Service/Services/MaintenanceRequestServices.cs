@@ -101,7 +101,7 @@ public class MaintenanceRequestServices : IMaintenanceRequestServices
 
         _vehicleRepo.Update(vehicle);
         await _repo.CreateAsync(model);
-        await _unitOfWork.SaveChanges();
+        await _unitOfWork.SaveChangesAsync();
     }
     #endregion
 
@@ -124,7 +124,7 @@ public class MaintenanceRequestServices : IMaintenanceRequestServices
         model.Parts = partsDic.Values.ToList();
 
         _repo.Update(model);
-        await _unitOfWork.SaveChanges();
+        await _unitOfWork.SaveChangesAsync();
     }
     #endregion
 
@@ -174,7 +174,7 @@ public class MaintenanceRequestServices : IMaintenanceRequestServices
             await _repo.GetByIdAsync(id)
             ?? throw new NotFoundException($"No Maintenace Request With Id {id}");
         _repo.Delete(request);
-        await _unitOfWork.SaveChanges();
+        await _unitOfWork.SaveChangesAsync();
     }
     #endregion
 }

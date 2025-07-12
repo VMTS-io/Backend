@@ -100,7 +100,7 @@ public class MaintenanceTrackingService : IMaintenanceTrackingService
             _unitOfWork.GetRepo<MaintenanceTracking>().Update(tracking);
         }
 
-        await _unitOfWork.SaveChanges();
+        await _unitOfWork.SaveChangesAsync();
     }
 
     #endregion
@@ -117,7 +117,7 @@ public class MaintenanceTrackingService : IMaintenanceTrackingService
         {
             await RecalculateRowAsync(tracking);
         }
-        await _unitOfWork.SaveChanges();
+        await _unitOfWork.SaveChangesAsync();
     }
 
     #endregion

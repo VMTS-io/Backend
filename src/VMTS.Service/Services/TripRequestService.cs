@@ -146,7 +146,7 @@ public class TripRequestService : ITripRequestService
                     }
                 );
 
-        var result = await _unitOfWork.SaveChanges();
+        var result = await _unitOfWork.SaveChangesAsync();
         if (result <= 0)
             throw new Exception("Failed to create trip request.");
 
@@ -204,7 +204,7 @@ public class TripRequestService : ITripRequestService
         }
         trip.Destination = destination;
         _unitOfWork.GetRepo<TripRequest>().Update(trip);
-        await _unitOfWork.SaveChanges();
+        await _unitOfWork.SaveChangesAsync();
     }
 
     #endregion
@@ -220,7 +220,7 @@ public class TripRequestService : ITripRequestService
             throw new ForbbidenException("You are not authorized to delete this trip request.");
 
         _unitOfWork.GetRepo<TripRequest>().Delete(trip);
-        await _unitOfWork.SaveChanges();
+        await _unitOfWork.SaveChangesAsync();
     }
 
     #endregion
@@ -278,7 +278,7 @@ public class TripRequestService : ITripRequestService
             tripRequest.Status = TripStatus.Approved;
 
         _unitOfWork.GetRepo<TripRequest>().Update(tripRequest);
-        await _unitOfWork.SaveChanges();
+        await _unitOfWork.SaveChangesAsync();
     }
 
     #endregion
@@ -337,7 +337,7 @@ public class TripRequestService : ITripRequestService
             await _unitOfWork.GetRepo<TripRequest>().CreateAsync(trip);
         }
 
-        await _unitOfWork.SaveChanges();
+        await _unitOfWork.SaveChangesAsync();
     }
 
     #endregion
@@ -354,7 +354,7 @@ public class TripRequestService : ITripRequestService
             throw new ForbbidenException("You are not allowed to delete this template");
 
         template.IsActive = false;
-        await _unitOfWork.SaveChanges();
+        await _unitOfWork.SaveChangesAsync();
     }
 
     #endregion

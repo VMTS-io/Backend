@@ -35,7 +35,7 @@ public class VehicleServices : IVehicleSerivces
             throw new NotFoundException("Model Not Found");
 
         await _vehicleRepo.CreateAsync(vehicle);
-        await _unitOfWork.SaveChanges();
+        await _unitOfWork.SaveChangesAsync();
 
         var spec = new VehicleIncludesSpecification(vehicle.Id);
         var returnVehicle =
@@ -60,7 +60,7 @@ public class VehicleServices : IVehicleSerivces
         await _vehicleRepo.CreateAsync(vehicle);
         //[NOTE]  i think calling omar emthod , to calculate is duo or allmost due and next maintence date and km
         await _trackingRepo.AddRangeAsync(maintenanceTracking);
-        await _unitOfWork.SaveChanges();
+        await _unitOfWork.SaveChangesAsync();
     }
     #endregion
 
@@ -70,7 +70,7 @@ public class VehicleServices : IVehicleSerivces
         var vehicle =
             await _vehicleRepo.GetByIdAsync(id) ?? throw new Exception("Vehicle Not Found");
         _vehicleRepo.Delete(vehicle);
-        await _unitOfWork.SaveChanges();
+        await _unitOfWork.SaveChangesAsync();
         return true;
     }
     #endregion
@@ -104,7 +104,7 @@ public class VehicleServices : IVehicleSerivces
             throw new NotFoundException("Model Not Found");
 
         _vehicleRepo.Update(vehicle);
-        await _unitOfWork.SaveChanges();
+        await _unitOfWork.SaveChangesAsync();
 
         var spec = new VehicleIncludesSpecification(vehicle.Id);
         var returnVehicle = await _vehicleRepo.GetByIdWithSpecificationAsync(spec);
@@ -153,7 +153,7 @@ public class VehicleServices : IVehicleSerivces
         var partIds = maintenanceTracking.Select(mt => mt.PartId);
         await _partService.ValidatePartIdsExistAsync(partIds);
         await _trackingRepo.AddRangeAsync(maintenanceTracking);
-        await _unitOfWork.SaveChanges();
+        await _unitOfWork.SaveChangesAsync();
     }
     #endregion
 }
