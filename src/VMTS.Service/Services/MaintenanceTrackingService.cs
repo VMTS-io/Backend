@@ -42,7 +42,7 @@ public class MaintenanceTrackingService : IMaintenanceTrackingService
                     return null; // skip broken data
 
                 var dueParts = group
-                    .Where(mt => mt.Part != null)
+                    .Where(mt => mt.Part != null && mt.IsAlmostDue || mt.IsDue)
                     .Select(mt => new DuePart
                     {
                         PartId = mt.PartId,
@@ -85,7 +85,6 @@ public class MaintenanceTrackingService : IMaintenanceTrackingService
     }
 
     #endregion
-
 
     #region Recalculate
 

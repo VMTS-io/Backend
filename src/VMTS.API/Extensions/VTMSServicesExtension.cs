@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using StackExchange.Redis;
 using VMTS.API.ActionFilters;
+using VMTS.API.Controllers;
 using VMTS.API.Errors;
 using VMTS.API.GlobalExceptionHnadler;
 using VMTS.API.Helpers;
@@ -176,6 +177,8 @@ public static class VTMSServicesExtension
             IAiPredictNextMaintenanceDateClient,
             AiPredictNextMaintenanceDateClient
         >();
+        services.AddHttpClient<IOdometerOcrClient, OdometerOcrClient>();
+        services.AddScoped<IOdometerService, OdometerService>();
         services.AddScoped<INextMaintenanceDateServices, NextMaintenanceDateServices>();
 
         return services;
