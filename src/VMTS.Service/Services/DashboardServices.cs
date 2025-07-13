@@ -103,8 +103,8 @@ public class DashboardServices : IDashboardServices
 
     public async Task<int> GetTotalTripsAsync(int? month)
     {
-        return await GetCountTripsWithFaultsAsync(month)
-            + await GetCountTripsWithoutFaultsAsync(month);
+        var taotalTrips = await _unitOfWork.GetRepo<TripRequest>().GetAllAsync();
+        return taotalTrips.Count;
     }
 
     public async Task<int> GetTotalVehicleCount()
