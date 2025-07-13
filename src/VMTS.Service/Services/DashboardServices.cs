@@ -109,7 +109,9 @@ public class DashboardServices : IDashboardServices
 
     public async Task<int> GetTotalVehicleCount()
     {
-        var specs = new VehicleIncludesSpecification(v => v.Status != VehicleStatus.Retired);
+        var specs = new VehicleIncludesSpecification(v =>
+            v.Status != VehicleStatus.Retired && v.Status != VehicleStatus.OutOfService
+        );
         var vehicles = await _unitOfWork.GetRepo<Vehicle>().GetCountAsync(specs);
         return vehicles;
     }
