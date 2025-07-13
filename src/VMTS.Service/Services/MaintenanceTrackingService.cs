@@ -90,7 +90,7 @@ public class MaintenanceTrackingService : IMaintenanceTrackingService
     #region Get Vehicles With Due Parts
 
     public async Task<IReadOnlyList<VehicleWithDueParts>> GetVehiclesPartsAsync(
-        VehicleWithDuePartsSpecParams specParams
+        VehiclePartsSpecParams specParams
     )
     {
         var spec = new TrackingDuePartsSpecification(specParams);
@@ -111,7 +111,7 @@ public class MaintenanceTrackingService : IMaintenanceTrackingService
                     return null; // skip broken data
 
                 var dueParts = group
-                    .Where(mt => mt.Part != null && mt.IsAlmostDue || mt.IsDue)
+                    .Where(mt => mt.Part != null)
                     .Select(mt => new DuePart
                     {
                         PartId = mt.PartId,
@@ -144,7 +144,7 @@ public class MaintenanceTrackingService : IMaintenanceTrackingService
                         vehicle.VehicleModel.Category ?? new VehicleCategory { Name = "Unknown" },
                     NeedMaintenancePrediction = vehicle.NeedMaintenancePrediction,
 
-                    DueParts = hasNoDueParts ? new List<DuePart>() : dueParts,
+                    DueParts = dueParts,
                 };
             })
             .Where(v => v != null)
