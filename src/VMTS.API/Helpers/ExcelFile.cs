@@ -421,9 +421,11 @@ public static class ExcelFile
                     var isDue =
                         (nextChangeDate <= DateTime.Today) || (currentOdometerKM >= nextChangeKM);
                     var isAlmostDue =
-                        !isDue && (nextChangeDate <= DateTime.Today.AddDays(15))
-                        || (currentOdometerKM >= nextChangeKM - 500);
-
+                        !isDue
+                        && (
+                            (nextChangeKM > 0 && vehicle.CurrentOdometerKM >= nextChangeKM - 500)
+                            || (nextChangeDate <= DateTime.Today.AddDays(15))
+                        );
                     results.Add(
                         new MaintenanceTracking
                         {
