@@ -7,7 +7,9 @@ namespace VMTS.API.Dtos.Vehicles;
 
 public class VehicleDetailsDto
 {
+    public DateTime CreatedAt { get; set; }
     public string PalletNumber { get; set; } = default!;
+    public string FuelEfficiency { get; set; } = default!;
 
     public DateOnly JoinedYear { get; set; }
 
@@ -32,7 +34,6 @@ public class VehicleDetailsDto
     public PartCondition? BatteryStatus { get; set; } = default!;
     public DrivingCondition? DrivingCondition { get; set; } = default!;
     public DateTime? LastAssignedDate { get; set; }
-    public string? FuelEfficiency { get; set; } = default!;
 
     public DateTime? LastMaintenanceDate { get; set; }
     public DateTime? ExpectedNextMaintenanceDate { get; set; }

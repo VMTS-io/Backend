@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using VMTS.API.ActionFilters;
 using VMTS.API.Dtos.MaintenanceTrackingForGetVehicleInDue;
 using VMTS.Core.Interfaces.Services;
+using VMTS.Core.Specifications.MaintenanceTracking;
 
 namespace VMTS.API.Controllers;
 
@@ -31,10 +32,10 @@ public class MaintenanceeTrackingController : BaseApiController
         return Ok(mappedResult);
     }
 
-    [ServiceFilter<ValidateModelActionFilter<VehicleWithDuePartsSpecParams>>]
+    // [ServiceFilter<ValidateModelActionFilter<VehicleWithDuePartsSpecParams>>]
     [HttpGet("MaintenanceTrackings")]
     public async Task<VehicleTrackingDto> GetVehicleTraching(
-        [FromQuery] VehicleWithDuePartsSpecParams specParams
+        [FromQuery] VehiclePartsSpecParams specParams
     )
     {
         var result = await _maintenanceTrackingService.GetVehiclesPartsAsync(specParams);
