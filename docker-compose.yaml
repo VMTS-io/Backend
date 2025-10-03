@@ -11,11 +11,32 @@ services:
     image: mcr.microsoft.com/mssql/server:2022-latest
     container_name: sqlserver
     environment:
-      ACCEPT_EULA : "Y"
+      ACCEPT_EULA: "Y"
       MSSQL_SA_PASSWORD: "P@$$word1234"
     volumes:
       - sql-volume:/var/opt/mssql
     ports:
       - 1433:1433
+  sql-server-identity:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: sqlserver-identity
+    environment:
+      ACCEPT_EULA: "Y"
+      MSSQL_SA_PASSWORD: "P@$$word1234"
+    volumes:
+      - sql-volume:/var/opt/mssql
+    ports:
+      - 1433:1433
+  redis:
+    image: redis:latest # or a specific version like redis:7.0-alpine
+    container_name: redis
+    ports:
+      - "6379:6379" # Maps host port 6379 to container port 6379
+    volumes:
+      - redis_data:/data # Persists Redis data in a named volume
+    restart: always # Ensures Redis restarts if it stops
+    environment:
+      - REDIS_PASSWORD=Redis1234
 volumes:
   sql-volume:
+  redis_data:
